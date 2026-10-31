@@ -723,6 +723,56 @@ export async function writeBrief(input: {
   });
 }
 
+function sniffImageFormat(bytes: Buffer): Mockup["outputFormat"] {
+  if (bytes.subarray(0, 8).toString("hex") === "89504e470d0a1a0a") return "png";
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) return "jpeg";
+  if (bytes.subarray(0, 4).toString("ascii") === "RIFF" && bytes.subarray(8, 12).toString("ascii") === "WEBP") {
+    return "webp";
+  }
+  throw new ModelOutputError("Muse Image returned an image in an unexpected format.");
+}
+
+/**
+ * One Muse Image still via the documented Responses call.
+ * Does not count toward the per-run mockup limit. Used to build demo candidates.
+ */
+export async function generateDemoStill(input: { prompt: string; cacheScope?: CacheScope }): Promise<Mockup> {
+  return withOneRetry(mockupSchema, "Muse Image", async () => {
+    if (isMock()) return mockMockup({ visualDirection: input.prompt });
+
+    const cacheScope = input.cacheScope ?? "private";
+    const body = {
+      model: "muse-image-1.0" as const,
+      input: input.prompt,
+      store: false as const,
+    };
+    const key = requestKey(body);
+    const hit = readCache(cacheScope, key, mockupSchema);
+    if (hit) {
+      addCachedUsd(hit.priceUsd);
+      return hit.result;
+    }
+
+    await ensureLiveClaimed();
+    await chargeKnownUsd(imageCostUsd(1), "Muse Image");
+    const client = liveClient();
+    const response = await client.responses.create(body);
+    const call = response.output.find((item) => item.type === "image_generation_call");
+    if (!call || call.status === "failed" || !call.result) {
+      const detail = call?.error?.message ? ` ${call.error.message}` : "";
+      throw new ModelOutputError(`Muse Image did not return an image.${detail}`);
+    }
+    const bytes = Buffer.from(call.result, "base64");
+    const result = mockupSchema.parse({
+      prompt: input.prompt,
+      outputFormat: sniffImageFormat(bytes),
+      b64Json: call.result,
+    });
+    writeCache(cacheScope, key, { priceUsd: imageCostUsd(1), result });
+    return result;
+  });
+}
+
 export async function generateMockup(input: {
   visualDirection: string;
   cacheScope?: CacheScope;

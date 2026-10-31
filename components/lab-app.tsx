@@ -250,10 +250,19 @@ export function LabApp() {
             Creative Intelligence Lab
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
-            See which motivations and formats are already in a portfolio, and which cells
-            are empty. Since Andromeda, different creative ideas can reach different
-            people. This page only maps coverage. It does not predict performance, scores,
-            or click-through.
+            Meta&apos;s next-gen Andromeda scores every eligible ad and encodes ad content
+            together with its serving context, while the pool of ads keeps growing with
+            generative AI. Variations of the same idea compete in a crowded pool. This tool
+            maps which distinct ideas are missing.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            It does not predict results, scores, or click-through.{" "}
+            <a
+              className="underline decoration-muted-foreground/40 underline-offset-2 hover:decoration-foreground"
+              href="https://engineering.fb.com/2026/10/28/ml-applications/meta-andromeda-next-gen-ads-retrieval-gpu-co-design/"
+            >
+              Source
+            </a>
           </p>
         </div>
         <Button

@@ -4,6 +4,10 @@ A small web app for advertisers. It shows which creative ideas are already in a 
 
 It maps coverage. It does not predict results, scores, or click-through.
 
+Meta's next-gen Andromeda scores every eligible ad and encodes ad content together with its serving context, while the pool of ads keeps growing with generative AI. Variations of the same idea compete in a crowded pool. This tool maps which distinct ideas are missing.
+
+Source: [Meta Engineering, Andromeda](https://engineering.fb.com/2026/10/28/ml-applications/meta-andromeda-next-gen-ads-retrieval-gpu-co-design/)
+
 This repository is milestone 1: the input form, a demo brand, a mock analysis (no API key), and the coverage map. Concept briefs, image mockups, and export come later.
 
 ## Run it locally
@@ -110,8 +114,10 @@ If the key is missing, the command stops and does not call the API.
 - `lib/meta.ts` — the only place that can call Meta’s models, plus prices, cache, and the budget cap
 - `lib/mock.ts` — fake but checked results for demos without a key
 - `lib/demo.ts` — Danish Coffee Lab copy
+- `lib/brand-kit.ts` — bag, palette, and photo style for the demo photographs
 - `data/cache/` — saved real model results for the demo, replayed at $0
-- `public/demo/` — original SVG ad placeholders (drawn for this project)
+- `public/demo/` — original SVG ad placeholders, plus 24 candidate photographs in `candidates/`
+- `docs/m3/` — contact sheets and the full prompt for each candidate. A pick per ad is still open.
 - `scripts/validate-mock.ts` — checks the demo labels
 
 There is no database. The analysis stays in the browser until you refresh the page.
