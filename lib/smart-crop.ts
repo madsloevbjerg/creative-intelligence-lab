@@ -20,10 +20,13 @@ export type CropRect = {
 
 export type SmartCropFit = "fits" | "tight" | "impossible";
 
+export type OverlayPlace = "standard" | "top" | "bottom";
+
 export type SmartCropResult = {
   rect: CropRect;
   fit: SmartCropFit;
   reason: string;
+  overlay: OverlayPlace;
 };
 
 export type SmartCropOptions = {
@@ -138,6 +141,7 @@ export function smartCrop(
     return {
       rect: { left: 0, top: 0, width: 0, height: 0 },
       fit: "impossible",
+      overlay: "standard",
       reason: "The image has no pixels to crop.",
     };
   }
@@ -145,6 +149,7 @@ export function smartCrop(
     return {
       rect: { left: 0, top: 0, width: 0, height: 0 },
       fit: "impossible",
+      overlay: "standard",
       reason: "The aspect ratio has to be greater than zero.",
     };
   }
@@ -161,6 +166,7 @@ export function smartCrop(
     return {
       rect,
       fit,
+      overlay: "standard",
       reason: `A ${aspectRatio.toFixed(3)} crop keeps the mask clear of the wordmark and the headline, with ${room}.`,
     };
   }
@@ -168,6 +174,131 @@ export function smartCrop(
   return {
     rect: { left: 0, top: 0, width: image.width, height: image.height },
     fit: "impossible",
+    overlay: "standard",
     reason: "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+  };
+}
+
+function largestFrame(image: { width: number; height: number }, aspectRatio: number): { width: number; height: number } {
+  let height = image.height;
+  let width = height * aspectRatio;
+  if (width > image.width) {
+    width = image.width;
+    height = width / aspectRatio;
+  }
+  return { width, height };
+}
+
+function containsBox(rect: CropRect, box: MaskBox): boolean {
+  return (
+    box.left >= rect.left - 1 &&
+    box.right <= rect.left + rect.width + 1 &&
+    box.top >= rect.top - 1 &&
+    box.bottom <= rect.top + rect.height + 1
+  );
+}
+
+function bandClears(rect: CropRect, bag: MaskBox, overlay: OverlayPlace): boolean {
+  if (overlay === "standard") {
+    const wordmarkBottom = rect.top + WORDMARK_RESERVE * rect.height;
+    const headlineTop = rect.top + rect.height * (1 - HEADLINE_RESERVE);
+    return bag.top >= wordmarkBottom - 2 && bag.bottom <= headlineTop + 2;
+  }
+  if (overlay === "top") {
+    return bag.top >= rect.top + 0.22 * rect.height - 2;
+  }
+  return bag.bottom <= rect.top + rect.height * (1 - 0.22) + 2;
+}
+
+function centerOf(box: MaskBox): { x: number; y: number } {
+  return { x: (box.left + box.right) / 2, y: (box.top + box.bottom) / 2 };
+}
+
+function subjectInside(rect: CropRect, box: MaskBox): boolean {
+  const huge = box.right - box.left > rect.width * 0.85 || box.bottom - box.top > rect.height * 0.85;
+  if (!huge) return containsBox(rect, box);
+  const center = centerOf(box);
+  return (
+    center.x >= rect.left &&
+    center.x <= rect.left + rect.width &&
+    center.y >= rect.top &&
+    center.y <= rect.top + rect.height
+  );
+}
+
+/**
+ * Largest 4:5 or 9:16 window that keeps the whole bag inside.
+ * A person-sized mask only has to stay visibly in frame, because SAM often
+ * outlines the whole body. The type sits clear of the bag.
+ */
+export function frameSubjects(
+  image: { width: number; height: number },
+  subjects: readonly MaskBox[],
+  bag: MaskBox,
+  aspectRatio: number,
+): SmartCropResult {
+  if (subjects.length === 0) {
+    return {
+      rect: { left: 0, top: 0, width: 0, height: 0 },
+      fit: "impossible",
+      overlay: "standard",
+      reason: "There is no subject to keep inside the crop.",
+    };
+  }
+  const frame = largestFrame(image, aspectRatio);
+  const cropW = Math.round(frame.width);
+  const cropH = Math.round(frame.height);
+  if (bag.right - bag.left > cropW + 2 || bag.bottom - bag.top > cropH + 2) {
+    return {
+      rect: { left: 0, top: 0, width: cropW, height: cropH },
+      fit: "impossible",
+      overlay: "standard",
+      reason: "The bag itself is larger than a 4:5 or 9:16 frame of this photo.",
+    };
+  }
+  const leftLo = Math.max(0, bag.right - cropW);
+  const leftHi = Math.min(image.width - cropW, bag.left);
+  const topLo = Math.max(0, bag.bottom - cropH);
+  const topHi = Math.min(image.height - cropH, bag.top);
+  if (leftLo > leftHi + 2 || topLo > topHi + 2) {
+    return {
+      rect: { left: 0, top: 0, width: cropW, height: cropH },
+      fit: "impossible",
+      overlay: "standard",
+      reason: "The bag does not fit inside a 4:5 or 9:16 frame.",
+    };
+  }
+
+  const placements: OverlayPlace[] = ["standard", "top", "bottom"];
+  for (const overlay of placements) {
+    const topStep = Math.max(1, Math.floor((topHi - topLo) / 16));
+    const leftStep = Math.max(1, Math.floor((leftHi - leftLo) / 16));
+    for (let top = topLo; top <= topHi; top += topStep) {
+      for (let left = leftLo; left <= leftHi; left += leftStep) {
+        const rect = { left: Math.round(left), top: Math.round(top), width: cropW, height: cropH };
+        if (!containsBox(rect, bag)) continue;
+        if (!subjects.every((box) => subjectInside(rect, box))) continue;
+        if (!bandClears(rect, bag, overlay)) continue;
+        const where =
+          overlay === "standard"
+            ? "wordmark at the top and the headline at the bottom"
+            : overlay === "top"
+              ? "wordmark and headline together at the top, clear of the bag"
+              : "wordmark and headline together at the bottom, clear of the bag";
+        return {
+          rect,
+          fit: "fits",
+          overlay,
+          reason: `A wide ${aspectRatio.toFixed(3)} crop keeps the scene, with the ${where}.`,
+        };
+      }
+    }
+  }
+
+  return {
+    rect: { left: Math.round(Math.max(0, leftLo)), top: Math.round(Math.max(0, topLo)), width: cropW, height: cropH },
+    fit: "impossible",
+    overlay: "standard",
+    reason: "The bag and its scene subject do not share a frame that also leaves room for the type.",
   };
 }

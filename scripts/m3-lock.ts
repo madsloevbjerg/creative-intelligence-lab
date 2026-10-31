@@ -165,6 +165,7 @@ async function chooseCrop(bytes: Buffer, label: string): Promise<{
       crop: {
         rect: { left: 0, top: 0, width, height },
         fit: "impossible",
+        overlay: "standard",
         reason: "SAM 3.1 did not find a coffee bag to keep inside the crop.",
       },
     };

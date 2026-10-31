@@ -3,6 +3,7 @@ import {
   HEADLINE_RESERVE,
   REELS_ASPECT,
   WORDMARK_RESERVE,
+  frameSubjects,
   smartCrop,
   unionMaskBoxes,
   type CropRect,
@@ -74,6 +75,30 @@ if (union) {
 
 const empty = unionMaskBoxes([]);
 if (empty !== null) fail("empty union should be null");
+
+const lowBag: MaskBox = { left: 700, top: 900, right: 980, bottom: 1260 };
+const lowFrame = frameSubjects(image, [lowBag], lowBag, FEED_ASPECT);
+if (lowFrame.fit === "impossible") fail(`a low bag should move the type: ${lowFrame.reason}`);
+if (lowFrame.overlay === "standard") fail("a bag on the bottom edge should not keep the headline underneath it");
+if (lowBag.bottom > lowFrame.rect.top + lowFrame.rect.height + 1 || lowBag.top < lowFrame.rect.top - 1) {
+  fail("the low bag is outside the frame");
+}
+
+const spreadPerson: MaskBox = { left: 40, top: 200, right: 500, bottom: 900 };
+const spreadBag: MaskBox = { left: 1400, top: 700, right: 1700, bottom: 1200 };
+const spread = frameSubjects(image, [spreadPerson, spreadBag], spreadBag, FEED_ASPECT);
+if (spread.fit !== "impossible") fail("a person and a bag at opposite edges should not share a 4:5 frame");
+
+const nearPerson: MaskBox = { left: 620, top: 180, right: 980, bottom: 860 };
+const nearBag: MaskBox = { left: 1000, top: 520, right: 1280, bottom: 980 };
+const near = frameSubjects(image, [nearPerson, nearBag], nearBag, FEED_ASPECT);
+if (near.fit === "impossible") fail(`a person beside the bag should fit: ${near.reason}`);
+if (nearPerson.left < near.rect.left - 1 || nearBag.right > near.rect.left + near.rect.width + 1) {
+  fail("the nearby person or bag is outside the frame");
+}
+
+const reelsScene = frameSubjects(image, [bag], bag, REELS_ASPECT);
+if (reelsScene.fit === "impossible") fail("9:16 framing should hold a small centered bag");
 
 if (failures > 0) {
   console.error(`${failures} crop check(s) failed`);

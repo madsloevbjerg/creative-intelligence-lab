@@ -1,6 +1,7 @@
 import sharp from "sharp";
 
 import { brandKit } from "@/lib/brand-kit";
+import type { OverlayPlace } from "@/lib/smart-crop";
 import { adOverlaySvg } from "@/lib/wordmark";
 
 /** Feed 4:5 canvas. The documented image call does not take a size, so the crop is local. */
@@ -11,6 +12,7 @@ export async function compositeAd(
   photo: Buffer,
   headline: string,
   crop?: { left: number; top: number; width: number; height: number },
+  place: OverlayPlace = "standard",
 ): Promise<Buffer> {
   let image = sharp(photo).rotate();
   if (crop) {
@@ -22,7 +24,9 @@ export async function compositeAd(
     });
   }
   const base = await image.resize(COMPOSITE_WIDTH, COMPOSITE_HEIGHT, { fit: "fill" }).png().toBuffer();
-  const overlay = Buffer.from(adOverlaySvg({ width: COMPOSITE_WIDTH, height: COMPOSITE_HEIGHT, headline }));
+  const overlay = Buffer.from(
+    adOverlaySvg({ width: COMPOSITE_WIDTH, height: COMPOSITE_HEIGHT, headline, place }),
+  );
   return sharp(base)
     .composite([{ input: overlay, top: 0, left: 0 }])
     .png({ compressionLevel: 9 })

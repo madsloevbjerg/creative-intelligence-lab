@@ -1,131 +1,139 @@
 {
   "picks": {
     "dcl-01": {
-      "candidate": "1c",
+      "candidate": "dcl-01-c.png",
       "regenerated": false,
       "regenerationReason": null,
-      "fit": "tight",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 31px of padding, less than the 38px asked for.",
+      "fit": "fits",
+      "overlay": "standard",
+      "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
-        "left": 480,
-        "top": 57,
-        "width": 978,
-        "height": 1223
+        "left": 298,
+        "top": 0,
+        "width": 1024,
+        "height": 1280
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
       "bagCount": 1
     },
     "dcl-02": {
-      "candidate": "2c",
-      "regenerated": true,
-      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "candidate": "2c pile",
+      "regenerated": false,
+      "regenerationReason": null,
       "fit": "fits",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 38px of padding.",
+      "overlay": "standard",
+      "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
-        "left": 613,
-        "top": 397,
-        "width": 662,
-        "height": 828
+        "left": 198,
+        "top": 0,
+        "width": 1024,
+        "height": 1280
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
       "bagCount": 3
     },
     "dcl-03": {
-      "candidate": "3a",
+      "candidate": "dcl-03-a.png",
       "regenerated": true,
-      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
-      "fit": "tight",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 1px of padding, less than the 38px asked for.",
+      "regenerationReason": "Candidate 3b. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
+      "fit": "fits",
+      "overlay": "top",
+      "reason": "Candidate 3b. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
-        "left": 547,
-        "top": 260,
-        "width": 816,
-        "height": 1020
+        "left": 491,
+        "top": 0,
+        "width": 1024,
+        "height": 1280
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
       "bagCount": 1
     },
     "dcl-04": {
-      "candidate": "4a",
+      "candidate": "dcl-04-a.png",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 38px of padding.",
+      "overlay": "standard",
+      "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
-        "left": 576,
-        "top": 247,
-        "width": 707,
-        "height": 884
+        "left": 81,
+        "top": 0,
+        "width": 1024,
+        "height": 1280
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
       "bagCount": 1
     },
     "dcl-05": {
-      "candidate": "5c",
+      "candidate": "dcl-05-c.png",
       "regenerated": true,
-      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
-      "fit": "tight",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 19px of padding, less than the 38px asked for.",
+      "regenerationReason": "Candidate 5a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
+      "fit": "fits",
+      "overlay": "top",
+      "reason": "Candidate 5a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
-        "left": 592,
-        "top": 713,
-        "width": 453,
-        "height": 567
+        "left": 0,
+        "top": 0,
+        "width": 1408,
+        "height": 1760
       },
-      "imageWidth": 1920,
-      "imageHeight": 1280,
+      "imageWidth": 1408,
+      "imageHeight": 1760,
       "bagCount": 1
     },
     "dcl-06": {
-      "candidate": "6a",
-      "regenerated": true,
-      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
-      "fit": "tight",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 29px of padding, less than the 38px asked for.",
+      "candidate": "dcl-06-a.png",
+      "regenerated": false,
+      "regenerationReason": null,
+      "fit": "fits",
+      "overlay": "top",
+      "reason": "A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
-        "left": 52,
-        "top": 492,
-        "width": 1142,
-        "height": 1428
-      },
-      "imageWidth": 1280,
-      "imageHeight": 1920,
-      "bagCount": 1
-    },
-    "dcl-07": {
-      "candidate": "7b",
-      "regenerated": true,
-      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
-      "fit": "tight",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 17px of padding, less than the 38px asked for.",
-      "crop": {
-        "left": 622,
-        "top": 731,
-        "width": 439,
-        "height": 549
+        "left": 432,
+        "top": 0,
+        "width": 1024,
+        "height": 1280
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
       "bagCount": 1
     },
-    "dcl-08": {
-      "candidate": "8a",
+    "dcl-07": {
+      "candidate": "dcl-07-b.png",
       "regenerated": true,
-      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "regenerationReason": "Candidate 7a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "fit": "fits",
-      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 38px of padding.",
+      "overlay": "top",
+      "reason": "Candidate 7a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
-        "left": 351,
-        "top": 802,
-        "width": 566,
-        "height": 708
+        "left": 0,
+        "top": 0,
+        "width": 1408,
+        "height": 1760
       },
-      "imageWidth": 1280,
-      "imageHeight": 1920,
+      "imageWidth": 1408,
+      "imageHeight": 1760,
+      "bagCount": 1
+    },
+    "dcl-08": {
+      "candidate": "dcl-08-a.png",
+      "regenerated": false,
+      "regenerationReason": null,
+      "fit": "fits",
+      "overlay": "top",
+      "reason": "A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
+      "crop": {
+        "left": 0,
+        "top": 0,
+        "width": 1024,
+        "height": 1280
+      },
+      "imageWidth": 1920,
+      "imageHeight": 1280,
       "bagCount": 1
     }
   }

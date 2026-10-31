@@ -29,13 +29,16 @@ export const FORMATS = [
   "Lifestyle scene",
 ] as const;
 
-/** One short noun phrase per SAM 3.1 call. `background` is stored as setting. */
+/**
+ * One short noun phrase per SAM 3.1 call. `background` is stored as setting.
+ * These phrases are the ones that actually matched the demo photos.
+ */
 export const SEGMENT_PROMPTS = [
-  { key: "product", phrase: "product" },
+  { key: "product", phrase: "bag" },
   { key: "person", phrase: "person" },
-  { key: "textOverlay", phrase: "text overlay" },
+  { key: "textOverlay", phrase: "words" },
   { key: "setting", phrase: "background" },
-  { key: "logo", phrase: "logo" },
+  { key: "logo", phrase: "green logo" },
 ] as const;
 
 export const HOOK_MAX_WORDS = 10;
