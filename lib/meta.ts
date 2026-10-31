@@ -6,8 +6,11 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import OpenAI from "openai";
+import type { ZodType } from "zod";
 
+import { readCache, requestKey, writeCache, type CacheScope } from "@/lib/cache";
 import { ModelOutputError, UserFacingError, type CostSummary } from "@/lib/errors";
+import { imageSha256 } from "@/lib/image-bytes";
 import { formatBudgetUsd, formatUsd } from "@/lib/money";
 import {
   DEFAULT_LIVE_RUNS_PER_HOUR,
@@ -22,6 +25,8 @@ import {
   mockSegmentation,
 } from "@/lib/mock";
 import { BRAND_SYSTEM, BRIEF_SYSTEM, CLASSIFY_SYSTEM } from "@/lib/prompts";
+import { brandUserText, classifyUserText } from "@/lib/request-text";
+import { isDemoBrandText, isDemoImageSha } from "@/lib/demo-assets";
 import {
   brandSummaryJsonSchema,
   brandSummarySchema,
@@ -66,13 +71,15 @@ export const LIST_PRICES = {
 /** Output tokens reserved when deciding whether a Spark call fits the budget. */
 const SPARK_OUTPUT_ALLOWANCE = 800;
 
-const DEFAULT_BUDGET_USD = 100;
+const DEFAULT_BUDGET_USD = 120;
 
 type RunLedger = {
   usd: number;
+  cachedUsd: number;
   mode: "mock" | "live";
   briefs: number;
   mockups: number;
+  liveClaimed: boolean;
 };
 
 const runLedger = new AsyncLocalStorage<RunLedger>();
@@ -222,16 +229,35 @@ function sparkEstimateUsd(text: string): number {
   return sparkCostUsd(inputTokens, SPARK_OUTPUT_ALLOWANCE);
 }
 
+function addCachedUsd(usd: number): void {
+  const run = runLedger.getStore();
+  if (run) run.cachedUsd = roundUsd(run.cachedUsd + usd);
+}
+
 export function currentCost(): CostSummary {
   return {
     runUsd: roundUsd(runLedger.getStore()?.usd ?? 0),
+    cachedUsd: roundUsd(runLedger.getStore()?.cachedUsd ?? 0),
     totalUsd: roundUsd(readSpendTotalUsd()),
     budgetUsd: budgetLimitUsd(),
   };
 }
 
 export function runWithCost<T>(mode: "mock" | "live", task: () => Promise<T>): Promise<T> {
-  return runLedger.run({ usd: 0, mode, briefs: 0, mockups: 0 }, task);
+  return runLedger.run(
+    { usd: 0, cachedUsd: 0, mode, briefs: 0, mockups: 0, liveClaimed: false },
+    task,
+  );
+}
+
+async function ensureLiveClaimed(): Promise<void> {
+  const run = runLedger.getStore();
+  if (!run || run.mode !== "live") {
+    throw new UserFacingError("Live mode is not enabled for this run. No model call was made.", 403);
+  }
+  if (run.liveClaimed) return;
+  await claimLiveRun();
+  run.liveClaimed = true;
 }
 
 function takeOutputSlot(kind: "brief" | "mockup"): void {
@@ -403,13 +429,24 @@ function parseJsonContent(content: string, label: string): unknown {
 
 type JsonSchema = Record<string, unknown>;
 
-async function museJson(input: {
+async function museJson<T>(input: {
   schemaName: string;
   jsonSchema: JsonSchema;
+  schema: ZodType<T>;
   system: string;
   userText: string;
   imageUrl?: string;
-}): Promise<unknown> {
+  cacheScope: CacheScope;
+  keyMaterial: unknown;
+}): Promise<T> {
+  const key = requestKey(input.keyMaterial);
+  const hit = readCache(input.cacheScope, key, input.schema);
+  if (hit) {
+    addCachedUsd(hit.priceUsd);
+    return hit.result;
+  }
+
+  await ensureLiveClaimed();
   const estimate = sparkEstimateUsd([input.system, input.userText, input.imageUrl ?? ""].join("\n"));
   await reserveEstimateUsd(estimate, "Muse Spark");
 
@@ -441,13 +478,19 @@ async function museJson(input: {
   });
 
   const actual = usageCostUsd(response.usage);
+  const priceUsd = actual ?? estimate;
   if (actual !== null) await settleEstimateUsd(estimate, actual);
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
     throw new ModelOutputError(`${input.schemaName} came back empty.`);
   }
-  return parseJsonContent(content, input.schemaName);
+  const parsed = input.schema.safeParse(parseJsonContent(content, input.schemaName));
+  if (!parsed.success) {
+    throw new ModelOutputError(`${input.schemaName} did not match the expected format.`);
+  }
+  writeCache(input.cacheScope, key, { priceUsd, result: parsed.data });
+  return parsed.data;
 }
 
 type SegmentHit = Segmentation["product"];
@@ -456,7 +499,51 @@ type SegmentHit = Segmentation["product"];
  * SAM 3.1 returns special-token text, not JSON. One call per noun phrase.
  * Empty output is a real "no match", not a missing field.
  */
+const segmentHitSchema = segmentationSchema.shape.product;
+
+export function samKeyMaterial(imageSha: string, phrase: string) {
+  return {
+    model: "sam-3.1" as const,
+    phrase,
+    imageSha256: imageSha,
+    stream: true as const,
+    metadata: { mask_encoding: "one_bit" },
+    detail: "auto" as const,
+  };
+}
+
+export function classifyKeyMaterial(imageSha: string, userText: string) {
+  return {
+    model: "muse-spark-1.3" as const,
+    task: "classifyAd" as const,
+    system: CLASSIFY_SYSTEM,
+    userText,
+    imageSha256: imageSha,
+    responseFormat: { type: "json_schema" as const, strict: true, name: "Classification" },
+  };
+}
+
+export function brandKeyMaterial(userText: string) {
+  return {
+    model: "muse-spark-1.3" as const,
+    task: "summarizeBrand" as const,
+    system: BRAND_SYSTEM,
+    userText,
+    responseFormat: { type: "json_schema" as const, strict: true, name: "BrandSummary" },
+  };
+}
+
 async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit> {
+  const imageSha = imageSha256(imageUrl);
+  const cacheScope: CacheScope = isDemoImageSha(imageSha) ? "demo" : "private";
+  const key = requestKey(samKeyMaterial(imageSha, phrase));
+  const hit = readCache(cacheScope, key, segmentHitSchema);
+  if (hit) {
+    addCachedUsd(hit.priceUsd);
+    return hit.result;
+  }
+
+  await ensureLiveClaimed();
   await chargeKnownUsd(samCallUsd(), "SAM 3.1");
   const client = liveClient();
   const events = await client.responses.create({
@@ -494,18 +581,28 @@ async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit>
 
   const boxes = recordsOfKind(result.records, "box");
   const failed = result.diagnostics.some((item) => item.severity === "error");
+  const finish = (hit: SegmentHit): SegmentHit => {
+    const checked = segmentHitSchema.parse(hit);
+    writeCache(cacheScope, key, { priceUsd: samCallUsd(), result: checked });
+    return checked;
+  };
   if (boxes.length === 0 && result.rawOutput.trim() === "") {
-    return { found: false, note: "No match" };
+    return finish({ found: false, note: "No match" });
   }
   if (failed && boxes.length === 0) {
     throw new ModelOutputError(`Could not read the segmentation for “${phrase}”.`);
   }
   if (boxes.length === 0) {
-    return { found: false, note: "No match" };
+    return finish({ found: false, note: "No match" });
   }
 
   const countLabel = boxes.length === 1 ? "1 match" : `${boxes.length} matches`;
-  return { found: true, note: `${countLabel} for “${phrase}”.` };
+  return finish({ found: true, note: `${countLabel} for “${phrase}”.` });
+}
+
+/** One SAM 3.1 call for a single noun phrase. Used by the smoke script. */
+export async function segmentPhrase(imageUrl: string, phrase: string): Promise<SegmentHit> {
+  return withOneRetry(segmentHitSchema, `Segmentation “${phrase}”`, () => segmentOne(imageUrl, phrase));
 }
 
 export async function segmentImage(input: { imageUrl: string; headline: string; primaryText: string }): Promise<Segmentation> {
@@ -546,17 +643,17 @@ export async function classifyAd(input: {
       });
     }
 
+    const userText = classifyUserText(input);
+    const imageSha = imageSha256(input.imageUrl);
     return museJson({
       schemaName: "Classification",
       jsonSchema: classificationJsonSchema,
+      schema: classificationSchema,
       system: CLASSIFY_SYSTEM,
       imageUrl: input.imageUrl,
-      userText: [
-        `Headline: ${input.headline}`,
-        `Primary text: ${input.primaryText}`,
-        "Segmentation notes (from SAM 3.1; “No match” means that phrase was not found):",
-        JSON.stringify(input.segmentation),
-      ].join("\n"),
+      userText,
+      cacheScope: isDemoImageSha(imageSha) ? "demo" : "private",
+      keyMaterial: classifyKeyMaterial(imageSha, userText),
     });
   });
 }
@@ -567,11 +664,15 @@ export async function summarizeBrand(input: {
 }): Promise<BrandSummary> {
   return withOneRetry(brandSummarySchema, "Brand summary", async () => {
     if (isMock()) return mockBrandSummary(input);
+    const userText = brandUserText(input.websiteText, input.brief);
     return museJson({
       schemaName: "BrandSummary",
       jsonSchema: brandSummaryJsonSchema,
+      schema: brandSummarySchema,
       system: BRAND_SYSTEM,
-      userText: `Website text:\n${input.websiteText}\n\nCampaign brief:\n${input.brief}`,
+      userText,
+      cacheScope: isDemoBrandText(input.websiteText, input.brief) ? "demo" : "private",
+      keyMaterial: brandKeyMaterial(userText),
     });
   });
 }
@@ -593,40 +694,60 @@ export async function writeBrief(input: {
         offer: input.offer,
       });
     }
+    const userText = [
+      `Motivation: ${input.motivation}`,
+      `Format: ${input.format}`,
+      `Offer: ${input.offer}`,
+      `Coverage note: ${input.hypothesis}`,
+      `Website text:\n${input.websiteText}`,
+      `Campaign brief:\n${input.brief}`,
+    ].join("\n\n");
     return museJson({
       schemaName: "ConceptBrief",
       jsonSchema: conceptBriefJsonSchema,
+      schema: conceptBriefSchema,
       system: BRIEF_SYSTEM,
-      userText: [
-        `Motivation: ${input.motivation}`,
-        `Format: ${input.format}`,
-        `Offer: ${input.offer}`,
-        `Coverage note: ${input.hypothesis}`,
-        `Website text:\n${input.websiteText}`,
-        `Campaign brief:\n${input.brief}`,
-      ].join("\n\n"),
+      userText,
+      cacheScope: "private",
+      keyMaterial: {
+        model: "muse-spark-1.3",
+        task: "writeBrief",
+        system: BRIEF_SYSTEM,
+        userText,
+        responseFormat: { type: "json_schema", strict: true, name: "ConceptBrief" },
+      },
     });
   });
 }
 
 export async function generateMockup(input: {
   visualDirection: string;
+  cacheScope?: CacheScope;
 }): Promise<Mockup> {
   takeOutputSlot("mockup");
   return withOneRetry(mockupSchema, "Mockup", async () => {
     if (isMock()) return mockMockup(input);
 
-    await chargeKnownUsd(imageCostUsd(1), "Muse Image");
-    const client = liveClient();
+    const cacheScope = input.cacheScope ?? "private";
     const body = {
-      model: "muse-image-1.0",
+      model: "muse-image-1.0" as const,
       prompt: input.visualDirection,
       n: 1,
-      size: "1024x1024",
+      size: "1024x1024" as const,
       response_format: "b64_json" as const,
       output_format: "png" as const,
       tool_enablement: { enable_web_search: false },
     };
+    const key = requestKey(body);
+    const hit = readCache(cacheScope, key, mockupSchema);
+    if (hit) {
+      addCachedUsd(hit.priceUsd);
+      return hit.result;
+    }
+
+    await ensureLiveClaimed();
+    await chargeKnownUsd(imageCostUsd(1), "Muse Image");
+    const client = liveClient();
     const response = await client.images.generate(
       body as OpenAI.Images.ImageGenerateParamsNonStreaming,
     );
@@ -634,10 +755,12 @@ export async function generateMockup(input: {
     if (!b64Json) {
       throw new ModelOutputError("Muse Image returned no image.");
     }
-    return {
+    const result = mockupSchema.parse({
       prompt: input.visualDirection,
       outputFormat: "png",
       b64Json,
-    };
+    });
+    writeCache(cacheScope, key, { priceUsd: imageCostUsd(1), result });
+    return result;
   });
 }

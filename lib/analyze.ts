@@ -1,8 +1,18 @@
 import "server-only";
 
+import { isExactDemoSubmission, loadCachedDemo } from "@/lib/demo-cache";
 import { ModelOutputError, UserFacingError } from "@/lib/errors";
 import { imageWithinLimit } from "@/lib/image-bytes";
-import { classifyAd, currentCost, runWithCost, segmentImage, summarizeBrand, type AdapterMode } from "@/lib/meta";
+import {
+  budgetLimitUsd,
+  classifyAd,
+  currentCost,
+  readSpendTotalUsd,
+  runWithCost,
+  segmentImage,
+  summarizeBrand,
+  type AdapterMode,
+} from "@/lib/meta";
 import {
   analysisResponseSchema,
   analyzeRequestSchema,
@@ -45,6 +55,36 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
     if (!imageWithinLimit(ad.imageDataUrl)) {
       throw new UserFacingError(`“${ad.headline}” is over 5 MB. Use a smaller image.`, 413);
     }
+  }
+
+  const demoInput = {
+    websiteText,
+    brief: request.data.brief,
+    ads: request.data.ads,
+  };
+  let chosen = decision;
+  if (decision.mode !== "live" && isExactDemoSubmission(demoInput)) {
+    const cached = loadCachedDemo(demoInput);
+    if (cached) {
+      const checked = analysisResponseSchema.safeParse({
+        mode: "cached",
+        modeReason: "Saved model results for the Danish Coffee Lab demo. No API call was made.",
+        brand: cached.brand,
+        ads: cached.ads,
+        cost: {
+          runUsd: 0,
+          cachedUsd: cached.cachedUsd,
+          totalUsd: readSpendTotalUsd(),
+          budgetUsd: budgetLimitUsd(),
+        },
+      });
+      if (checked.success) return checked.data;
+    }
+    chosen = {
+      mode: "mock",
+      reason:
+        "This demo is not in the saved model cache yet, so mock labels were used. No API call was made.",
+    };
   }
 
   const ads = [];
@@ -95,8 +135,8 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
   }
 
   const result = {
-    mode: decision.mode,
-    modeReason: decision.reason,
+    mode: chosen.mode,
+    modeReason: chosen.reason,
     brand,
     ads,
     cost: currentCost(),

@@ -17,14 +17,14 @@ import {
 import { FORMATS, HOOK_MAX_WORDS, MOTIVATIONS, wordCount } from "../lib/taxonomy";
 
 const expected: Record<string, { motivation: string; format: string }> = {
-  "bonne-01": { motivation: "Price/value", format: "Static image" },
-  "bonne-02": { motivation: "Price/value", format: "Static image" },
-  "bonne-03": { motivation: "Price/value", format: "Carousel" },
-  "bonne-04": { motivation: "Convenience/time", format: "Static image" },
-  "bonne-05": { motivation: "Convenience/time", format: "Product demo" },
-  "bonne-06": { motivation: "Convenience/time", format: "Short video (<15s)" },
-  "bonne-07": { motivation: "Quality/performance", format: "Lifestyle scene" },
-  "bonne-08": { motivation: "Quality/performance", format: "Static image" },
+  "dcl-01": { motivation: "Price/value", format: "Static image" },
+  "dcl-02": { motivation: "Price/value", format: "Static image" },
+  "dcl-03": { motivation: "Price/value", format: "Carousel" },
+  "dcl-04": { motivation: "Convenience/time", format: "Static image" },
+  "dcl-05": { motivation: "Convenience/time", format: "Product demo" },
+  "dcl-06": { motivation: "Convenience/time", format: "Short video (<15s)" },
+  "dcl-07": { motivation: "Quality/performance", format: "Lifestyle scene" },
+  "dcl-08": { motivation: "Quality/performance", format: "Static image" },
 };
 
 const banned = /\b(ctr|roas|benchmark|click-through|conversion rate)\b/i;
@@ -65,7 +65,7 @@ const brand = brandSummarySchema.parse(
   }),
 );
 if (banned.test(JSON.stringify(brand))) fail("Brand summary contains a performance claim");
-if (!/Bønne|does not estimate/i.test(brand.why)) {
+if (!/Danish Coffee Lab|does not estimate/i.test(brand.why)) {
   fail("Brand why does not explain the reading");
 }
 

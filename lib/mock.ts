@@ -90,7 +90,7 @@ export function mockSegmentation(input: CopyInput): Segmentation {
   if (demo) return fixtureForDemoAd(demo.id).segmentation;
 
   const copy = `${input.headline} ${input.primaryText}`;
-  const logo = /b[øo]nne\s*&\s*co/i.test(copy);
+  const logo = /danish coffee lab/i.test(copy);
   return {
     product: {
       found: true,
@@ -116,7 +116,7 @@ export function mockSegmentation(input: CopyInput): Segmentation {
     logo: logo
       ? {
           found: true,
-          note: "Mock: the Bønne & Co name appears in the copy. SAM was not called.",
+          note: "Mock: the Danish Coffee Lab name appears in the copy. SAM was not called.",
         }
       : {
           found: false,
@@ -194,8 +194,8 @@ export function mockClassification(input: CopyInput): Classification {
   };
 }
 
-function isBonneBrand(websiteText: string, brief: string): boolean {
-  return /b[øo]nne\s*&\s*co/i.test(`${websiteText}\n${brief}`);
+function isDanishCoffeeLab(websiteText: string, brief: string): boolean {
+  return /danish coffee lab/i.test(`${websiteText}\n${brief}`);
 }
 
 function sentencesOf(text: string): string[] {
@@ -209,7 +209,7 @@ export function mockBrandSummary(input: {
   websiteText: string;
   brief: string;
 }): BrandSummary {
-  if (isBonneBrand(input.websiteText, input.brief)) {
+  if (isDanishCoffeeLab(input.websiteText, input.brief)) {
     return {
       offer: "A weekly bag of specialty coffee, roasted in Aarhus after you order.",
       audiences: ["Home drinkers in Denmark who already buy specialty coffee"],
@@ -219,7 +219,7 @@ export function mockBrandSummary(input: {
         "Price per cup shown before you start",
       ],
       tone: "Calm, concrete, and small-company direct.",
-      why: "Read from the Bønne & Co page and the autumn brief: a weekly roasted bag, people who already buy specialty coffee, and a calm tone. This describes the brand. It does not estimate results.",
+      why: "Read from the Danish Coffee Lab page and the autumn brief: a weekly roasted bag, people who already buy specialty coffee, and a calm tone. This describes the brand. It does not estimate results.",
     };
   }
 

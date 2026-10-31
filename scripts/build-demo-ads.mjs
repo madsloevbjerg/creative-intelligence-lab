@@ -12,7 +12,7 @@ ${parts}
 }
 
 function wordmark(fill) {
-  return `<text x="48" y="78" fill="${fill}" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>`;
+  return `<text x="48" y="78" fill="${fill}" font-family="Georgia, 'Times New Roman', serif" font-size="22">Danish Coffee Lab</text>`;
 }
 
 function bag(x, y, w, body, band) {
@@ -25,7 +25,7 @@ function bag(x, y, w, body, band) {
 }
 
 const ads = {
-  "bonne-01.svg": svg(`
+  "dcl-01.svg": svg(`
     <rect width="800" height="1000" fill="#f3ecdf"/>
     ${wordmark("#3c2415")}
     <text x="48" y="280" fill="#8a5a32" font-family="Georgia, serif" font-size="28" letter-spacing="3">WEEKLY BAG</text>
@@ -34,7 +34,7 @@ const ads = {
     ${bag(470, 620, 220, "#6b3a22", "#3d2416")}
     <text x="48" y="900" fill="#6d5344" font-family="Georgia, serif" font-size="28">Specialty coffee, delivered.</text>
   `),
-  "bonne-02.svg": svg(`
+  "dcl-02.svg": svg(`
     <rect width="800" height="1000" fill="#2c2118"/>
     ${wordmark("#f3ecdf")}
     <text x="48" y="280" fill="#e2c48a" font-family="Georgia, serif" font-size="28" letter-spacing="3">STAY THREE MONTHS</text>
@@ -42,7 +42,7 @@ const ads = {
     <text x="48" y="530" fill="#f6f1e8" font-family="Georgia, serif" font-size="92">free</text>
     ${bag(500, 680, 200, "#8a5a38", "#e2c48a")}
   `),
-  "bonne-03.svg": svg(`
+  "dcl-03.svg": svg(`
     <rect width="800" height="1000" fill="#efe6d6"/>
     ${wordmark("#3c2415")}
     <text x="48" y="160" fill="#8a5a32" font-family="Georgia, serif" font-size="26" letter-spacing="3">SWIPE</text>
@@ -60,7 +60,7 @@ const ads = {
     ${bag(580, 520, 120, "#6b3a22", "#3d2416")}
     <text x="48" y="920" fill="#6d5344" font-family="Georgia, serif" font-size="26">Three prices. One subscription.</text>
   `),
-  "bonne-04.svg": svg(`
+  "dcl-04.svg": svg(`
     <rect width="800" height="1000" fill="#d7e6ee"/>
     ${wordmark("#1d3a4a")}
     <text x="48" y="240" fill="#1d3a4a" font-family="Georgia, serif" font-size="72">Every</text>
@@ -71,7 +71,7 @@ const ads = {
     ${bag(330, 640, 150, "#6b3a22", "#3d2416")}
     <text x="48" y="920" fill="#1d3a4a" font-family="Georgia, serif" font-size="28">On the mat. You boil the water.</text>
   `),
-  "bonne-05.svg": svg(`
+  "dcl-05.svg": svg(`
     <rect width="800" height="1000" fill="#f6f1e8"/>
     ${wordmark("#3c2415")}
     <text x="48" y="200" fill="#3c2415" font-family="Georgia, serif" font-size="64">Bag to cup</text>
@@ -89,7 +89,7 @@ const ads = {
       .join("")}
     ${bag(300, 640, 200, "#6b3a22", "#3d2416")}
   `),
-  "bonne-06.svg": svg(`
+  "dcl-06.svg": svg(`
     <rect width="800" height="1000" fill="#171513"/>
     ${wordmark("#f3ecdf")}
     <circle cx="400" cy="430" r="110" fill="none" stroke="#f3ecdf" stroke-width="8"/>
@@ -99,7 +99,7 @@ const ads = {
     <rect x="80" y="800" width="640" height="8" fill="#3a332c"/>
     ${bag(330, 760, 140, "#8a5a38", "#e2c48a")}
   `),
-  "bonne-07.svg": svg(`
+  "dcl-07.svg": svg(`
     <rect width="800" height="1000" fill="#e7c9a4"/>
     ${wordmark("#3c2415")}
     <rect x="160" y="180" width="480" height="360" rx="8" fill="#f7f1e6"/>
@@ -113,7 +113,7 @@ const ads = {
     <text x="48" y="860" fill="#3c2415" font-family="Georgia, serif" font-size="64">This week</text>
     <text x="48" y="930" fill="#3c2415" font-family="Georgia, serif" font-size="40">Aarhus</text>
   `),
-  "bonne-08.svg": svg(`
+  "dcl-08.svg": svg(`
     <rect width="800" height="1000" fill="#f7f4ef"/>
     ${wordmark("#3c2415")}
     <text x="48" y="240" fill="#3c2415" font-family="Georgia, serif" font-size="78">One origin</text>

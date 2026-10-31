@@ -10,6 +10,7 @@ export class ModelOutputError extends Error {
 
 export type CostSummary = {
   runUsd: number;
+  cachedUsd: number;
   totalUsd: number;
   budgetUsd: number;
 };

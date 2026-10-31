@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
 
     <rect width="800" height="1000" fill="#f3ecdf"/>
-    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="22">Danish Coffee Lab</text>
     <text x="48" y="280" fill="#8a5a32" font-family="Georgia, serif" font-size="28" letter-spacing="3">WEEKLY BAG</text>
     <text x="48" y="430" fill="#3c2415" font-family="Georgia, serif" font-size="132" font-weight="700">49 kr</text>
     <text x="48" y="500" fill="#3c2415" font-family="Georgia, serif" font-size="42">a week</text>

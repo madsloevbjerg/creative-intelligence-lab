@@ -126,12 +126,13 @@ export const analyzedAdSchema = z.object({
 
 export const costSummarySchema = z.object({
   runUsd: z.number().min(0),
+  cachedUsd: z.number().min(0),
   totalUsd: z.number().min(0),
   budgetUsd: z.number().min(0),
 });
 
 export const analysisResponseSchema = z.object({
-  mode: z.enum(["mock", "live"]),
+  mode: z.enum(["mock", "live", "cached"]),
   modeReason: nonEmpty,
   brand: brandSummarySchema,
   ads: z.array(analyzedAdSchema).min(1),

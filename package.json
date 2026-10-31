@@ -12,7 +12,8 @@
     "lint": "eslint",
     "check:mock": "tsx scripts/validate-mock.ts",
     "check:budget": "tsx --tsconfig scripts/tsconfig.budget.json scripts/validate-budget.ts",
-    "check:safety": "tsx --tsconfig scripts/tsconfig.budget.json scripts/validate-safety.ts"
+    "check:safety": "tsx --tsconfig scripts/tsconfig.budget.json scripts/validate-safety.ts",
+    "m2:smoke": "tsx --tsconfig scripts/tsconfig.budget.json scripts/m2-smoke.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

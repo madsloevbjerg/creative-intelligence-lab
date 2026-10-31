@@ -356,7 +356,7 @@ export function LabApp() {
         {ads.length === 0 ? (
           <div className="rounded-xl border border-dashed px-4 py-10 text-center">
             <p className="text-sm text-muted-foreground">
-              No ads yet. Load the Bønne &amp; Co demo, or add your own.
+              No ads yet. Load the Danish Coffee Lab demo, or add your own.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               <Button type="button" onClick={() => void loadDemo()} disabled={loadingDemo || analyzing}>
@@ -541,11 +541,11 @@ function CostLine({ cost }: { cost: AnalysisResponse["cost"] }) {
   return (
     <div className="rounded-xl border bg-card px-4 py-3">
       <p className="text-sm">
-        Estimated API cost this run: {formatUsd(cost.runUsd)} · total: {formatUsd(cost.totalUsd)} of{" "}
-        {formatBudgetUsd(cost.budgetUsd)} budget
+        Estimated API cost this run: {formatUsd(cost.runUsd)} · from cache: {formatUsd(cost.cachedUsd)} ·
+        total: {formatUsd(cost.totalUsd)} of {formatBudgetUsd(cost.budgetUsd)} budget
       </p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Estimate based on Meta&apos;s list prices. Mock calls are $0.
+        Estimate based on Meta&apos;s list prices. Cache hits are $0. Mock calls are $0.
       </p>
     </div>
   );
@@ -554,12 +554,16 @@ function CostLine({ cost }: { cost: AnalysisResponse["cost"] }) {
 function ModeBanner({ result }: { result: AnalysisResponse }) {
   return (
     <Alert>
-      <AlertTitle>{result.mode === "mock" ? "Mock mode" : "Live model"}</AlertTitle>
+      <AlertTitle>
+        {result.mode === "live" ? "Live model" : result.mode === "cached" ? "Cached results" : "Mock mode"}
+      </AlertTitle>
       <AlertDescription>
         {result.modeReason}{" "}
-        {result.mode === "mock"
+        {result.mode === "mock" && !result.modeReason.includes("mock labels")
           ? "Demo ads use prepared labels. Other copy is labeled from the words in the text. These are not Muse Spark results."
-          : "Labels come from the model. They describe the ads. They are not a forecast."}
+          : result.mode === "live"
+            ? "Labels come from the model. They describe the ads. They are not a forecast."
+            : ""}
       </AlertDescription>
     </Alert>
   );

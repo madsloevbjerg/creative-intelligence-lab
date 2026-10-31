@@ -1,19 +1,26 @@
+import { createHash } from "node:crypto";
+
 import { MAX_IMAGE_BYTES } from "@/lib/limits";
 
-/** Decoded byte size of an image data URL. Invalid payloads count as too large. */
-export function decodedImageBytes(dataUrl: string): number {
+function imagePayload(dataUrl: string): Buffer {
   const comma = dataUrl.indexOf(",");
-  if (comma < 0) return MAX_IMAGE_BYTES + 1;
+  if (comma < 0) return Buffer.alloc(MAX_IMAGE_BYTES + 1);
   const meta = dataUrl.slice(0, comma);
   const payload = dataUrl.slice(comma + 1);
-  if (/;base64/i.test(meta)) {
-    return Buffer.from(payload, "base64").byteLength;
-  }
+  if (/;base64/i.test(meta)) return Buffer.from(payload, "base64");
   try {
-    return Buffer.byteLength(decodeURIComponent(payload));
+    return Buffer.from(decodeURIComponent(payload), "utf8");
   } catch {
-    return Buffer.byteLength(payload);
+    return Buffer.from(payload, "utf8");
   }
+}
+
+export function decodedImageBytes(dataUrl: string): number {
+  return imagePayload(dataUrl).byteLength;
+}
+
+export function imageSha256(dataUrl: string): string {
+  return createHash("sha256").update(imagePayload(dataUrl)).digest("hex");
 }
 
 export function imageWithinLimit(dataUrl: string): boolean {

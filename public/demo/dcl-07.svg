@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
 
     <rect width="800" height="1000" fill="#e7c9a4"/>
-    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="22">Danish Coffee Lab</text>
     <rect x="160" y="180" width="480" height="360" rx="8" fill="#f7f1e6"/>
     <rect x="190" y="210" width="420" height="250" fill="#b7c9d4"/>
     <rect x="188" y="430" width="424" height="22" fill="#c4a06a"/>

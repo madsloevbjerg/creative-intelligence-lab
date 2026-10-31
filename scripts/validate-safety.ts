@@ -1,15 +1,22 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { requestKey, writeCache } from "../lib/cache";
+import { demoPortfolio } from "../lib/demo";
+import { isExactDemoSubmission, loadCachedDemo } from "../lib/demo-cache";
 import { UserFacingError } from "../lib/errors";
-import { decodedImageBytes } from "../lib/image-bytes";
+import { decodedImageBytes, imageSha256 } from "../lib/image-bytes";
 import { MAX_BRIEFS_PER_RUN, MAX_IMAGE_BYTES, MAX_MOCKUPS_PER_RUN } from "../lib/limits";
 import {
   budgetLimitUsd,
   claimLiveRun,
+  currentCost,
   generateMockup,
+  readSpendTotalUsd,
   resolveLiveAccess,
   runWithCost,
+  samKeyMaterial,
+  segmentPhrase,
   writeBrief,
 } from "../lib/meta";
 
@@ -22,7 +29,9 @@ const saved = {
 };
 
 const runsFile = path.join(process.cwd(), ".data", "live-runs.json");
+const spendFile = path.join(process.cwd(), ".data", "spend.json");
 const runsBackup = existsSync(runsFile) ? readFileSync(runsFile) : null;
+const spendBackup = existsSync(spendFile) ? readFileSync(spendFile) : null;
 
 let failures = 0;
 
@@ -40,14 +49,14 @@ const briefInput = {
   motivation: "Price/value" as const,
   format: "Static image" as const,
   offer: "A weekly bag of coffee.",
-  websiteText: "Bønne & Co roasts coffee in Aarhus and sends a bag each week.",
+  websiteText: "Danish Coffee Lab roasts coffee in Aarhus and sends a bag each week.",
   brief: "Autumn push for people who already buy specialty coffee.",
   hypothesis: "Hypothesis: a price test would cover an unused cell.",
 };
 
 async function main(): Promise<void> {
   delete process.env.BUDGET_LIMIT_USD;
-  if (budgetLimitUsd() !== 100) fail(`default budget was ${budgetLimitUsd()}`);
+  if (budgetLimitUsd() !== 120) fail(`default budget was ${budgetLimitUsd()}`);
 
   process.env.MODEL_API_KEY = "test-key-not-used";
   delete process.env.USE_MOCK;
@@ -118,11 +127,44 @@ async function main(): Promise<void> {
   const tiny = "data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C/svg%3E";
   if (decodedImageBytes(tiny) > MAX_IMAGE_BYTES) fail("a tiny svg was rejected");
 
+  const demoAds = demoPortfolio.ads.map((ad) => {
+    const svg = readFileSync(path.join(process.cwd(), "public", ad.file.replace(/^\//, "")), "utf8");
+    return {
+      id: ad.id,
+      headline: ad.headline,
+      primaryText: ad.primaryText,
+      imageDataUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+    };
+  });
+  const demoSubmission = {
+    websiteText: demoPortfolio.websiteText,
+    brief: demoPortfolio.brief,
+    ads: demoAds,
+  };
+  if (!isExactDemoSubmission(demoSubmission)) fail("demo files do not match the data URLs the page sends");
+  if (loadCachedDemo(demoSubmission) !== null) fail("an empty demo cache should not replay results");
+
+  const probe = `data:image/svg+xml;charset=utf-8,${encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>")}`;
+  const probeKey = requestKey(samKeyMaterial(imageSha256(probe), "coffee bag"));
+  writeCache("private", probeKey, {
+    priceUsd: 0.0025,
+    result: { found: true, note: "1 match for coffee bag." },
+  });
+  const spendBefore = readSpendTotalUsd();
+  const snap = await runWithCost("live", async () => {
+    const hit = await segmentPhrase(probe, "coffee bag");
+    if (!hit.found || !hit.note.includes("coffee bag")) fail("cache hit was not returned");
+    return currentCost();
+  });
+  if (readSpendTotalUsd() !== spendBefore) fail("a cache hit changed tracked spend");
+  if (Math.abs(snap.cachedUsd - 0.0025) > 1e-9) fail(`cache credit was ${snap.cachedUsd}`);
+  rmSync(path.join(process.cwd(), ".data", "cache", `${probeKey}.json`), { force: true });
+
   if (failures > 0) {
     console.error(`${failures} safety check(s) failed`);
     return;
   }
-  console.log("Access code, hourly cap, image size, and brief limits check out.");
+  console.log("Access code, hourly cap, image size, brief limits, and cache hits check out.");
 }
 
 main()
@@ -138,5 +180,7 @@ main()
     restoreEnv("BUDGET_LIMIT_USD", saved.budget);
     if (runsBackup) writeFileSync(runsFile, runsBackup);
     else rmSync(runsFile, { force: true });
+    if (spendBackup) writeFileSync(spendFile, spendBackup);
+    else rmSync(spendFile, { force: true });
     if (failures > 0) process.exitCode = 1;
   });

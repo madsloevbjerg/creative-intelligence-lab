@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
 
     <rect width="800" height="1000" fill="#171513"/>
-    <text x="48" y="78" fill="#f3ecdf" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="78" fill="#f3ecdf" font-family="Georgia, 'Times New Roman', serif" font-size="22">Danish Coffee Lab</text>
     <circle cx="400" cy="430" r="110" fill="none" stroke="#f3ecdf" stroke-width="8"/>
     <polygon points="370,370 370,490 470,430" fill="#f3ecdf"/>
     <text x="400" y="620" text-anchor="middle" fill="#f3ecdf" font-family="Georgia, serif" font-size="72">10s</text>

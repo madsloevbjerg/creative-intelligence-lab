@@ -1,7 +1,7 @@
 import { UserFacingError } from "@/lib/errors";
 import { MAX_ANALYZE_BODY_BYTES } from "@/lib/limits";
 import { analyzePortfolio } from "@/lib/analyze";
-import { claimLiveRun, resolveLiveAccess } from "@/lib/meta";
+import { resolveLiveAccess } from "@/lib/meta";
 
 function accessCodeFrom(body: unknown): string {
   if (!body || typeof body !== "object" || !("accessCode" in body)) return "";
@@ -41,9 +41,6 @@ export async function POST(request: Request) {
   try {
     const accessCode = accessCodeFrom(body);
     const decision = resolveLiveAccess(accessCode);
-    if (decision.mode === "live") {
-      await claimLiveRun();
-    }
     const result = await analyzePortfolio(body, decision);
     return Response.json(result);
   } catch (error) {

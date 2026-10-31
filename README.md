@@ -34,7 +34,7 @@ npm run check:mock
 ## Try milestone 1
 
 1. Start the app with `npm run dev`.
-2. Click **Load demo data**. That fills in the fictional coffee brand Bønne & Co: website text, a campaign brief, and 8 ads.
+2. Click **Load demo data**. That fills in the fictional coffee brand Danish Coffee Lab: website text, a campaign brief, and 8 ads.
 3. Click **Analyze coverage**.
 4. Read the brand summary. The “Why” line says what the summary was taken from.
 5. Look at the grid. Rows are motivations, columns are formats. Empty cells have no ad. Thin cells have one. The 8 demo ads sit in only three motivations, so most of the grid is empty.
@@ -49,7 +49,7 @@ Copy `.env.example` to `.env.local` if you want to set variables. `.env.local` i
 - Leave `MODEL_API_KEY` empty to use mock data.
 - `USE_MOCK=true` forces mock data even if a key is present.
 - A live call happens only when a key is set and `USE_MOCK` is not true. Milestone 1 does not require that, and the demo does not make a live call.
-- `BUDGET_LIMIT_USD` caps estimated live spend. Leave it blank for $100. The running total is stored in `.data/spend.json`, which is gitignored.
+- `BUDGET_LIMIT_USD` caps estimated live spend. Leave it blank for $120. The running total is stored in `.data/spend.json`, which is gitignored. Cache hits cost $0. Saved demo results live in `data/cache/`, which is committed and contains no secrets.
 - `LIVE_ACCESS_CODE` is the passcode for live model calls. If it is empty, live mode is off. Visitors can still use the demo. The code is checked only on the server.
 - `LIVE_RUNS_PER_HOUR` limits how many live analysis runs the server may start per hour. Blank means 10. Mock runs do not count.
 - A run accepts at most 20 images, 5 MB each, and at most 5 concept briefs and 5 mockups.
@@ -58,7 +58,7 @@ Copy `.env.example` to `.env.local` if you want to set variables. `.env.local` i
 
 Mock calls cost $0. After you analyze the demo, the page shows a line like:
 
-`Estimated API cost this run: $0.00 · total: $0.00 of $100 budget`
+`Estimated API cost this run: $0.00 · from cache: $0.00 · total: $0.00 of $120 budget`
 
 Under it: “Estimate based on Meta's list prices.”
 
@@ -85,9 +85,19 @@ That checks four rules without calling a model:
 1. With no `LIVE_ACCESS_CODE`, live mode stays off even if a key and a code are present.
 2. A blank or wrong code stays on mock data. The matching code is the only one that unlocks live mode, and the check does not print the code.
 3. With `LIVE_RUNS_PER_HOUR=2`, the third live run is refused and the log still has two runs.
-4. A run can make 5 briefs and 5 mockups. The sixth is refused. An image over 5 MB is over the limit. The default budget is still $100.
+4. A run can make 5 briefs and 5 mockups. The sixth is refused. An image over 5 MB is over the limit. The default budget is still $120.
 
 To try the field yourself once a key is configured: leave the code blank and confirm the note says mock data was used. Then enter the wrong code and confirm it still does not call the models. Then enter the real code. If the hour already has 10 live runs, the page says live analysis is paused and tells you the demo still works with a blank code. Delete `.data/live-runs.json` to clear that hourly log.
+
+## M2 smoke test
+
+When `MODEL_API_KEY` is set, this makes one SAM call (`coffee bag` on demo ad 1), one Muse Spark classification, one Muse Spark brand summary, and one Muse Image test frame. A second run should be cache hits at $0.
+
+```bash
+npm run m2:smoke
+```
+
+If the key is missing, the command stops and does not call the API.
 
 ## What is in the repo
 
@@ -97,9 +107,10 @@ To try the field yourself once a key is configured: leave the code blank and con
 - `app/api/analyze/route.ts` — the server route that runs an analysis
 - `lib/taxonomy.ts` — the only list of motivations, formats, and segment phrases
 - `lib/schemas.ts` — the zod checks for every model response
-- `lib/meta.ts` — the only place that can call Meta’s models, plus the price list and budget cap
+- `lib/meta.ts` — the only place that can call Meta’s models, plus prices, cache, and the budget cap
 - `lib/mock.ts` — fake but checked results for demos without a key
-- `lib/demo.ts` — Bønne & Co copy
+- `lib/demo.ts` — Danish Coffee Lab copy
+- `data/cache/` — saved real model results for the demo, replayed at $0
 - `public/demo/` — original SVG ad placeholders (drawn for this project)
 - `scripts/validate-mock.ts` — checks the demo labels
 

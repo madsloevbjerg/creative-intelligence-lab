@@ -12,13 +12,13 @@ const noPerson = {
 };
 
 const fixtures: Record<string, Fixture> = {
-  "bonne-01": {
+  "dcl-01": {
     segmentation: {
       product: { found: true, note: "A coffee bag is drawn in the lower half." },
       person: noPerson,
       textOverlay: { found: true, note: "Large price text sits on the image." },
       setting: { found: true, note: "The background is a plain cream field." },
-      logo: { found: true, note: "The Bønne & Co wordmark is in the corner." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark is in the corner." },
     },
     classification: {
       message: "A weekly bag of specialty coffee for 49 kr.",
@@ -30,13 +30,13 @@ const fixtures: Record<string, Fixture> = {
       why: "The headline leads with a weekly price on a single still: a bag, price text, and the wordmark, and no person.",
     },
   },
-  "bonne-02": {
+  "dcl-02": {
     segmentation: {
       product: { found: true, note: "One coffee bag is drawn under the offer." },
       person: noPerson,
       textOverlay: { found: true, note: "The words “3rd bag free” fill the frame." },
       setting: { found: true, note: "The background is a dark brown field." },
-      logo: { found: true, note: "The Bønne & Co wordmark is in the corner." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark is in the corner." },
     },
     classification: {
       message: "Stay three months and the third bag is free.",
@@ -48,13 +48,13 @@ const fixtures: Record<string, Fixture> = {
       why: "A free third bag is a price offer, and the frame is one still rather than a sequence.",
     },
   },
-  "bonne-03": {
+  "dcl-03": {
     segmentation: {
       product: { found: true, note: "A small bag is drawn in each of three panels." },
       person: noPerson,
       textOverlay: { found: true, note: "Each panel has a plan name and a price." },
       setting: { found: true, note: "Three side-by-side panels make the background." },
-      logo: { found: true, note: "The Bønne & Co wordmark sits above the panels." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark sits above the panels." },
     },
     classification: {
       message: "Three subscription prices, compared per cup.",
@@ -66,13 +66,13 @@ const fixtures: Record<string, Fixture> = {
       why: "The copy tells you to swipe across three prices, so this is a carousel about price.",
     },
   },
-  "bonne-04": {
+  "dcl-04": {
     segmentation: {
       product: { found: true, note: "A bag sits on a doorstep." },
       person: noPerson,
       textOverlay: { found: true, note: "“Every Monday” is set in large type." },
       setting: { found: true, note: "A door and step are drawn behind the bag." },
-      logo: { found: true, note: "The Bønne & Co wordmark is in the corner." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark is in the corner." },
     },
     classification: {
       message: "Beans arrive every Monday, so you skip the shop.",
@@ -84,7 +84,7 @@ const fixtures: Record<string, Fixture> = {
       why: "The message is a standing Monday delivery, shown as one still of a bag at the door.",
     },
   },
-  "bonne-05": {
+  "dcl-05": {
     segmentation: {
       product: { found: true, note: "A bag is drawn beside four numbered steps." },
       person: noPerson,
@@ -93,7 +93,7 @@ const fixtures: Record<string, Fixture> = {
         note: "The steps are labeled Open, Grind, Pour, and Drink.",
       },
       setting: { found: true, note: "The background is a plain warm paper field." },
-      logo: { found: true, note: "The Bønne & Co wordmark is in the corner." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark is in the corner." },
     },
     classification: {
       message: "Four steps from bag to cup, and no shop run.",
@@ -105,13 +105,13 @@ const fixtures: Record<string, Fixture> = {
       why: "Four numbered steps from bag to cup make this a product demo about skipping the shop run.",
     },
   },
-  "bonne-06": {
+  "dcl-06": {
     segmentation: {
       product: { found: true, note: "A small bag is drawn at the bottom of the frame." },
       person: noPerson,
       textOverlay: { found: true, note: "“10s” and a play mark sit in the center." },
       setting: { found: true, note: "The background is a near-black video frame." },
-      logo: { found: true, note: "The Bønne & Co wordmark is in the corner." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark is in the corner." },
     },
     classification: {
       message: "A short clip of Monday coffee already at the door.",
@@ -123,7 +123,7 @@ const fixtures: Record<string, Fixture> = {
       why: "The copy describes a 10-second clip of a doorstep bag, so this is a short video about time.",
     },
   },
-  "bonne-07": {
+  "dcl-07": {
     segmentation: {
       product: { found: true, note: "A cup is drawn on a windowsill." },
       person: noPerson,
@@ -132,7 +132,7 @@ const fixtures: Record<string, Fixture> = {
         found: true,
         note: "A window and a plant are drawn behind the cup.",
       },
-      logo: { found: true, note: "The Bønne & Co wordmark is in the corner." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark is in the corner." },
     },
     classification: {
       message: "Beans roasted this week in Aarhus.",
@@ -144,7 +144,7 @@ const fixtures: Record<string, Fixture> = {
       why: "A named roast city and a cup by a window are a quality claim staged as a lifestyle scene.",
     },
   },
-  "bonne-08": {
+  "dcl-08": {
     segmentation: {
       product: { found: true, note: "A bag with an origin label is centered." },
       person: noPerson,
@@ -153,7 +153,7 @@ const fixtures: Record<string, Fixture> = {
         note: "“One origin” and a green origin label are on the image.",
       },
       setting: { found: true, note: "The background is an off-white field." },
-      logo: { found: true, note: "The Bønne & Co wordmark is in the corner." },
+      logo: { found: true, note: "The Danish Coffee Lab wordmark is in the corner." },
     },
     classification: {
       message: "One origin, with the roast date on the bag.",
