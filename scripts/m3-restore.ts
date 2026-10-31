@@ -285,7 +285,8 @@ async function main(): Promise<void> {
       if (!chosen) throw new Error(plan.id);
       const raw = await sharp(chosen.bytes).png({ compressionLevel: 9 }).toBuffer();
       const mask = await maskPng(chosen.width, chosen.height, chosen.bag);
-      const finalImage = await compositeAd(raw, ad.headline, chosen.crop.rect, chosen.crop.overlay);
+      const band = chosen.crop.overlay === "top" ? "top" : "bottom";
+      const finalImage = await compositeAd(raw, ad.headline, chosen.crop.rect, band);
       writeFileSync(path.join(demoDir, `dcl-0${plan.number}-raw.png`), raw);
       writeFileSync(path.join(demoDir, `dcl-0${plan.number}-mask.png`), mask);
       writeFileSync(path.join(demoDir, `dcl-0${plan.number}.png`), finalImage);

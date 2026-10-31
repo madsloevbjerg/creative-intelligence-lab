@@ -678,6 +678,18 @@ const segmentRegionSchema = z.object({
 export type SegmentRegion = z.infer<typeof segmentRegionSchema>;
 
 /**
+ * Read a saved SAM region mask. Does not call the API and does not add spend.
+ */
+export function readCachedRegions(
+  imageUrl: string,
+  phrase: string,
+  cacheScope: CacheScope = "demo",
+): SegmentRegion | null {
+  const key = requestKey({ ...samKeyMaterial(imageSha256(imageUrl), phrase), task: "regions" as const });
+  return readCache(cacheScope, key, segmentRegionSchema)?.result ?? null;
+}
+
+/**
  * SAM 3.1 masks for one phrase, including every box so a crop can keep them.
  * Cached separately from the found/note used by ad classification.
  */

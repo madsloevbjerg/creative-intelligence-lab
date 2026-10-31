@@ -1,0 +1,107 @@
+# Handoff
+
+Creative Intelligence Lab maps which motivation-and-format combinations a Meta ad portfolio already uses. It does not predict results. The demo brand is Danish Coffee Lab.
+
+Another agent can take over from this file. Do not put secret values in the repo.
+
+## Run it locally
+
+Node.js 22, or at least 20.17. `.nvmrc` says `22`.
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000. Click **Load demo data**, leave the access code blank, then **Analyze coverage**. With the committed cache, that replay costs $0 and must not show a mock banner when `MODEL_API_KEY` is set and `USE_MOCK` is not true.
+
+Checks:
+
+```bash
+npm run lint
+npm run check:mock
+npm run check:budget
+npm run check:safety
+npm run check:crop
+npm run check:text
+npm run build
+```
+
+`npm run m2:smoke` makes one live SAM call, one classification, one brand summary, and one image if they are not already cached. Do not run it unless you mean to spend.
+
+## Environment variable names
+
+Copy `.env.example` to `.env.local`. `.env.local` is gitignored. Never commit values.
+
+- `MODEL_API_KEY` — Meta Model API key. Empty means mock mode.
+- `USE_MOCK` — `true` forces mock mode even when a key is set.
+- `LIVE_ACCESS_CODE` — server-only passcode required before any live call. Empty means live mode is off.
+- `BUDGET_LIMIT_USD` — hard cap on estimated live spend. Blank means 120.
+- `LIVE_RUNS_PER_HOUR` — how many live analysis runs the server may start per hour. Blank means 10. Mock runs do not count.
+
+Scripts also read `PLACE_ONLY` and `SKIP_CLASSIFY` as local switches. They are not app configuration.
+
+The spend ledger is `.data/spend.json` (gitignored). Cache hits and mock calls are $0. Saved demo results live in `data/cache/` and are committed. That folder has no secrets.
+
+## Project structure
+
+- `app/page.tsx` — the one page
+- `app/api/analyze/route.ts` — the only analysis route
+- `components/lab-app.tsx` — form, results, per-ad view, cost line
+- `components/coverage-map.tsx` — motivation × format grid
+- `components/coverage-story.tsx` — the summary bar, counted from the classifications on screen
+- `components/feed-frame.tsx` — Meta-style frame around a finished ad
+- `components/sam-crop-view.tsx` — bag mask and crop rectangle
+- `lib/taxonomy.ts` — the only list of motivations, formats, and SAM phrases
+- `lib/meta.ts` — the only module that calls Meta. Prices, cache, and the $120 cap live here
+- `lib/schemas.ts` — zod checks for every model response
+- `lib/mock.ts` and `lib/mock-fixtures.ts` — labels used when there is no live call
+- `lib/demo.ts` — Danish Coffee Lab copy and the eight ad paths
+- `lib/demo-cache.ts` — replays an exact demo submission from `data/cache/`
+- `lib/brand-kit.ts` — bag, palette, photo style
+- `lib/smart-crop.ts` — 4:5 and 9:16 crop around SAM boxes
+- `lib/place-text.ts` — `placeText(image, masks, aspectRatio, options)`. Picks the top or bottom band. `options.safeZone` is for Stories/Reels in M5
+- `lib/wordmark.ts` — wordmark pill and headline. The pill is as wide as the name, plus padding
+- `lib/phone-notice.ts` — the lock-screen card drawn onto ad 6
+- `lib/composite-ad.ts` — crop, overlay, and contact sheets
+- `public/demo/` — the eight final ads, raw photos, bag masks, `manifest.json`, candidates, and redo stills
+- `lib/demo-manifest.json` — same manifest the UI fetches: crop, and `placement.reason` per ad
+- `docs/m3/` — prompts, the selection note, and the labelled contact sheet `final-ads.png`
+- `scripts/` — mock, budget, safety, crop, and placeText checks, plus the M2 and M3 runners
+
+There is no database. An analysis stays in the browser until refresh.
+
+## What is done
+
+- M0–M1: one-page app, demo brand, mock analysis, coverage map, budget cap, access code, hourly limit.
+- M2: live Muse Spark, SAM 3.1, and Muse Image, with cache. SVG is rasterized before it is sent. The documented image call does not take a size.
+- M3: eight visually different ads, three motivations (Price/value 1–3, Convenience/time 4–6, Quality/performance 7–8). Scenes that were flattened back to “bag on a table” were restored. 1, 2, and 4 are the original picks. 6 and 8 are crops of the original photos. 3, 5, and 7 were regenerated as the same scene, not a new one.
+- Placement fix: `placeText` chooses the top or bottom band from the cached SAM masks. Text does not sit on a face. Ad 6 has a coded delivery notification on the phone screen. The wordmark pill fits its text. The per-ad view shows the placement sentence next to the mask toggle.
+
+## What is left
+
+- M4: split the taxonomy into the motivations and formats the product should actually use, and add brief constraints. Do not start this until asked.
+- M5: concept briefs, image mockups, placements, and one AI persona. Reuse `placeText` with a Stories/Reels `safeZone` (`REELS_SAFE_ZONE` in `lib/place-text.ts`). Feed ads use an open safe zone.
+- M6: deploy, README, and the submission. Update this file at the end of each milestone.
+
+## Known issues
+
+- SAM phrases in `lib/taxonomy.ts` are `bag`, `person`, `words`, `background`, and `green logo`. `words` still misses the headline on some ads (4, 5, 6, and 8 after the last composite). `background` misses the setting on 4, 7, and 8. Do not invent a mask when SAM returns no match.
+- Reclassifying the new composites kept every motivation. The format label moved to Lifestyle scene for ads 4, 5, and 6. The summary bar only counts motivations, so it still reads 8 ads and 3 motivations.
+- Ad 8’s headline is in the bottom band because the roaster mask fills the top. The line overlaps the lower part of the bag. The face rule did not apply; there is no person.
+- The phone card is axis-aligned inside the SAM phone box. The phone in the photo is slightly tilted.
+- `readCachedRegions` in `lib/meta.ts` reads masks without a new call. Placement used those. SAM was called again only on the recomposited ads.
+- Remotes: `origin` is the Origin git remote. No GitHub remote is configured. Do not create a GitHub repo from here.
+
+## Demo scenes
+
+| Ad | Scene | Headline band |
+| --- | --- | --- |
+| 1 | Bold price still | top, because the bottom band overlapped the bag |
+| 2 | Three bags, all visible | top, because the bottom band overlapped the bag |
+| 3 | Woman in a café, bag on the table | bottom, because the top band overlapped her face |
+| 4 | Doorstep | top, because the bottom band overlapped the bag |
+| 5 | Hand pouring from a gooseneck kettle, bag by the cup | top, because the bottom band overlapped the kettle and the bag |
+| 6 | Hand holding a phone with a delivery notification, bag beside it | bottom, because the top band overlapped the phone and the hand |
+| 7 | Person in a home kitchen with the bag | bottom, because the top band overlapped her face |
+| 8 | Aarhus roastery, bag in front | bottom, because the top band overlapped the roaster |

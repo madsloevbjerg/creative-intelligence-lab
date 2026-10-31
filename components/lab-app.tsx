@@ -106,6 +106,7 @@ export function LabApp() {
         imageWidth: number;
         imageHeight: number;
         bagCount: number;
+        placement?: { band: string; reason: string };
       }
     >;
   } | null>(null);
@@ -587,6 +588,7 @@ function AdInspect({
         imageWidth: number;
         imageHeight: number;
         reason: string;
+        placement?: { band: string; reason: string };
       }
     >;
   } | null;
@@ -606,7 +608,8 @@ function AdInspect({
     <div className="rounded-xl border bg-card p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium">{ad.headline}</p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {pick?.placement ? <p className="text-sm text-muted-foreground">{pick.placement.reason}</p> : null}
           <Button type="button" variant={cropView ? "outline" : "default"} onClick={() => cropView && onToggle()}>
             Final ad
           </Button>

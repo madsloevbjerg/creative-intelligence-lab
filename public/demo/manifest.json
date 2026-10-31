@@ -5,7 +5,7 @@
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "standard",
+      "overlay": "top",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
         "left": 298,
@@ -15,14 +15,18 @@
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
-      "bagCount": 1
+      "bagCount": 1,
+      "placement": {
+        "band": "top",
+        "reason": "Headline placed at top: bottom band overlapped bag"
+      }
     },
     "dcl-02": {
       "candidate": "2c pile",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "standard",
+      "overlay": "top",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
         "left": 198,
@@ -32,14 +36,18 @@
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
-      "bagCount": 3
+      "bagCount": 3,
+      "placement": {
+        "band": "top",
+        "reason": "Headline placed at top: bottom band overlapped bag"
+      }
     },
     "dcl-03": {
       "candidate": "dcl-03-a.png",
       "regenerated": true,
       "regenerationReason": "Candidate 3b. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "Candidate 3b. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
         "left": 491,
@@ -49,14 +57,18 @@
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
-      "bagCount": 1
+      "bagCount": 1,
+      "placement": {
+        "band": "bottom",
+        "reason": "Headline placed at bottom: top band overlapped face and person"
+      }
     },
     "dcl-04": {
       "candidate": "dcl-04-a.png",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "standard",
+      "overlay": "top",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
         "left": 81,
@@ -66,7 +78,11 @@
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
-      "bagCount": 1
+      "bagCount": 1,
+      "placement": {
+        "band": "top",
+        "reason": "Headline placed at top: bottom band overlapped bag"
+      }
     },
     "dcl-05": {
       "candidate": "dcl-05-c.png",
@@ -83,14 +99,18 @@
       },
       "imageWidth": 1408,
       "imageHeight": 1760,
-      "bagCount": 1
+      "bagCount": 1,
+      "placement": {
+        "band": "top",
+        "reason": "Headline placed at top: bottom band overlapped kettle and bag"
+      }
     },
     "dcl-06": {
       "candidate": "dcl-06-a.png",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
         "left": 432,
@@ -100,14 +120,18 @@
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
-      "bagCount": 1
+      "bagCount": 1,
+      "placement": {
+        "band": "bottom",
+        "reason": "Headline placed at bottom: top band overlapped phone and hand"
+      }
     },
     "dcl-07": {
       "candidate": "dcl-07-b.png",
       "regenerated": true,
       "regenerationReason": "Candidate 7a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "Candidate 7a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
         "left": 0,
@@ -117,14 +141,18 @@
       },
       "imageWidth": 1408,
       "imageHeight": 1760,
-      "bagCount": 1
+      "bagCount": 1,
+      "placement": {
+        "band": "bottom",
+        "reason": "Headline placed at bottom: top band overlapped face and person"
+      }
     },
     "dcl-08": {
       "candidate": "dcl-08-a.png",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
         "left": 0,
@@ -134,7 +162,11 @@
       },
       "imageWidth": 1920,
       "imageHeight": 1280,
-      "bagCount": 1
+      "bagCount": 1,
+      "placement": {
+        "band": "bottom",
+        "reason": "Headline placed at bottom: top band overlapped roaster"
+      }
     }
   }
 }
