@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   // The dev server allows localhost. Browsers that open 127.0.0.1 need this too.
   allowedDevOrigins: ["127.0.0.1"],
-  // SAM's parser is ESM-only. Keep it out of the bundle and load it only for live calls.
-  serverExternalPackages: ["@meta-sam/parser"],
+  // SAM's parser is ESM-only. resvg is a native SVG rasterizer. Keep both out of the bundle.
+  serverExternalPackages: ["@meta-sam/parser", "@resvg/resvg-js"],
   turbopack: {
     rules: {
       "*.css": {

@@ -11,6 +11,7 @@ import type { ZodType } from "zod";
 import { readCache, requestKey, writeCache, type CacheScope } from "@/lib/cache";
 import { ModelOutputError, UserFacingError, type CostSummary } from "@/lib/errors";
 import { imageSha256 } from "@/lib/image-bytes";
+import { imageUrlForModel } from "@/lib/model-image";
 import { formatBudgetUsd, formatUsd } from "@/lib/money";
 import {
   DEFAULT_LIVE_RUNS_PER_HOUR,
@@ -446,18 +447,19 @@ async function museJson<T>(input: {
     return hit.result;
   }
 
+  const modelImageUrl = input.imageUrl ? await imageUrlForModel(input.imageUrl) : undefined;
   await ensureLiveClaimed();
-  const estimate = sparkEstimateUsd([input.system, input.userText, input.imageUrl ?? ""].join("\n"));
+  const estimate = sparkEstimateUsd([input.system, input.userText, modelImageUrl ?? ""].join("\n"));
   await reserveEstimateUsd(estimate, "Muse Spark");
 
   const client = liveClient();
   const userContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [
     { type: "text", text: input.userText },
   ];
-  if (input.imageUrl) {
+  if (modelImageUrl) {
     userContent.push({
       type: "image_url",
-      image_url: { url: input.imageUrl },
+      image_url: { url: modelImageUrl },
     });
   }
 
@@ -543,6 +545,7 @@ async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit>
     return hit.result;
   }
 
+  const modelImageUrl = await imageUrlForModel(imageUrl);
   await ensureLiveClaimed();
   await chargeKnownUsd(samCallUsd(), "SAM 3.1");
   const client = liveClient();
@@ -557,7 +560,7 @@ async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit>
         content: [
           { type: "input_text", text: phrase },
           // `detail` is the OpenAI SDK's image field. "auto" is its documented default.
-          { type: "input_image", image_url: imageUrl, detail: "auto" },
+          { type: "input_image", image_url: modelImageUrl, detail: "auto" },
         ],
       },
     ],

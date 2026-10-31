@@ -15,6 +15,15 @@ function imagePayload(dataUrl: string): Buffer {
   }
 }
 
+export function imageBytes(dataUrl: string): Buffer {
+  return imagePayload(dataUrl);
+}
+
+export function imageMime(dataUrl: string): string {
+  const match = /^data:([^;,]+)/i.exec(dataUrl.trim());
+  return match?.[1]?.toLowerCase() ?? "";
+}
+
 export function decodedImageBytes(dataUrl: string): number {
   return imagePayload(dataUrl).byteLength;
 }
