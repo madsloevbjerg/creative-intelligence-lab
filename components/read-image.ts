@@ -1,11 +1,12 @@
 "use client";
 
+import { MAX_IMAGE_BYTES } from "@/lib/limits";
+
 const MAX_EDGE = 960;
-const MAX_FILE_BYTES = 8 * 1024 * 1024;
 
 export async function readImageFile(file: File): Promise<string> {
-  if (file.size > MAX_FILE_BYTES) {
-    throw new Error("That image is over 8 MB. Use a smaller file.");
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error("That image is over 5 MB. Use a smaller file.");
   }
 
   const isSvg = file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { formatZodIssues, ModelOutputError } from "@/lib/errors";
+import { MAX_IMAGE_DATA_URL_CHARS } from "@/lib/limits";
 import {
   FORMATS,
   HOOK_MAX_WORDS,
@@ -72,8 +73,8 @@ const imageDataUrlSchema = z
     "Each ad image must be a PNG, JPEG, WEBP, GIF, or SVG.",
   )
   .refine(
-    (value) => value.length <= 1_500_000,
-    "One of the images is too large. Use a smaller file.",
+    (value) => value.length <= MAX_IMAGE_DATA_URL_CHARS,
+    "Each image must be 5 MB or smaller.",
   );
 
 export const analyzeRequestSchema = z.object({
@@ -101,6 +102,7 @@ export const analyzeRequestSchema = z.object({
     }),
   ]),
   brief: z.string().trim().min(20, "Add a campaign brief of at least a sentence."),
+  accessCode: z.string().max(200).optional(),
   ads: z
     .array(
       z.object({

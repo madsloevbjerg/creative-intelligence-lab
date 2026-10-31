@@ -55,6 +55,7 @@ function fingerprint(input: {
   websiteText: string;
   websiteUrl: string;
   brief: string;
+  accessCode: string;
   ads: AdDraft[];
 }): string {
   return JSON.stringify({
@@ -62,6 +63,7 @@ function fingerprint(input: {
     websiteText: input.websiteText.trim(),
     websiteUrl: input.websiteUrl.trim(),
     brief: input.brief.trim(),
+    accessCode: input.accessCode,
     ads: input.ads.map((ad) => ({
       id: ad.localId,
       headline: ad.headline.trim(),
@@ -76,6 +78,7 @@ export function LabApp() {
   const [websiteText, setWebsiteText] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [brief, setBrief] = useState("");
+  const [accessCode, setAccessCode] = useState("");
   const [ads, setAds] = useState<AdDraft[]>([]);
   const [adError, setAdError] = useState<string | null>(null);
   const [loadingDemo, setLoadingDemo] = useState(false);
@@ -87,7 +90,14 @@ export function LabApp() {
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [pinnedId, setPinnedId] = useState<string | null>(null);
 
-  const currentFingerprint = fingerprint({ sourceMode, websiteText, websiteUrl, brief, ads });
+  const currentFingerprint = fingerprint({
+    sourceMode,
+    websiteText,
+    websiteUrl,
+    brief,
+    accessCode,
+    ads,
+  });
   const stale = Boolean(result && resultFingerprint && resultFingerprint !== currentFingerprint);
 
   const blocker = useMemo(() => {
@@ -183,6 +193,7 @@ export function LabApp() {
               ? { kind: "text", websiteText: websiteText.trim() }
               : { kind: "url", websiteUrl: websiteUrl.trim() },
           brief: brief.trim(),
+          accessCode: accessCode.trim(),
           ads: ads.map((ad) => ({
             id: ad.localId,
             headline: ad.headline.trim(),
@@ -445,7 +456,19 @@ export function LabApp() {
         {adError ? <p className="text-sm text-destructive">{adError}</p> : null}
       </section>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="w-full sm:max-w-xs">
+          <Label htmlFor="access-code">Enter access code for live mode</Label>
+          <Input
+            id="access-code"
+            type="password"
+            autoComplete="off"
+            value={accessCode}
+            onChange={(event) => setAccessCode(event.target.value)}
+            className="mt-2"
+            placeholder="Leave blank for the demo"
+          />
+        </div>
         <Button
           type="button"
           className="h-10"
@@ -454,8 +477,8 @@ export function LabApp() {
         >
           {analyzing ? "Reading the ads…" : "Analyze coverage"}
         </Button>
-        <p className="text-sm text-muted-foreground">
-          {blocker ?? "Ready. The map will place each ad and show why."}
+        <p className="text-sm text-muted-foreground sm:mb-2">
+          {blocker ?? "Ready. The map will place each ad and show why. Blank code stays on mock data."}
         </p>
       </div>
 

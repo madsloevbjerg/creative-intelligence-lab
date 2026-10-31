@@ -50,6 +50,9 @@ Copy `.env.example` to `.env.local` if you want to set variables. `.env.local` i
 - `USE_MOCK=true` forces mock data even if a key is present.
 - A live call happens only when a key is set and `USE_MOCK` is not true. Milestone 1 does not require that, and the demo does not make a live call.
 - `BUDGET_LIMIT_USD` caps estimated live spend. Leave it blank for $100. The running total is stored in `.data/spend.json`, which is gitignored.
+- `LIVE_ACCESS_CODE` is the passcode for live model calls. If it is empty, live mode is off. Visitors can still use the demo. The code is checked only on the server.
+- `LIVE_RUNS_PER_HOUR` limits how many live analysis runs the server may start per hour. Blank means 10. Mock runs do not count.
+- A run accepts at most 20 images, 5 MB each, and at most 5 concept briefs and 5 mockups.
 
 ## How to test the cost line and the budget cap
 
@@ -67,7 +70,24 @@ To check the math and the cap without a model key:
 npm run check:budget
 ```
 
-To see the refusal in the app, put a tiny cap in `.env.local`, set a real `MODEL_API_KEY`, and set `USE_MOCK=false`. Restart `npm run dev`. The next live call that would pass the cap stops, and the page shows the budget error. Delete `.data/spend.json` to reset the total. With no key, the demo stays at $0 and never hits the cap.
+To see the refusal in the app, put a tiny cap in `.env.local`, set a real `MODEL_API_KEY`, set `USE_MOCK=false`, and set `LIVE_ACCESS_CODE` to a private passcode. Restart `npm run dev`. Type that code in **Enter access code for live mode**, then analyze. The next live call that would pass the cap stops, and the page shows the budget error. Delete `.data/spend.json` to reset the total. With no key, or with the code left blank, the demo stays at $0.
+
+## How to test the public-link safeguards
+
+The page has a field labeled **Enter access code for live mode**. Leave it blank and analyze the demo. The result stays in mock mode.
+
+```bash
+npm run check:safety
+```
+
+That checks four rules without calling a model:
+
+1. With no `LIVE_ACCESS_CODE`, live mode stays off even if a key and a code are present.
+2. A blank or wrong code stays on mock data. The matching code is the only one that unlocks live mode, and the check does not print the code.
+3. With `LIVE_RUNS_PER_HOUR=2`, the third live run is refused and the log still has two runs.
+4. A run can make 5 briefs and 5 mockups. The sixth is refused. An image over 5 MB is over the limit. The default budget is still $100.
+
+To try the field yourself once a key is configured: leave the code blank and confirm the note says mock data was used. Then enter the wrong code and confirm it still does not call the models. Then enter the real code. If the hour already has 10 live runs, the page says live analysis is paused and tells you the demo still works with a blank code. Delete `.data/live-runs.json` to clear that hourly log.
 
 ## What is in the repo
 

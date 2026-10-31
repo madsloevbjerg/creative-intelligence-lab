@@ -1,6 +1,7 @@
 import "server-only";
 
 import { AsyncLocalStorage } from "node:async_hooks";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
@@ -8,6 +9,11 @@ import OpenAI from "openai";
 
 import { ModelOutputError, UserFacingError, type CostSummary } from "@/lib/errors";
 import { formatBudgetUsd, formatUsd } from "@/lib/money";
+import {
+  DEFAULT_LIVE_RUNS_PER_HOUR,
+  MAX_BRIEFS_PER_RUN,
+  MAX_MOCKUPS_PER_RUN,
+} from "@/lib/limits";
 import {
   mockBrandSummary,
   mockClassification,
@@ -62,7 +68,12 @@ const SPARK_OUTPUT_ALLOWANCE = 800;
 
 const DEFAULT_BUDGET_USD = 100;
 
-type RunLedger = { usd: number };
+type RunLedger = {
+  usd: number;
+  mode: "mock" | "live";
+  briefs: number;
+  mockups: number;
+};
 
 const runLedger = new AsyncLocalStorage<RunLedger>();
 let ledgerQueue: Promise<unknown> = Promise.resolve();
@@ -100,6 +111,8 @@ function roundUsd(value: number): number {
 }
 
 const SPEND_FILE = path.join(process.cwd(), ".data", "spend.json");
+const LIVE_RUNS_FILE = path.join(process.cwd(), ".data", "live-runs.json");
+const HOUR_MS = 60 * 60 * 1000;
 
 export function readSpendTotalUsd(): number {
   let raw: string;
@@ -217,8 +230,127 @@ export function currentCost(): CostSummary {
   };
 }
 
-export function runWithCost<T>(task: () => Promise<T>): Promise<T> {
-  return runLedger.run({ usd: 0 }, task);
+export function runWithCost<T>(mode: "mock" | "live", task: () => Promise<T>): Promise<T> {
+  return runLedger.run({ usd: 0, mode, briefs: 0, mockups: 0 }, task);
+}
+
+function takeOutputSlot(kind: "brief" | "mockup"): void {
+  const run = runLedger.getStore();
+  const noun = kind === "brief" ? "concept brief" : "mockup";
+  const limit = kind === "brief" ? MAX_BRIEFS_PER_RUN : MAX_MOCKUPS_PER_RUN;
+  if (!run) {
+    throw new UserFacingError(`A ${noun} has to be part of an analysis run.`, 400);
+  }
+  if (kind === "brief") run.briefs += 1;
+  else run.mockups += 1;
+  const count = kind === "brief" ? run.briefs : run.mockups;
+  if (count > limit) {
+    throw new UserFacingError(
+      `This run is limited to ${limit} ${kind === "brief" ? "concept briefs" : "mockups"}. Nothing further was requested.`,
+      400,
+    );
+  }
+}
+
+export function liveRunsPerHour(): number {
+  const raw = process.env.LIVE_RUNS_PER_HOUR;
+  if (raw === undefined || raw.trim() === "") return DEFAULT_LIVE_RUNS_PER_HOUR;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < 0) {
+    throw new UserFacingError(
+      "LIVE_RUNS_PER_HOUR must be empty or a whole number that is zero or greater. No model call was made.",
+      500,
+    );
+  }
+  return value;
+}
+
+function readLiveRuns(): number[] {
+  let raw: string;
+  try {
+    raw = readFileSync(LIVE_RUNS_FILE, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw new UserFacingError("The live-run log could not be read. No model call was made.", 500);
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch {
+    throw new UserFacingError(
+      "The live-run log .data/live-runs.json is not valid JSON. Fix or delete it before a live model call.",
+      500,
+    );
+  }
+  const startedAt = (parsed as { startedAt?: unknown }).startedAt;
+  if (!Array.isArray(startedAt) || startedAt.some((stamp) => typeof stamp !== "number")) {
+    throw new UserFacingError(
+      "The live-run log .data/live-runs.json is damaged. Fix or delete it before a live model call.",
+      500,
+    );
+  }
+  return startedAt;
+}
+
+function writeLiveRuns(startedAt: number[]): void {
+  mkdirSync(path.dirname(LIVE_RUNS_FILE), { recursive: true });
+  writeFileSync(LIVE_RUNS_FILE, `${JSON.stringify({ startedAt }, null, 2)}\n`);
+}
+
+/** Count one live analysis against the hourly cap, or refuse before any model call. */
+export async function claimLiveRun(): Promise<void> {
+  await withLedger(() => {
+    const limit = liveRunsPerHour();
+    const now = Date.now();
+    const recent = readLiveRuns().filter((stamp) => now - stamp < HOUR_MS);
+    if (recent.length >= limit) {
+      const noun = limit === 1 ? "live run" : "live runs";
+      throw new UserFacingError(
+        `Live analysis is paused. This server allows ${limit} ${noun} per hour, and that limit is used up. Leave the access code blank to use the demo. Try again later.`,
+        429,
+      );
+    }
+    recent.push(now);
+    writeLiveRuns(recent);
+  });
+}
+
+function accessCodesMatch(given: string, expected: string): boolean {
+  const left = createHash("sha256").update(given).digest();
+  const right = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(left, right);
+}
+
+/**
+ * Live mode needs a server-side passcode. The code is never returned to the browser.
+ * A missing or wrong code, or an unset LIVE_ACCESS_CODE, stays on mock data.
+ */
+export function resolveLiveAccess(accessCode: string | undefined): AdapterMode {
+  const env = adapterMode();
+  if (env.mode === "mock") return env;
+
+  const configured = process.env.LIVE_ACCESS_CODE?.trim() ?? "";
+  if (!configured) {
+    return {
+      mode: "mock",
+      reason: "LIVE_ACCESS_CODE is not set, so live mode is disabled. Mock data was used.",
+    };
+  }
+
+  const given = accessCode?.trim() ?? "";
+  if (!given || !accessCodesMatch(given, configured)) {
+    return {
+      mode: "mock",
+      reason: given
+        ? "That access code was not accepted, so this run used mock data."
+        : "No access code was entered, so this run used mock data.",
+    };
+  }
+
+  return {
+    mode: "live",
+    reason: "The access code was accepted, so this run can call the models.",
+  };
 }
 
 export type AdapterMode = {
@@ -227,8 +359,8 @@ export type AdapterMode = {
 };
 
 /**
- * Mock when USE_MOCK is true, or whenever MODEL_API_KEY is missing.
- * Live calls run only when a key is set and mock is not forced.
+ * Env-only gate. A key alone is not enough for a live call: the request
+ * also needs a matching LIVE_ACCESS_CODE, checked in the API route.
  */
 export function adapterMode(): AdapterMode {
   const flag = process.env.USE_MOCK?.trim().toLowerCase();
@@ -246,7 +378,7 @@ export function adapterMode(): AdapterMode {
 }
 
 function isMock(): boolean {
-  return adapterMode().mode === "mock";
+  return runLedger.getStore()?.mode !== "live";
 }
 
 function liveClient(): OpenAI {
@@ -452,6 +584,7 @@ export async function writeBrief(input: {
   brief: string;
   hypothesis: string;
 }): Promise<ConceptBrief> {
+  takeOutputSlot("brief");
   return withOneRetry(conceptBriefSchema, "Concept brief", async () => {
     if (isMock()) {
       return mockConceptBrief({
@@ -479,6 +612,7 @@ export async function writeBrief(input: {
 export async function generateMockup(input: {
   visualDirection: string;
 }): Promise<Mockup> {
+  takeOutputSlot("mockup");
   return withOneRetry(mockupSchema, "Mockup", async () => {
     if (isMock()) return mockMockup(input);
 

@@ -1,7 +1,8 @@
 import "server-only";
 
 import { ModelOutputError, UserFacingError } from "@/lib/errors";
-import { adapterMode, classifyAd, currentCost, runWithCost, segmentImage, summarizeBrand } from "@/lib/meta";
+import { imageWithinLimit } from "@/lib/image-bytes";
+import { classifyAd, currentCost, runWithCost, segmentImage, summarizeBrand, type AdapterMode } from "@/lib/meta";
 import {
   analysisResponseSchema,
   analyzeRequestSchema,
@@ -9,10 +10,10 @@ import {
 } from "@/lib/schemas";
 import { websiteTextFromUrl } from "@/lib/website";
 
-export async function analyzePortfolio(body: unknown): Promise<AnalysisResponse> {
-  return runWithCost(async () => {
+export async function analyzePortfolio(body: unknown, decision: AdapterMode): Promise<AnalysisResponse> {
+  return runWithCost(decision.mode, async () => {
     try {
-      return await analyzePortfolioInner(body);
+      return await analyzePortfolioInner(body, decision);
     } catch (error) {
       if (error instanceof UserFacingError) {
         let cost: AnalysisResponse["cost"] | undefined;
@@ -28,7 +29,7 @@ export async function analyzePortfolio(body: unknown): Promise<AnalysisResponse>
   });
 }
 
-async function analyzePortfolioInner(body: unknown): Promise<AnalysisResponse> {
+async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Promise<AnalysisResponse> {
   const request = analyzeRequestSchema.safeParse(body);
   if (!request.success) {
     const message = request.error.issues[0]?.message ?? "The form is incomplete.";
@@ -39,6 +40,12 @@ async function analyzePortfolioInner(body: unknown): Promise<AnalysisResponse> {
     request.data.source.kind === "text"
       ? request.data.source.websiteText
       : await websiteTextFromUrl(request.data.source.websiteUrl);
+
+  for (const ad of request.data.ads) {
+    if (!imageWithinLimit(ad.imageDataUrl)) {
+      throw new UserFacingError(`“${ad.headline}” is over 5 MB. Use a smaller image.`, 413);
+    }
+  }
 
   const ads = [];
   for (const ad of request.data.ads) {
@@ -87,10 +94,9 @@ async function analyzePortfolioInner(body: unknown): Promise<AnalysisResponse> {
     throw error;
   }
 
-  const mode = adapterMode();
   const result = {
-    mode: mode.mode,
-    modeReason: mode.reason,
+    mode: decision.mode,
+    modeReason: decision.reason,
     brand,
     ads,
     cost: currentCost(),
