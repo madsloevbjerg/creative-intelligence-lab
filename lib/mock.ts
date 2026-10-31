@@ -10,9 +10,11 @@ import type {
 } from "@/lib/schemas";
 import {
   HOOK_MAX_WORDS,
-  type Format,
+  type Delivery,
+  type Execution,
   type Motivation,
 } from "@/lib/taxonomy";
+import type { Constraints } from "@/lib/schemas";
 
 const TONE_WORDS = [
   "calm",
@@ -134,20 +136,20 @@ function motivationFromCopy(copy: string): Motivation {
   );
 }
 
-function formatFromCopy(copy: string): Format {
-  if (/\b(swipe|carousel|slides?)\b/i.test(copy)) return "Carousel";
-  if (/\b\d{1,2}\s*-?\s*seconds?\b|\bvideo\b|\bclip\b/i.test(copy)) {
-    return "Short video (<15s)";
-  }
-  if (/\b(ugc|creator|selfie)\b/i.test(copy)) return "UGC/creator style";
+function executionFromCopy(copy: string): Execution {
+  if (/\b(ugc|creator|selfie)\b/i.test(copy)) return "Person/UGC";
   if (/\bbefore\b/i.test(copy) && /\bafter\b/i.test(copy)) return "Before/after";
   if (/\b(testimonial|review)\b|\bcustomers say\b/i.test(copy)) return "Testimonial";
-  if (/\b(steps?|demo|how to|from bag to cup)\b/i.test(copy)) return "Product demo";
-  if (/\b(meme|text-led|text only)\b/i.test(copy)) return "Text-led/meme";
-  if (/\b(lifestyle|window|kitchen|morning light)\b/i.test(copy)) {
-    return "Lifestyle scene";
-  }
-  return "Static image";
+  if (/\b(steps?|demo|how to|from bag to cup)\b/i.test(copy)) return "Demo/how-to";
+  if (/\b(meme|text-led|text only)\b/i.test(copy)) return "Text-led";
+  if (/\b(lifestyle|window|kitchen|morning light|roastery)\b/i.test(copy)) return "Lifestyle scene";
+  return "Product focus";
+}
+
+function deliveryFromCopy(copy: string): Delivery {
+  if (/\b(swipe|carousel|slides?)\b/i.test(copy)) return "Carousel";
+  if (/\b\d{1,2}\s*-?\s*seconds?\b|\bvideo\b|\bclip\b/i.test(copy)) return "Video";
+  return "Static";
 }
 
 function hookFromHeadline(headline: string): string {
@@ -171,7 +173,8 @@ export function mockClassification(input: CopyInput): Classification {
 
   const copy = `${input.headline}\n${input.primaryText}`;
   const motivation = motivationFromCopy(copy);
-  const format = formatFromCopy(copy);
+  const execution = executionFromCopy(copy);
+  const delivery = deliveryFromCopy(copy);
   const segmentation = mockSegmentation(input);
   const seen = [
     segmentation.product,
@@ -188,9 +191,10 @@ export function mockClassification(input: CopyInput): Classification {
     message: messageFromCopy(input),
     motivation,
     hook: hookFromHeadline(input.headline),
-    format,
+    execution,
+    delivery,
     visualDescription: seen || "Mock visual read: nothing in the frame was marked as found.",
-    why: `Mock reading of the copy only, not a model call. The words point to ${motivation}, and the format reads as ${format}.`,
+    why: `Mock reading of the copy only, not a model call. The words point to ${motivation}, told as a ${execution} ${delivery.toLowerCase()}.`,
   };
 }
 
@@ -262,20 +266,41 @@ export function mockBrandSummary(input: {
   };
 }
 
+export function mockConstraints(input: { websiteText: string; brief: string }): Constraints {
+  const text = `${input.websiteText}\n${input.brief}`;
+  const exclusions = [
+    ...(/not a discount campaign/i.test(text) ? ["This is not a discount campaign."] : []),
+    ...(/no limited drops|limited drop/i.test(text) ? ["No limited drops."] : []),
+    ...(/no status claims|slogan about status/i.test(text) ? ["No status claims."] : []),
+  ];
+  const focusPoints = [
+    ...(/weekly ritual/i.test(text) ? ["weekly ritual"] : []),
+    ...(/roast date/i.test(text) ? ["roast date"] : []),
+  ];
+  if (exclusions.length === 0 || focusPoints.length === 0) {
+    throw new ModelOutputError(
+      "Mock mode could not find a written exclusion and a focus point in the brief or the website text.",
+    );
+  }
+  return { exclusions, focusPoints };
+}
+
 export function mockConceptBrief(input: {
   motivation: Motivation;
-  format: Format;
+  execution: Execution;
+  delivery: Delivery;
   offer: string;
 }): ConceptBrief {
   return {
-    conceptName: `${input.motivation} in a ${input.format.toLowerCase()}`,
+    conceptName: `${input.motivation} as a ${input.execution.toLowerCase()}`,
     motivation: input.motivation,
     coreMessage: `Test a ${input.motivation.toLowerCase()} angle for this offer: ${input.offer}`,
     hook: "Try a different angle this week",
-    format: input.format,
-    visualDirection: `A rough ${input.format.toLowerCase()} frame that states the angle in the first screen.`,
-    examplePrimaryText: `Mock primary text for a ${input.motivation} ${input.format} test. This is a hypothesis, not a forecast.`,
-    hypothesis: `Hypothesis: a ${input.motivation} × ${input.format} test would cover a cell this portfolio is not using. This is not a performance prediction.`,
+    execution: input.execution,
+    delivery: input.delivery,
+    visualDirection: `A rough ${input.execution.toLowerCase()} frame that states the angle in the first screen.`,
+    examplePrimaryText: `Mock primary text for a ${input.motivation} ${input.execution} test. This is a hypothesis, not a forecast.`,
+    hypothesis: `Hypothesis: a ${input.motivation} × ${input.execution} test would cover a cell this portfolio is not using. This is not a performance prediction.`,
   };
 }
 

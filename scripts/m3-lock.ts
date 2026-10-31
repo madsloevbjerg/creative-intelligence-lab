@@ -298,7 +298,7 @@ async function main(): Promise<void> {
       const spent = readSpendTotalUsd() - spendBefore;
       const fromCache = currentCost().cachedUsd - cacheBefore;
       console.log(
-        `${ad.id}: ${classification.motivation} · ${classification.format} · spent ${formatUsd(spent)}, from cache ${formatUsd(fromCache)}`,
+        `${ad.id}: ${classification.motivation} · ${classification.execution} · ${classification.delivery} · spent ${formatUsd(spent)}, from cache ${formatUsd(fromCache)}`,
       );
       console.log(`  hook: ${classification.hook}`);
       console.log(

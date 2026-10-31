@@ -24,7 +24,8 @@ const fixtures: Record<string, Fixture> = {
       message: "A weekly bag of specialty coffee for 49 kr.",
       motivation: "Price/value",
       hook: "Coffee for 49 kr a week",
-      format: "Static image",
+      execution: "Product focus",
+      delivery: "Static",
       visualDescription:
         "A cream still with a large 49 kr lockup, a coffee bag, and the wordmark.",
       why: "The headline leads with a weekly price on a single still: a bag, price text, and the wordmark, and no person.",
@@ -42,7 +43,8 @@ const fixtures: Record<string, Fixture> = {
       message: "Stay three months and the third bag is free.",
       motivation: "Price/value",
       hook: "Your third bag is free",
-      format: "Static image",
+      execution: "Product focus",
+      delivery: "Static",
       visualDescription:
         "A dark still with a large “3rd bag free” line and a single bag.",
       why: "A free third bag is a price offer, and the frame is one still rather than a sequence.",
@@ -60,7 +62,8 @@ const fixtures: Record<string, Fixture> = {
       message: "Three subscription prices, compared per cup.",
       motivation: "Price/value",
       hook: "Three prices, one subscription",
-      format: "Carousel",
+      execution: "Product focus",
+      delivery: "Carousel",
       visualDescription:
         "Three panels labeled Home, Office, and Gift, each with a price and a bag.",
       why: "The copy tells you to swipe across three prices, so this is a carousel about price.",
@@ -78,7 +81,8 @@ const fixtures: Record<string, Fixture> = {
       message: "Beans arrive every Monday, so you skip the shop.",
       motivation: "Convenience/time",
       hook: "Beans on the mat every Monday",
-      format: "Static image",
+      execution: "Lifestyle scene",
+      delivery: "Static",
       visualDescription:
         "A pale morning still of a bag on a doorstep and the line “Every Monday”.",
       why: "The message is a standing Monday delivery, shown as one still of a bag at the door.",
@@ -99,7 +103,8 @@ const fixtures: Record<string, Fixture> = {
       message: "Four steps from bag to cup, and no shop run.",
       motivation: "Convenience/time",
       hook: "From bag to cup in four steps",
-      format: "Product demo",
+      execution: "Demo/how-to",
+      delivery: "Static",
       visualDescription:
         "Four numbered circles in a row: Open, Grind, Pour, Drink, plus a bag.",
       why: "Four numbered steps from bag to cup make this a product demo about skipping the shop run.",
@@ -117,7 +122,8 @@ const fixtures: Record<string, Fixture> = {
       message: "A short clip of Monday coffee already at the door.",
       motivation: "Convenience/time",
       hook: "Monday coffee, already handled",
-      format: "Short video (<15s)",
+      execution: "Person/UGC",
+      delivery: "Video",
       visualDescription:
         "A dark frame with a play mark, a 10-second label, and a bag at a door.",
       why: "The copy describes a 10-second clip of a doorstep bag, so this is a short video about time.",
@@ -138,7 +144,8 @@ const fixtures: Record<string, Fixture> = {
       message: "Beans roasted this week in Aarhus.",
       motivation: "Quality/performance",
       hook: "Roasted this week in Aarhus",
-      format: "Lifestyle scene",
+      execution: "Lifestyle scene",
+      delivery: "Static",
       visualDescription:
         "A warm room with a window, a plant, and a cup on the sill.",
       why: "A named roast city and a cup by a window are a quality claim staged as a lifestyle scene.",
@@ -159,7 +166,8 @@ const fixtures: Record<string, Fixture> = {
       message: "One origin, with the roast date on the bag.",
       motivation: "Quality/performance",
       hook: "One origin. Nothing blended away.",
-      format: "Static image",
+      execution: "Product focus",
+      delivery: "Static",
       visualDescription:
         "An off-white still of one bag with a green single-origin label.",
       why: "Single-origin beans and a roast date on one product still are a quality message, not a price offer.",

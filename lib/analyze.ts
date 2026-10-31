@@ -7,6 +7,7 @@ import {
   budgetLimitUsd,
   classifyAd,
   currentCost,
+  extractConstraints,
   readSpendTotalUsd,
   runWithCost,
   segmentImage,
@@ -70,6 +71,7 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
         mode: "cached",
         modeReason: "Saved model results for the Danish Coffee Lab demo. No API call was made.",
         brand: cached.brand,
+        constraints: cached.constraints,
         ads: cached.ads,
         cost: {
           runUsd: 0,
@@ -123,8 +125,13 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
   }
 
   let brand;
+  let constraints;
   try {
     brand = await summarizeBrand({
+      websiteText,
+      brief: request.data.brief,
+    });
+    constraints = await extractConstraints({
       websiteText,
       brief: request.data.brief,
     });
@@ -140,6 +147,7 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
     mode: chosen.mode,
     modeReason: chosen.reason,
     brand,
+    constraints,
     ads,
     cost: currentCost(),
   };

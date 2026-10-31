@@ -1,4 +1,4 @@
-import { FORMATS, MOTIVATIONS, type Format, type Motivation } from "@/lib/taxonomy";
+import { EXECUTIONS, MOTIVATIONS, type Execution, type Motivation } from "@/lib/taxonomy";
 
 export type CellDensity = "empty" | "thin" | "covered";
 
@@ -9,10 +9,10 @@ export function cellDensity(count: number): CellDensity {
   return "covered";
 }
 
-export function cellKey(motivation: Motivation, format: Format): string {
-  return `${motivation}::${format}`;
+export function cellKey(motivation: Motivation, execution: Execution): string {
+  return `${motivation}::${execution}`;
 }
 
 export const COVERAGE_ROW_COUNT = MOTIVATIONS.length;
-export const COVERAGE_COLUMN_COUNT = FORMATS.length;
+export const COVERAGE_COLUMN_COUNT = EXECUTIONS.length;
 export const COVERAGE_CELL_COUNT = COVERAGE_ROW_COUNT * COVERAGE_COLUMN_COUNT;

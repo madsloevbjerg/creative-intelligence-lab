@@ -285,8 +285,7 @@ async function main(): Promise<void> {
       if (!chosen) throw new Error(plan.id);
       const raw = await sharp(chosen.bytes).png({ compressionLevel: 9 }).toBuffer();
       const mask = await maskPng(chosen.width, chosen.height, chosen.bag);
-      const band = chosen.crop.overlay === "top" ? "top" : "bottom";
-      const finalImage = await compositeAd(raw, ad.headline, chosen.crop.rect, band);
+      const finalImage = await compositeAd(raw, ad.headline, chosen.crop.rect);
       writeFileSync(path.join(demoDir, `dcl-0${plan.number}-raw.png`), raw);
       writeFileSync(path.join(demoDir, `dcl-0${plan.number}-mask.png`), mask);
       writeFileSync(path.join(demoDir, `dcl-0${plan.number}.png`), finalImage);
@@ -345,7 +344,7 @@ async function main(): Promise<void> {
         segmentation,
       });
       console.log(
-        `${ad.id}: ${classification.motivation} · ${classification.format} · spent ${formatUsd(readSpendTotalUsd() - spendBefore)}`,
+        `${ad.id}: ${classification.motivation} · ${classification.execution} · ${classification.delivery} · spent ${formatUsd(readSpendTotalUsd() - spendBefore)}`,
       );
       console.log(`  hook: ${classification.hook}`);
       console.log(

@@ -57,7 +57,7 @@ async function onePass(): Promise<void> {
         logo: notRequested,
       },
     });
-    return `${classification.motivation} · ${classification.format}. ${classification.why}`;
+    return `${classification.motivation} · ${classification.execution} · ${classification.delivery}. ${classification.why}`;
   });
 
   await measure("Muse Spark brand summary", async () => {

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CoverageMap, WhyPanel, type MapAd } from "@/components/coverage-map";
+import { conflictQuote, offBrandMotivations, rankGaps, topGaps, writtenConstraints } from "@/lib/gaps";
 import { CoverageStory } from "@/components/coverage-story";
 import { FeedFrame } from "@/components/feed-frame";
 import { readImageFile } from "@/components/read-image";
@@ -107,6 +108,7 @@ export function LabApp() {
         imageHeight: number;
         bagCount: number;
         placement?: { band: string; reason: string };
+        elements?: { subject: string; left: number; top: number; right: number; bottom: number }[];
       }
     >;
   } | null>(null);
@@ -265,6 +267,32 @@ export function LabApp() {
   });
   const activeId = hoverId ?? pinnedId;
   const activeAd = mapAds.find((ad) => ad.id === activeId) ?? null;
+  const constraintLines = (() => {
+    const fromModel = result?.constraints ?? { exclusions: [], focusPoints: [] };
+    const written = writtenConstraints(`${websiteText}\n${brief}`);
+    const exclusions = [...fromModel.exclusions];
+    for (const line of written.exclusions) {
+      if (!exclusions.some((item) => item.toLowerCase().includes(line.slice(0, 16).toLowerCase()))) {
+        exclusions.push(line);
+      }
+    }
+    const focusPoints = [...fromModel.focusPoints];
+    for (const line of written.focusPoints) {
+      if (!focusPoints.some((item) => item.toLowerCase().includes(line.toLowerCase()))) focusPoints.push(line);
+    }
+    return { exclusions, focusPoints };
+  })();
+  const offBrand = offBrandMotivations(constraintLines.exclusions);
+  const topGapList = topGaps(
+    rankGaps({
+      ads: mapAds.map((ad) => ({
+        motivation: ad.classification.motivation,
+        execution: ad.classification.execution,
+      })),
+      focusPoints: constraintLines.focusPoints,
+      exclusions: constraintLines.exclusions,
+    }),
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-[88rem] flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
@@ -545,12 +573,17 @@ export function LabApp() {
             {activeAd ? <AdInspect ad={activeAd} manifest={manifest} cropView={cropView} onToggle={() => setCropView((value) => !value)} /> : null}
           </div>
           {mapAds.length === result.ads.length ? (
-            <CoverageMap
-              ads={mapAds}
-              pinnedId={pinnedId}
-              onHover={setHoverId}
-              onPin={setPinnedId}
-            />
+            <>
+              <CoverageMap
+                ads={mapAds}
+                pinnedId={pinnedId}
+                onHover={setHoverId}
+                onPin={setPinnedId}
+                highlighted={topGapList}
+                offBrand={offBrand}
+              />
+              <WhyList ads={mapAds} exclusions={constraintLines.exclusions} />
+            </>
           ) : (
             <Alert variant="destructive">
               <AlertTitle>The map is missing an image</AlertTitle>
@@ -589,6 +622,7 @@ function AdInspect({
         imageHeight: number;
         reason: string;
         placement?: { band: string; reason: string };
+        elements?: { subject: string; left: number; top: number; right: number; bottom: number }[];
       }
     >;
   } | null;
@@ -627,7 +661,7 @@ function AdInspect({
         {cropView && pick && demo ? (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              SAM 3.1 at work. Green is the coffee-bag mask. The pale frame is the crop used for the ad.
+              SAM 3.1 at work. Coloured boxes are cached element masks. The pale frame is the crop.
             </p>
             <SamCropView
               rawUrl={demo.rawFile}
@@ -635,6 +669,7 @@ function AdInspect({
               crop={pick.crop}
               imageWidth={pick.imageWidth}
               imageHeight={pick.imageHeight}
+              elements={pick.elements}
             />
             <p className="text-xs text-muted-foreground">{pick.reason}</p>
           </div>
@@ -651,6 +686,34 @@ function AdInspect({
         ))}
       </ul>
     </div>
+  );
+}
+
+function WhyList({ ads, exclusions }: { ads: MapAd[]; exclusions: string[] }) {
+  if (ads.length === 0) return null;
+  return (
+    <section className="rounded-xl border bg-card px-4 py-3">
+      <h3 className="text-sm font-medium">Why each ad is placed there</h3>
+      <ul className="mt-3 space-y-3">
+        {ads.map((ad) => {
+          const quote = conflictQuote(`${ad.headline} ${ad.primaryText}`, exclusions);
+          return (
+            <li key={ad.id} className="text-sm">
+              <p className="font-medium">
+                {ad.headline}
+                {quote ? (
+                  <span className="ml-2 rounded-full bg-[#f6e7c4] px-2 py-0.5 text-[11px] font-medium text-[#7a5b1e]">
+                    conflicts with brief
+                  </span>
+                ) : null}
+              </p>
+              <p className="mt-1 text-muted-foreground">{ad.classification.why}</p>
+              {quote ? <p className="mt-1">Conflicts with brief: “{quote}”</p> : null}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 

@@ -6,9 +6,11 @@ import sharp from "sharp";
 import { compositeAd, contactSheet } from "../lib/composite-ad";
 import { demoPortfolio } from "../lib/demo";
 import { formatUsd } from "../lib/money";
+import { conflictQuote, offBrandMotivations, rankGaps, topGaps } from "../lib/gaps";
 import {
   classifyAd,
   currentCost,
+  extractConstraints,
   readCachedRegions,
   readSpendTotalUsd,
   runWithCost,
@@ -50,6 +52,7 @@ const lookups: { subject: TextSubject; phrases: string[] }[] = [
   { subject: "hand", phrases: ["hand"] },
   { subject: "kettle", phrases: ["gooseneck kettle", "kettle"] },
   { subject: "roaster", phrases: ["coffee roaster", "roaster"] },
+  { subject: "cup", phrases: ["cup", "coffee cup"] },
 ];
 
 function pngDataUrl(bytes: Buffer): string {
@@ -132,6 +135,7 @@ async function main(): Promise<void> {
     let photo = readFileSync(path.join(process.cwd(), clean));
     const files = sources[ad.id] ?? [`public/demo/dcl-${number}-raw.png`];
     const masks: SubjectMask[] = [];
+    const elements: { subject: string; left: number; top: number; right: number; bottom: number }[] = [];
     const used: string[] = [];
     let phoneBox: MaskBox | null = null;
     for (const lookup of lookups) {
@@ -140,6 +144,7 @@ async function main(): Promise<void> {
       used.push(`${lookup.subject}:${hit.phrase}`);
       if (lookup.subject === "phone") phoneBox = hit.boxes[0] ?? null;
       for (const box of hit.boxes) {
+        elements.push({ subject: lookup.subject, left: box.left, top: box.top, right: box.right, bottom: box.bottom });
         const cropped = intoCrop(box, pick.crop);
         if (cropped) masks.push({ subject: lookup.subject, box: cropped });
       }
@@ -160,15 +165,20 @@ async function main(): Promise<void> {
       { width: pick.crop.width, height: pick.crop.height },
       masks,
       FEED_ASPECT,
+      { headline: ad.headline },
     );
-    const finalImage = await compositeAd(photo, ad.headline, pick.crop, placement.band);
+    const finalImage = await compositeAd(photo, ad.headline, pick.crop, placement, {
+      width: pick.crop.width,
+      height: pick.crop.height,
+    });
     writeFileSync(rawPath, photo);
     writeFileSync(path.join(process.cwd(), "public", "demo", `dcl-${number}.png`), finalImage);
     finals.push({ label: String(Number(number)), image: finalImage });
     manifest.picks[ad.id] = {
       ...pick,
-      overlay: placement.band,
-      placement: { band: placement.band, reason: placement.reason },
+      overlay: placement.place,
+      placement: { band: placement.place, reason: placement.reason },
+      elements,
     };
     console.log(`${Number(number)}: ${placement.reason} [${used.join(", ") || "no cached masks"}]`);
   }
@@ -199,6 +209,7 @@ async function main(): Promise<void> {
   }
 
   await runWithCost("live", async () => {
+    const placed = [];
     for (const ad of demoPortfolio.ads) {
       const file = readFileSync(path.join(process.cwd(), "public", ad.file.replace(/^\//, "")));
       const imageUrl = pngDataUrl(file);
@@ -212,10 +223,42 @@ async function main(): Promise<void> {
       const motivation = expectedMotivation[ad.id];
       const same = classification.motivation === motivation ? "unchanged" : `CHANGED from ${motivation}`;
       console.log(
-        `${ad.id}: ${classification.motivation} · ${classification.format} · ${same} · product ${segmentation.product.found ? "yes" : "no"}, person ${segmentation.person.found ? "yes" : "no"}, text ${segmentation.textOverlay.found ? "yes" : "no"}, setting ${segmentation.setting.found ? "yes" : "no"}, logo ${segmentation.logo.found ? "yes" : "no"}`,
+        `${ad.id}: ${classification.motivation} · ${classification.execution} · ${classification.delivery} · ${same} · product ${segmentation.product.found ? "yes" : "no"}, person ${segmentation.person.found ? "yes" : "no"}, text ${segmentation.textOverlay.found ? "yes" : "no"}, setting ${segmentation.setting.found ? "yes" : "no"}, logo ${segmentation.logo.found ? "yes" : "no"}`,
       );
+      placed.push({ ad, classification });
     }
     await summarizeBrand({ websiteText: demoPortfolio.websiteText, brief: demoPortfolio.brief });
+    const constraints = await extractConstraints({
+      websiteText: demoPortfolio.websiteText,
+      brief: demoPortfolio.brief,
+    });
+    console.log(`Exclusions: ${constraints.exclusions.join(" | ")}`);
+    console.log(`Focus: ${constraints.focusPoints.join(" | ")}`);
+    const exclusions = [
+      ...constraints.exclusions,
+      "This is not a discount campaign.",
+      "No limited drops.",
+      "No status claims.",
+    ];
+    for (const item of placed) {
+      const quote = conflictQuote(`${item.ad.headline} ${item.ad.primaryText}`, exclusions);
+      if (quote) console.log(`FLAG ${item.ad.id}: ${quote}`);
+    }
+    const gaps = topGaps(
+      rankGaps({
+        ads: placed.map((item) => ({
+          motivation: item.classification.motivation,
+          execution: item.classification.execution,
+        })),
+        focusPoints: [...constraints.focusPoints, "weekly ritual", "roast date"],
+        exclusions,
+      }),
+    );
+    console.log(`Off-brand: ${offBrandMotivations(exclusions).join(", ")}`);
+    for (const [index, gap] of gaps.entries()) {
+      console.log(`GAP ${index + 1}: ${gap.motivation} × ${gap.execution}`);
+      console.log(`  ${gap.hypothesis}`);
+    }
     const cost = currentCost();
     console.log(`Failed attempts: ${cost.failedAttempts}, ${formatUsd(cost.failedUsd)}`);
   });

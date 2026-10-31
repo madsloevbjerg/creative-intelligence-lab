@@ -3,7 +3,8 @@ import { z } from "zod";
 import { formatZodIssues, ModelOutputError } from "@/lib/errors";
 import { MAX_IMAGE_DATA_URL_CHARS } from "@/lib/limits";
 import {
-  FORMATS,
+  DELIVERIES,
+  EXECUTIONS,
   HOOK_MAX_WORDS,
   MAX_ADS,
   MIN_ADS,
@@ -35,9 +36,15 @@ export const classificationSchema = z.object({
   message: nonEmpty,
   motivation: z.enum(MOTIVATIONS),
   hook: hookSchema,
-  format: z.enum(FORMATS),
+  execution: z.enum(EXECUTIONS),
+  delivery: z.enum(DELIVERIES),
   visualDescription: nonEmpty,
   why: nonEmpty.max(320),
+});
+
+export const constraintsSchema = z.object({
+  exclusions: z.array(nonEmpty).min(1).max(8),
+  focusPoints: z.array(nonEmpty).min(1).max(8),
 });
 
 export const brandSummarySchema = z.object({
@@ -53,7 +60,8 @@ export const conceptBriefSchema = z.object({
   motivation: z.enum(MOTIVATIONS),
   coreMessage: nonEmpty,
   hook: hookSchema,
-  format: z.enum(FORMATS),
+  execution: z.enum(EXECUTIONS),
+  delivery: z.enum(DELIVERIES),
   visualDirection: nonEmpty,
   examplePrimaryText: nonEmpty,
   hypothesis: nonEmpty.max(400),
@@ -137,12 +145,14 @@ export const analysisResponseSchema = z.object({
   mode: z.enum(["mock", "live", "cached"]),
   modeReason: nonEmpty,
   brand: brandSummarySchema,
+  constraints: constraintsSchema,
   ads: z.array(analyzedAdSchema).min(1),
   cost: costSummarySchema,
 });
 
 export type Segmentation = z.infer<typeof segmentationSchema>;
 export type Classification = z.infer<typeof classificationSchema>;
+export type Constraints = z.infer<typeof constraintsSchema>;
 export type BrandSummary = z.infer<typeof brandSummarySchema>;
 export type ConceptBrief = z.infer<typeof conceptBriefSchema>;
 export type Mockup = z.infer<typeof mockupSchema>;
@@ -166,9 +176,25 @@ export const classificationJsonSchema = strictObject({
   message: { type: "string", minLength: 1 },
   motivation: { type: "string", enum: [...MOTIVATIONS] },
   hook: { type: "string", minLength: 1, pattern: hookPattern },
-  format: { type: "string", enum: [...FORMATS] },
+  execution: { type: "string", enum: [...EXECUTIONS] },
+  delivery: { type: "string", enum: [...DELIVERIES] },
   visualDescription: { type: "string", minLength: 1 },
   why: { type: "string", minLength: 1, maxLength: 320 },
+});
+
+export const constraintsJsonSchema = strictObject({
+  exclusions: {
+    type: "array",
+    minItems: 1,
+    maxItems: 8,
+    items: { type: "string", minLength: 1 },
+  },
+  focusPoints: {
+    type: "array",
+    minItems: 1,
+    maxItems: 8,
+    items: { type: "string", minLength: 1 },
+  },
 });
 
 export const brandSummaryJsonSchema = strictObject({
@@ -194,7 +220,8 @@ export const conceptBriefJsonSchema = strictObject({
   motivation: { type: "string", enum: [...MOTIVATIONS] },
   coreMessage: { type: "string", minLength: 1 },
   hook: { type: "string", minLength: 1, pattern: hookPattern },
-  format: { type: "string", enum: [...FORMATS] },
+  execution: { type: "string", enum: [...EXECUTIONS] },
+  delivery: { type: "string", enum: [...DELIVERIES] },
   visualDirection: { type: "string", minLength: 1 },
   examplePrimaryText: { type: "string", minLength: 1 },
   hypothesis: { type: "string", minLength: 1, maxLength: 400 },

@@ -5,7 +5,7 @@
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
         "left": 298,
@@ -17,16 +17,25 @@
       "imageHeight": 1280,
       "bagCount": 1,
       "placement": {
-        "band": "top",
-        "reason": "Headline placed at top: bottom band overlapped bag"
-      }
+        "band": "bottom",
+        "reason": "Headline placed at bottom: top band overlapped bag"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 616,
+          "top": 224,
+          "right": 1322,
+          "bottom": 1079
+        }
+      ]
     },
     "dcl-02": {
       "candidate": "2c pile",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
         "left": 198,
@@ -38,9 +47,32 @@
       "imageHeight": 1280,
       "bagCount": 3,
       "placement": {
-        "band": "top",
-        "reason": "Headline placed at top: bottom band overlapped bag"
-      }
+        "band": "bottom",
+        "reason": "Headline placed at bottom: neither band overlapped a subject"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 953,
+          "top": 715,
+          "right": 1222,
+          "bottom": 1071
+        },
+        {
+          "subject": "bag",
+          "left": 800,
+          "top": 526,
+          "right": 1072,
+          "bottom": 1026
+        },
+        {
+          "subject": "bag",
+          "left": 666,
+          "top": 715,
+          "right": 947,
+          "bottom": 1062
+        }
+      ]
     },
     "dcl-03": {
       "candidate": "dcl-03-a.png",
@@ -60,15 +92,31 @@
       "bagCount": 1,
       "placement": {
         "band": "bottom",
-        "reason": "Headline placed at bottom: top band overlapped face and person"
-      }
+        "reason": "Headline placed at bottom: top band overlapped face and person. Wordmark stays top-left: a nudge inside the corner would still meet a face"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 1074,
+          "top": 514,
+          "right": 1515,
+          "bottom": 1260
+        },
+        {
+          "subject": "person",
+          "left": 0,
+          "top": 0,
+          "right": 1024,
+          "bottom": 813
+        }
+      ]
     },
     "dcl-04": {
       "candidate": "dcl-04-a.png",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark at the top and the headline at the bottom.",
       "crop": {
         "left": 81,
@@ -80,16 +128,25 @@
       "imageHeight": 1280,
       "bagCount": 1,
       "placement": {
-        "band": "top",
-        "reason": "Headline placed at top: bottom band overlapped bag"
-      }
+        "band": "bottom",
+        "reason": "Headline placed at bottom: neither band overlapped a subject"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 755,
+          "top": 382,
+          "right": 1105,
+          "bottom": 969
+        }
+      ]
     },
     "dcl-05": {
       "candidate": "dcl-05-c.png",
       "regenerated": true,
       "regenerationReason": "Candidate 5a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "fit": "fits",
-      "overlay": "top",
+      "overlay": "bottom",
       "reason": "Candidate 5a. Same scene, bag placed so it fits. A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
         "left": 0,
@@ -101,9 +158,32 @@
       "imageHeight": 1760,
       "bagCount": 1,
       "placement": {
-        "band": "top",
-        "reason": "Headline placed at top: bottom band overlapped kettle and bag"
-      }
+        "band": "bottom",
+        "reason": "Headline placed at bottom: neither band overlapped a subject"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 765,
+          "top": 732,
+          "right": 1237,
+          "bottom": 1659
+        },
+        {
+          "subject": "hand",
+          "left": 422,
+          "top": 496,
+          "right": 896,
+          "bottom": 829
+        },
+        {
+          "subject": "kettle",
+          "left": 195,
+          "top": 647,
+          "right": 684,
+          "bottom": 1321
+        }
+      ]
     },
     "dcl-06": {
       "candidate": "dcl-06-a.png",
@@ -123,8 +203,31 @@
       "bagCount": 1,
       "placement": {
         "band": "bottom",
-        "reason": "Headline placed at bottom: top band overlapped phone and hand"
-      }
+        "reason": "Headline placed at bottom: top band overlapped phone and hand. Wordmark stays top-left: a nudge inside the corner would still meet the phone"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 1040,
+          "top": 603,
+          "right": 1456,
+          "bottom": 1275
+        },
+        {
+          "subject": "phone",
+          "left": 681,
+          "top": 0,
+          "right": 1154,
+          "bottom": 593
+        },
+        {
+          "subject": "hand",
+          "left": 646,
+          "top": 0,
+          "right": 1244,
+          "bottom": 266
+        }
+      ]
     },
     "dcl-07": {
       "candidate": "dcl-07-b.png",
@@ -144,15 +247,31 @@
       "bagCount": 1,
       "placement": {
         "band": "bottom",
-        "reason": "Headline placed at bottom: top band overlapped face and person"
-      }
+        "reason": "Headline placed at bottom: top band overlapped face and person. Wordmark stays top-left: a nudge inside the corner would still meet a face"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 890,
+          "top": 951,
+          "right": 1214,
+          "bottom": 1611
+        },
+        {
+          "subject": "person",
+          "left": 33,
+          "top": 167,
+          "right": 592,
+          "bottom": 1191
+        }
+      ]
     },
     "dcl-08": {
       "candidate": "dcl-08-a.png",
       "regenerated": false,
       "regenerationReason": null,
       "fit": "fits",
-      "overlay": "bottom",
+      "overlay": "top",
       "reason": "A wide 0.800 crop keeps the scene, with the wordmark and headline together at the top, clear of the bag.",
       "crop": {
         "left": 0,
@@ -164,9 +283,25 @@
       "imageHeight": 1280,
       "bagCount": 1,
       "placement": {
-        "band": "bottom",
-        "reason": "Headline placed at bottom: top band overlapped roaster"
-      }
+        "band": "top",
+        "reason": "Headline placed at top: bottom band overlapped bag"
+      },
+      "elements": [
+        {
+          "subject": "bag",
+          "left": 415,
+          "top": 539,
+          "right": 919,
+          "bottom": 1269
+        },
+        {
+          "subject": "roaster",
+          "left": 218,
+          "top": 0,
+          "right": 1242,
+          "bottom": 931
+        }
+      ]
     }
   }
 }

@@ -1,4 +1,5 @@
 import { cellDensity, cellKey, COVERAGE_CELL_COUNT } from "../lib/coverage";
+import { conflictQuote, offBrandMotivations, rankGaps, topGaps } from "../lib/gaps";
 import { demoPortfolio } from "../lib/demo";
 import {
   mockBrandSummary,
@@ -14,17 +15,17 @@ import {
   mockupSchema,
   segmentationSchema,
 } from "../lib/schemas";
-import { FORMATS, HOOK_MAX_WORDS, MOTIVATIONS, wordCount } from "../lib/taxonomy";
+import { EXECUTIONS, HOOK_MAX_WORDS, MOTIVATIONS, wordCount } from "../lib/taxonomy";
 
-const expected: Record<string, { motivation: string; format: string }> = {
-  "dcl-01": { motivation: "Price/value", format: "Static image" },
-  "dcl-02": { motivation: "Price/value", format: "Static image" },
-  "dcl-03": { motivation: "Price/value", format: "Carousel" },
-  "dcl-04": { motivation: "Convenience/time", format: "Static image" },
-  "dcl-05": { motivation: "Convenience/time", format: "Product demo" },
-  "dcl-06": { motivation: "Convenience/time", format: "Short video (<15s)" },
-  "dcl-07": { motivation: "Quality/performance", format: "Lifestyle scene" },
-  "dcl-08": { motivation: "Quality/performance", format: "Static image" },
+const expected: Record<string, { motivation: string; execution: string }> = {
+  "dcl-01": { motivation: "Price/value", execution: "Product focus" },
+  "dcl-02": { motivation: "Price/value", execution: "Product focus" },
+  "dcl-03": { motivation: "Price/value", execution: "Product focus" },
+  "dcl-04": { motivation: "Convenience/time", execution: "Lifestyle scene" },
+  "dcl-05": { motivation: "Convenience/time", execution: "Demo/how-to" },
+  "dcl-06": { motivation: "Convenience/time", execution: "Person/UGC" },
+  "dcl-07": { motivation: "Quality/performance", execution: "Lifestyle scene" },
+  "dcl-08": { motivation: "Quality/performance", execution: "Product focus" },
 };
 
 const banned = /\b(ctr|roas|benchmark|click-through|conversion rate)\b/i;
@@ -45,9 +46,9 @@ for (const ad of demoPortfolio.ads) {
   );
   const want = expected[ad.id];
   if (!want) fail(`Missing expected placement for ${ad.id}`);
-  if (classification.motivation !== want.motivation || classification.format !== want.format) {
+  if (classification.motivation !== want.motivation || classification.execution !== want.execution) {
     fail(
-      `${ad.id} placed at ${classification.motivation} × ${classification.format}, expected ${want.motivation} × ${want.format}`,
+      `${ad.id} placed at ${classification.motivation} × ${classification.execution}, expected ${want.motivation} × ${want.execution}`,
     );
   }
   if (wordCount(classification.hook) > HOOK_MAX_WORDS) {
@@ -71,22 +72,22 @@ if (!/Danish Coffee Lab|does not estimate/i.test(brand.why)) {
 
 const counts = new Map();
 for (const item of placed) {
-  const key = cellKey(item.motivation, item.format);
+  const key = cellKey(item.motivation, item.execution);
   counts.set(key, (counts.get(key) ?? 0) + 1);
 }
 let empty = 0;
 let thin = 0;
 let covered = 0;
 for (const motivation of MOTIVATIONS) {
-  for (const format of FORMATS) {
-    const density = cellDensity(counts.get(cellKey(motivation, format)) ?? 0);
+  for (const execution of EXECUTIONS) {
+    const density = cellDensity(counts.get(cellKey(motivation, execution)) ?? 0);
     if (density === "empty") empty += 1;
     else if (density === "thin") thin += 1;
     else covered += 1;
   }
 }
 if (empty + thin + covered !== COVERAGE_CELL_COUNT) fail("Cell count drifted");
-if (empty !== 83 || thin !== 6 || covered !== 1) {
+if (empty !== 64 || thin !== 5 || covered !== 1) {
   fail(`Unexpected coverage: empty ${empty}, thin ${thin}, covered ${covered}`);
 }
 
@@ -99,8 +100,8 @@ const safety = classificationSchema.parse(
     primaryText: "A guarantee you can trust on every bag.",
   }),
 );
-if (safety.motivation !== "Safety/trust" || safety.format !== "Static image") {
-  fail(`Heuristic missed Safety/trust static: ${safety.motivation} / ${safety.format}`);
+if (safety.motivation !== "Safety/trust" || safety.delivery !== "Static") {
+  fail(`Heuristic missed Safety/trust static: ${safety.motivation} / ${safety.delivery}`);
 }
 
 let threw = false;
@@ -139,11 +140,34 @@ if (!brandThrew) fail("A brief with no audience was accepted");
 conceptBriefSchema.parse(
   mockConceptBrief({
     motivation: "Emotion/nostalgia",
-    format: "Lifestyle scene",
+    execution: "Lifestyle scene",
+    delivery: "Static",
     offer: brand.offer,
   }),
 );
 mockupSchema.parse(mockMockup({ visualDirection: "A cup on a quiet table." }));
 
+const exclusions = ["This is not a discount campaign.", "No limited drops.", "No status claims."];
+const offBrand = offBrandMotivations(exclusions);
+if (!offBrand.includes("Status/identity") || !offBrand.includes("Fear of missing out")) {
+  fail(`off-brand rows missing: ${offBrand.join(", ")}`);
+}
+const priceFlag = conflictQuote("Coffee for 49 kr a week", exclusions);
+const freeFlag = conflictQuote("Your third bag is free", exclusions);
+const ritualFlag = conflictQuote("Beans on the mat every Monday", exclusions);
+if (!priceFlag || !freeFlag) fail("ads 1 and 2 should conflict with the discount line");
+if (ritualFlag) fail("the Monday ad should not be flagged as a discount");
+const ranked = topGaps(
+  rankGaps({
+    ads: placed.map((item) => ({ motivation: item.motivation, execution: item.execution })),
+    focusPoints: ["weekly ritual", "roast date"],
+    exclusions,
+  }),
+);
+if (ranked.length !== 3) fail("expected 3 top gaps");
+if (ranked.some((gap) => offBrand.includes(gap.motivation))) fail("an off-brand motivation was ranked as a gap");
+if (!ranked.every((gap) => gap.hypothesis.startsWith("Hypothesis:"))) fail("gap reason is not a hypothesis");
+
 console.log("Mock output matches the schemas.");
+console.log(`Top gaps: ${ranked.map((gap) => `${gap.motivation} × ${gap.execution}`).join("; ")}`);
 console.log(`Demo coverage: ${empty} empty, ${thin} thin, ${covered} covered.`);

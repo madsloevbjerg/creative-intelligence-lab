@@ -1,11 +1,12 @@
 import type { CropRect, MaskBox } from "@/lib/smart-crop";
+import { headlineLines, labelWidth } from "@/lib/wordmark";
 
 /**
- * Where the headline and wordmark sit.
- * M5 can pass a Stories/Reels safe zone; the bands stay inside it.
+ * Headline position, with the wordmark pinned to the top-left.
+ * M5 can pass a Stories/Reels safe zone; both stay inside it.
  */
 
-export type TextSubject = "person" | "face" | "bag" | "phone" | "hand" | "kettle" | "roaster";
+export type TextSubject = "person" | "face" | "bag" | "phone" | "hand" | "kettle" | "roaster" | "cup";
 
 export type SubjectMask = {
   subject: TextSubject;
@@ -28,25 +29,47 @@ export const OPEN_SAFE_ZONE: SafeZone = { top: 0, bottom: 0, left: 0, right: 0 }
  */
 export const REELS_SAFE_ZONE: SafeZone = { top: 0.14, bottom: 0.2, left: 0.04, right: 0.04 };
 
-export type TextBand = "top" | "bottom";
+export type HeadlinePlace =
+  | "top"
+  | "bottom"
+  | "middle"
+  | "left"
+  | "right"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-right";
 
 export type TextPlacement = {
-  band: TextBand;
+  place: HeadlinePlace;
   rect: CropRect;
   reason: string;
+  /** Wordmark origin in image pixels. The default is the top-left corner. */
+  wordmark: { left: number; top: number; nudged: boolean };
   overlap: { top: number; bottom: number };
 };
 
 export type PlaceTextOptions = {
   safeZone?: SafeZone;
-  /** Fraction of the frame height used by one text band. */
+  /** Fraction of the frame height used by a full headline band. */
   bandFraction?: number;
+  headline?: string;
 };
 
-/** Tall enough for the wordmark pill and a two-line headline. */
-export const TEXT_BAND_FRACTION = 0.26;
+/** Headline band only. The wordmark is separate and stays top-left. */
+export const TEXT_BAND_FRACTION = 0.16;
 
-const SUBJECT_ORDER: TextSubject[] = ["face", "person", "phone", "hand", "kettle", "bag", "roaster"];
+const SUBJECT_ORDER: TextSubject[] = ["face", "person", "phone", "hand", "kettle", "cup", "bag", "roaster"];
+
+const PLACE_PREFERENCE: HeadlinePlace[] = [
+  "bottom",
+  "top",
+  "middle",
+  "left",
+  "right",
+  "bottom-left",
+  "bottom-right",
+  "top-right",
+];
 
 function frameFor(image: { width: number; height: number }, aspectRatio: number): CropRect {
   let height = image.height;
@@ -91,18 +114,30 @@ export function faceBoxes(masks: readonly SubjectMask[]): MaskBox[] {
         left: mask.box.left,
         top: mask.box.top,
         right: mask.box.right,
-        bottom: mask.box.top + height * 0.25,
+        bottom: mask.box.top + height * (height > 0 ? 0.32 : 0.25),
       };
     });
 }
 
-function overlapOf(band: CropRect, masks: readonly SubjectMask[]): number {
-  const box = asBox(band);
-  return masks.reduce((sum, mask) => sum + intersectionArea(box, mask.box), 0);
+/** The drum, not the whole machine. */
+function roasterKey(box: MaskBox): MaskBox {
+  const width = box.right - box.left;
+  const height = box.bottom - box.top;
+  return {
+    left: box.left + width * 0.22,
+    top: box.top + height * 0.18,
+    right: box.right - width * 0.18,
+    bottom: box.bottom - height * 0.12,
+  };
 }
 
-function subjectsIn(band: CropRect, masks: readonly SubjectMask[], faces: readonly MaskBox[]): TextSubject[] {
-  const box = asBox(band);
+function overlapOf(rect: CropRect, boxes: readonly MaskBox[]): number {
+  const box = asBox(rect);
+  return boxes.reduce((sum, item) => sum + intersectionArea(box, item), 0);
+}
+
+function subjectsIn(rect: CropRect, masks: readonly SubjectMask[], faces: readonly MaskBox[]): TextSubject[] {
+  const box = asBox(rect);
   const found = new Set<TextSubject>();
   for (const mask of masks) {
     if (intersectionArea(box, mask.box) > 0) found.add(mask.subject);
@@ -118,9 +153,87 @@ function describe(subjects: readonly TextSubject[]): string {
   return `${subjects.slice(0, -1).join(", ")}, and ${subjects[subjects.length - 1]}`;
 }
 
+function placeName(place: HeadlinePlace): string {
+  if (place === "left") return "on the left";
+  if (place === "right") return "on the right";
+  if (place === "middle") return "across the middle";
+  if (place === "top-right") return "in the top-right";
+  if (place === "bottom-left") return "in the bottom-left";
+  if (place === "bottom-right") return "in the bottom-right";
+  return `at ${place}`;
+}
+
+type Slot = { place: HeadlinePlace; rect: CropRect };
+
+function textBlock(frame: CropRect, headline: string, maxChars: number, maxLines: number): { width: number; height: number } {
+  const fontSize = frame.width * 0.048;
+  const lineHeight = frame.width * 0.055;
+  const lines = headlineLines(headline || "Headline", maxChars, maxLines);
+  const width = Math.max(...lines.map((line) => labelWidth(line, fontSize)), fontSize * 4);
+  return { width: width + frame.width * 0.04, height: lineHeight * lines.length + frame.height * 0.02 };
+}
+
+function slots(frame: CropRect, safe: SafeZone, wordmark: CropRect, headline: string): Slot[] {
+  const left = frame.left + safe.left * frame.width;
+  const right = frame.left + frame.width * (1 - safe.right);
+  const top = Math.max(frame.top + safe.top * frame.height, wordmark.top + wordmark.height + frame.height * 0.012);
+  const bottom = frame.top + frame.height * (1 - safe.bottom);
+  const wide = textBlock(frame, headline, 28, 2);
+  const narrow = textBlock(frame, headline, 16, 3);
+  const box = (x: number, y: number, block: { width: number; height: number }): CropRect => ({
+    left: Math.round(Math.max(left, Math.min(x, right - block.width))),
+    top: Math.round(Math.max(top, Math.min(y, bottom - block.height))),
+    width: Math.round(Math.min(block.width, right - left)),
+    height: Math.round(block.height),
+  });
+  return [
+    { place: "bottom", rect: box(left, bottom - wide.height, wide) },
+    { place: "top", rect: box(left, top, wide) },
+    { place: "left", rect: box(left, top + (bottom - top) * 0.34, narrow) },
+    { place: "bottom-left", rect: box(left, bottom - narrow.height, narrow) },
+    { place: "right", rect: box(right - narrow.width, top + (bottom - top) * 0.34, narrow) },
+    { place: "bottom-right", rect: box(right - wide.width, bottom - wide.height, wide) },
+    { place: "top-right", rect: box(right - wide.width, top, wide) },
+    { place: "middle", rect: box(left, top + (bottom - top) * 0.42, wide) },
+  ];
+}
+
+/** Default top-left pill, in image pixels. */
+export function defaultWordmark(frame: CropRect): CropRect {
+  const fontSize = frame.width * 0.036;
+  const text = labelWidth("Danish Coffee Lab", fontSize);
+  const width = Math.min(frame.width * 0.7, text + frame.width * 0.09 * 1.1);
+  const height = frame.width * 0.09;
+  return {
+    left: Math.round(frame.left + frame.width * 0.05),
+    top: Math.round(frame.top + Math.max(frame.width * 0.04, frame.height * 0.03)),
+    width: Math.round(width),
+    height: Math.round(height),
+  };
+}
+
+function nudgeWordmark(frame: CropRect, blocked: readonly MaskBox[]): { left: number; top: number; nudged: boolean; clearOf: string } {
+  const base = defaultWordmark(frame);
+  const areaOf = (rect: CropRect) => overlapOf(rect, blocked);
+  if (areaOf(base) === 0) return { left: base.left, top: base.top, nudged: false, clearOf: "" };
+  for (const shift of [0.04, 0.08, 0.12]) {
+    for (const drop of [0, 0.04, 0.08]) {
+      const left = base.left + shift * frame.width;
+      const top = base.top + drop * frame.height;
+      if (left + base.width > frame.left + frame.width * 0.58) continue;
+      if (top + base.height > frame.top + frame.height * 0.28) continue;
+      const rect = { left: Math.round(left), top: Math.round(top), width: base.width, height: base.height };
+      if (areaOf(rect) === 0) {
+        return { left: rect.left, top: rect.top, nudged: true, clearOf: shift >= drop ? "right" : "down" };
+      }
+    }
+  }
+  return { left: base.left, top: base.top, nudged: false, clearOf: "stays" };
+}
+
 /**
- * Pick the top or bottom band that covers the least of the subject masks.
- * A band that crosses a face is refused when the other band does not.
+ * Pick a headline block that keeps the bag, the face, the phone, and a cup clear.
+ * The wordmark stays top-left unless that corner covers a face or the phone.
  */
 export function placeText(
   image: { width: number; height: number },
@@ -129,55 +242,77 @@ export function placeText(
   options: PlaceTextOptions = {},
 ): TextPlacement {
   const safe = options.safeZone ?? OPEN_SAFE_ZONE;
-  const bandFraction = options.bandFraction ?? TEXT_BAND_FRACTION;
   const frame = frameFor(image, aspectRatio);
-  const innerLeft = frame.left + safe.left * frame.width;
-  const innerRight = frame.left + frame.width - safe.right * frame.width;
-  const innerTop = frame.top + safe.top * frame.height;
-  const innerBottom = frame.top + frame.height - safe.bottom * frame.height;
-  const innerHeight = Math.max(1, innerBottom - innerTop);
-  const bandHeight = Math.min(bandFraction * frame.height, innerHeight * 0.45);
-  const width = Math.max(1, innerRight - innerLeft);
-  const topBand: CropRect = {
-    left: Math.round(innerLeft),
-    top: Math.round(innerTop),
-    width: Math.round(width),
-    height: Math.round(bandHeight),
-  };
-  const bottomBand: CropRect = {
-    left: Math.round(innerLeft),
-    top: Math.round(innerBottom - bandHeight),
-    width: Math.round(width),
-    height: Math.round(bandHeight),
-  };
-
+  const headline = options.headline ?? "Headline";
   const faces = faceBoxes(masks);
-  const overlap = {
-    top: overlapOf(topBand, masks),
-    bottom: overlapOf(bottomBand, masks),
+  const bags = masks.filter((mask) => mask.subject === "bag").map((mask) => mask.box);
+  const phones = masks.filter((mask) => mask.subject === "phone").map((mask) => mask.box);
+  const cups = masks.filter((mask) => mask.subject === "cup").map((mask) => mask.box);
+  const roasters = masks.filter((mask) => mask.subject === "roaster").map((mask) => roasterKey(mask.box));
+  const hard = [...faces, ...bags, ...phones, ...cups, ...roasters];
+  const wordmarkNudge = nudgeWordmark(frame, [...faces, ...phones]);
+  const wordmarkRect = {
+    ...defaultWordmark(frame),
+    left: wordmarkNudge.left,
+    top: wordmarkNudge.top,
   };
-  const faceHit = {
-    top: faces.some((face) => intersectionArea(asBox(topBand), face) > 0),
-    bottom: faces.some((face) => intersectionArea(asBox(bottomBand), face) > 0),
-  };
+  const optionsSlots = slots(frame, safe, wordmarkRect, headline);
 
-  let band: TextBand;
-  if (faceHit.top && !faceHit.bottom) band = "bottom";
-  else if (faceHit.bottom && !faceHit.top) band = "top";
-  else if (overlap.top < overlap.bottom) band = "top";
-  else band = "bottom";
+  const clear = (rect: CropRect, boxes: readonly MaskBox[]) => overlapOf(rect, boxes) === 0;
+  let pool = optionsSlots.filter((slot) => clear(slot.rect, hard));
+  let relaxed = false;
+  if (pool.length === 0) {
+    pool = optionsSlots.filter((slot) => clear(slot.rect, [...faces, ...bags, ...phones, ...cups]));
+    relaxed = true;
+  }
+  if (pool.length === 0) {
+    pool = optionsSlots.filter((slot) => clear(slot.rect, [...faces, ...bags, ...cups]));
+    relaxed = true;
+  }
+  if (pool.length === 0) pool = optionsSlots;
 
-  const other: TextBand = band === "top" ? "bottom" : "top";
-  const otherRect = other === "top" ? topBand : bottomBand;
-  const names = describe(subjectsIn(otherRect, masks, faces));
-  const reason = names
-    ? `Headline placed at ${band}: ${other} band overlapped ${names}`
-    : `Headline placed at ${band}: neither band overlapped a subject`;
+  const subjectBoxes = masks.map((mask) => mask.box);
+  pool.sort((a, b) => {
+    const delta = overlapOf(a.rect, subjectBoxes) - overlapOf(b.rect, subjectBoxes);
+    if (delta !== 0) return delta;
+    return PLACE_PREFERENCE.indexOf(a.place) - PLACE_PREFERENCE.indexOf(b.place);
+  });
+  const chosen = pool[0] ?? optionsSlots[0]!;
+  const topSlot = optionsSlots.find((slot) => slot.place === "top")!;
+  const bottomSlot = optionsSlots.find((slot) => slot.place === "bottom")!;
+  const blockedNames = [
+    ...new Set([
+      ...subjectsIn(topSlot.rect, masks, faces),
+      ...subjectsIn(bottomSlot.rect, masks, faces),
+    ]),
+  ];
+  const why =
+    chosen.place === "top" || chosen.place === "bottom"
+      ? describe(subjectsIn(chosen.place === "top" ? bottomSlot.rect : topSlot.rect, masks, faces))
+      : describe(blockedNames as TextSubject[]);
+  const other = chosen.place === "top" ? "bottom" : chosen.place === "bottom" ? "top" : "top and bottom";
+  let reason = why
+    ? `Headline placed ${placeName(chosen.place)}: ${other} band overlapped ${why}`
+    : `Headline placed ${placeName(chosen.place)}: neither band overlapped a subject`;
+  if (relaxed && chosen.place !== "top" && chosen.place !== "bottom") {
+    reason = `Headline placed ${placeName(chosen.place)}: a full band would cover the bag or the roaster`;
+  }
+  if (wordmarkNudge.nudged) {
+    const covered = phones.length > 0 && faces.length === 0 ? "the phone" : "a face";
+    reason = `${reason}. Wordmark nudged ${wordmarkNudge.clearOf} within the top-left: it would have covered ${covered}`;
+  } else if (overlapOf(wordmarkRect, [...faces, ...phones]) > 0) {
+    const covered = phones.length > 0 && faces.length === 0 ? "the phone" : "a face";
+    reason = `${reason}. Wordmark stays top-left: a nudge inside the corner would still meet ${covered}`;
+  }
 
   return {
-    band,
-    rect: band === "top" ? topBand : bottomBand,
+    place: chosen.place,
+    rect: chosen.rect,
     reason,
-    overlap,
+    wordmark: { left: wordmarkNudge.left, top: wordmarkNudge.top, nudged: wordmarkNudge.nudged },
+    overlap: {
+      top: overlapOf(topSlot.rect, subjectBoxes),
+      bottom: overlapOf(bottomSlot.rect, subjectBoxes),
+    },
   };
 }

@@ -48,7 +48,8 @@ function restoreEnv(name: string, value: string | undefined): void {
 
 const briefInput = {
   motivation: "Price/value" as const,
-  format: "Static image" as const,
+  execution: "Product focus" as const,
+  delivery: "Static" as const,
   offer: "A weekly bag of coffee.",
   websiteText: "Danish Coffee Lab roasts coffee in Aarhus and sends a bag each week.",
   brief: "Autumn push for people who already buy specialty coffee.",

@@ -1,7 +1,7 @@
 import sharp from "sharp";
 
 import { brandKit } from "@/lib/brand-kit";
-import type { TextBand } from "@/lib/place-text";
+import type { TextPlacement } from "@/lib/place-text";
 import { adOverlaySvg } from "@/lib/wordmark";
 
 /** Feed 4:5 canvas. The documented image call does not take a size, so the crop is local. */
@@ -12,7 +12,8 @@ export async function compositeAd(
   photo: Buffer,
   headline: string,
   crop?: { left: number; top: number; width: number; height: number },
-  band: TextBand = "bottom",
+  placement?: Pick<TextPlacement, "rect" | "wordmark">,
+  frame?: { width: number; height: number },
 ): Promise<Buffer> {
   let image = sharp(photo).rotate();
   if (crop) {
@@ -24,8 +25,22 @@ export async function compositeAd(
     });
   }
   const base = await image.resize(COMPOSITE_WIDTH, COMPOSITE_HEIGHT, { fit: "fill" }).png().toBuffer();
+  const source = frame ?? { width: COMPOSITE_WIDTH, height: COMPOSITE_HEIGHT };
+  const scaleX = COMPOSITE_WIDTH / source.width;
+  const scaleY = COMPOSITE_HEIGHT / source.height;
+  const headlineBox = placement
+    ? {
+        left: placement.rect.left * scaleX,
+        top: placement.rect.top * scaleY,
+        width: placement.rect.width * scaleX,
+        height: placement.rect.height * scaleY,
+      }
+    : { left: COMPOSITE_WIDTH * 0.05, top: COMPOSITE_HEIGHT * 0.78, width: COMPOSITE_WIDTH * 0.9, height: COMPOSITE_HEIGHT * 0.16 };
+  const wordmark = placement
+    ? { left: placement.wordmark.left * scaleX, top: placement.wordmark.top * scaleY }
+    : { left: COMPOSITE_WIDTH * 0.05, top: COMPOSITE_WIDTH * 0.04 };
   const overlay = Buffer.from(
-    adOverlaySvg({ width: COMPOSITE_WIDTH, height: COMPOSITE_HEIGHT, headline, band }),
+    adOverlaySvg({ width: COMPOSITE_WIDTH, height: COMPOSITE_HEIGHT, headline, headlineBox, wordmark }),
   );
   return sharp(base)
     .composite([{ input: overlay, top: 0, left: 0 }])

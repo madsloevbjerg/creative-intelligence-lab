@@ -17,17 +17,19 @@ export const MOTIVATIONS = [
   "Emotion/nostalgia",
 ] as const;
 
-export const FORMATS = [
-  "Static image",
-  "Carousel",
-  "Short video (<15s)",
-  "UGC/creator style",
-  "Product demo",
-  "Testimonial",
-  "Before/after",
-  "Text-led/meme",
+/** Matrix columns. How the ad is made, not how it is delivered. */
+export const EXECUTIONS = [
+  "Product focus",
   "Lifestyle scene",
+  "Person/UGC",
+  "Testimonial",
+  "Demo/how-to",
+  "Before/after",
+  "Text-led",
 ] as const;
+
+/** Badge on each thumbnail. Not a matrix column. */
+export const DELIVERIES = ["Static", "Carousel", "Video"] as const;
 
 /**
  * One short noun phrase per SAM 3.1 call. `background` is stored as setting.
@@ -47,7 +49,8 @@ export const MIN_ADS = 5;
 export const MAX_ADS = 20;
 
 export type Motivation = (typeof MOTIVATIONS)[number];
-export type Format = (typeof FORMATS)[number];
+export type Execution = (typeof EXECUTIONS)[number];
+export type Delivery = (typeof DELIVERIES)[number];
 export type SegmentKey = (typeof SEGMENT_PROMPTS)[number]["key"];
 
 export function wordCount(value: string): number {

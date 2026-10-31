@@ -2,14 +2,16 @@ import { readCache, requestKey } from "@/lib/cache";
 import { demoAssetBytes, isDemoBrandText, sha256 } from "@/lib/demo-assets";
 import { demoPortfolio } from "@/lib/demo";
 import { imageSha256 } from "@/lib/image-bytes";
-import { brandKeyMaterial, classifyKeyMaterial, samKeyMaterial } from "@/lib/meta";
+import { brandKeyMaterial, classifyKeyMaterial, constraintKeyMaterial, samKeyMaterial } from "@/lib/meta";
 import { brandUserText, classifyUserText } from "@/lib/request-text";
 import {
   brandSummarySchema,
   classificationSchema,
+  constraintsSchema,
   segmentationSchema,
   type AnalyzedAd,
   type BrandSummary,
+  type Constraints,
   type Segmentation,
 } from "@/lib/schemas";
 import { SEGMENT_PROMPTS } from "@/lib/taxonomy";
@@ -18,6 +20,7 @@ const segmentHitSchema = segmentationSchema.shape.product;
 
 export type CachedDemo = {
   brand: BrandSummary;
+  constraints: Constraints;
   ads: AnalyzedAd[];
   cachedUsd: number;
 };
@@ -103,6 +106,13 @@ export function loadCachedDemo(input: DemoInput): CachedDemo | null {
   const brand = readCache("demo", requestKey(brandKeyMaterial(summaryText)), brandSummarySchema);
   if (!brand) return null;
   cachedUsd += brand.priceUsd;
+  const constraints = readCache(
+    "demo",
+    requestKey(constraintKeyMaterial(summaryText)),
+    constraintsSchema,
+  );
+  if (!constraints) return null;
+  cachedUsd += constraints.priceUsd;
 
-  return { brand: brand.result, ads, cachedUsd };
+  return { brand: brand.result, constraints: constraints.result, ads, cachedUsd };
 }

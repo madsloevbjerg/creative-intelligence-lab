@@ -22,10 +22,11 @@ import {
   mockBrandSummary,
   mockClassification,
   mockConceptBrief,
+  mockConstraints,
   mockMockup,
   mockSegmentation,
 } from "@/lib/mock";
-import { BRAND_SYSTEM, BRIEF_SYSTEM, CLASSIFY_SYSTEM } from "@/lib/prompts";
+import { BRAND_SYSTEM, BRIEF_SYSTEM, CLASSIFY_SYSTEM, CONSTRAINT_SYSTEM } from "@/lib/prompts";
 import { brandUserText, classifyUserText } from "@/lib/request-text";
 import { isDemoBrandText, isDemoImageSha } from "@/lib/demo-assets";
 import {
@@ -33,6 +34,8 @@ import {
   brandSummarySchema,
   classificationJsonSchema,
   classificationSchema,
+  constraintsJsonSchema,
+  constraintsSchema,
   conceptBriefJsonSchema,
   conceptBriefSchema,
   mockupSchema,
@@ -40,11 +43,12 @@ import {
   withOneRetry,
   type BrandSummary,
   type Classification,
+  type Constraints,
   type ConceptBrief,
   type Mockup,
   type Segmentation,
 } from "@/lib/schemas";
-import { SEGMENT_PROMPTS, type Format, type Motivation } from "@/lib/taxonomy";
+import { SEGMENT_PROMPTS, type Delivery, type Execution, type Motivation } from "@/lib/taxonomy";
 
 const META_BASE_URL = "https://api.meta.ai/v1";
 
@@ -834,9 +838,41 @@ export async function summarizeBrand(input: {
   });
 }
 
+export function constraintKeyMaterial(userText: string) {
+  return {
+    model: "muse-spark-1.3" as const,
+    task: "extractConstraints" as const,
+    system: CONSTRAINT_SYSTEM,
+    userText,
+    responseFormat: { type: "json_schema" as const, strict: true, name: "Constraints" },
+  };
+}
+
+export async function extractConstraints(input: {
+  websiteText: string;
+  brief: string;
+}): Promise<Constraints> {
+  if (isMock()) {
+    return withOneRetry(constraintsSchema, "Constraints", async () => mockConstraints(input));
+  }
+  return retryCharged(constraintsSchema, "Constraints", async () => {
+    const userText = brandUserText(input.websiteText, input.brief);
+    return museJson({
+      schemaName: "Constraints",
+      jsonSchema: constraintsJsonSchema,
+      schema: constraintsSchema,
+      system: CONSTRAINT_SYSTEM,
+      userText,
+      cacheScope: isDemoBrandText(input.websiteText, input.brief) ? "demo" : "private",
+      keyMaterial: constraintKeyMaterial(userText),
+    });
+  });
+}
+
 export async function writeBrief(input: {
   motivation: Motivation;
-  format: Format;
+  execution: Execution;
+  delivery: Delivery;
   offer: string;
   websiteText: string;
   brief: string;
@@ -847,13 +883,15 @@ export async function writeBrief(input: {
     if (isMock()) {
       return mockConceptBrief({
         motivation: input.motivation,
-        format: input.format,
+        execution: input.execution,
+        delivery: input.delivery,
         offer: input.offer,
       });
     }
     const userText = [
       `Motivation: ${input.motivation}`,
-      `Format: ${input.format}`,
+      `Execution: ${input.execution}`,
+      `Delivery: ${input.delivery}`,
       `Offer: ${input.offer}`,
       `Coverage note: ${input.hypothesis}`,
       `Website text:\n${input.websiteText}`,

@@ -20,7 +20,7 @@ export const demoPortfolio = {
 The subscription is for home drinkers in Denmark who already buy specialty coffee and are tired of the last-minute shop run. Plans are Home, Office, and Gift. You can see the price per cup before you start, and you can skip or cancel a week.
 
 Nothing here is a limited drop or a slogan about status. The company is small, the tone on the site is calm, and the photos are of bags, cups, and the roastery door.`,
-  brief: `Autumn push for new subscribers in Copenhagen and Aarhus. Talk to people who already buy specialty coffee from a café or a supermarket. Focus on the weekly ritual and the roast date. This is not a discount campaign. The current ads cluster around price and convenience, and we want to see which motivations we are not using.`,
+  brief: `Autumn push for new subscribers in Copenhagen and Aarhus. Talk to people who already buy specialty coffee from a café or a supermarket. Focus on the weekly ritual and the roast date. This is not a discount campaign. No limited drops. No status claims. The current ads cluster around price and convenience, and we want to see which motivations we are not using.`,
   ads: [
     {
       id: "dcl-01",
