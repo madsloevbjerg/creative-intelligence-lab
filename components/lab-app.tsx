@@ -1,0 +1,542 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { CoverageMap, WhyPanel, type MapAd } from "@/components/coverage-map";
+import { readImageFile } from "@/components/read-image";
+import { demoPortfolio } from "@/lib/demo";
+import { analysisResponseSchema, type AnalysisResponse, type BrandSummary } from "@/lib/schemas";
+import { MAX_ADS, MIN_ADS } from "@/lib/taxonomy";
+
+type SourceMode = "text" | "url";
+
+type AdDraft = {
+  localId: string;
+  headline: string;
+  primaryText: string;
+  imageDataUrl: string;
+  fileName: string;
+};
+
+function emptyAd(): AdDraft {
+  return {
+    localId: crypto.randomUUID(),
+    headline: "",
+    primaryText: "",
+    imageDataUrl: "",
+    fileName: "",
+  };
+}
+
+function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function fingerprint(input: {
+  sourceMode: SourceMode;
+  websiteText: string;
+  websiteUrl: string;
+  brief: string;
+  ads: AdDraft[];
+}): string {
+  return JSON.stringify({
+    sourceMode: input.sourceMode,
+    websiteText: input.websiteText.trim(),
+    websiteUrl: input.websiteUrl.trim(),
+    brief: input.brief.trim(),
+    ads: input.ads.map((ad) => ({
+      id: ad.localId,
+      headline: ad.headline.trim(),
+      primaryText: ad.primaryText.trim(),
+      image: `${ad.imageDataUrl.length}:${ad.imageDataUrl.slice(0, 48)}`,
+    })),
+  });
+}
+
+export function LabApp() {
+  const [sourceMode, setSourceMode] = useState<SourceMode>("text");
+  const [websiteText, setWebsiteText] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [brief, setBrief] = useState("");
+  const [ads, setAds] = useState<AdDraft[]>([]);
+  const [adError, setAdError] = useState<string | null>(null);
+  const [loadingDemo, setLoadingDemo] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<AnalysisResponse | null>(null);
+  const [resultFingerprint, setResultFingerprint] = useState<string | null>(null);
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  const [pinnedId, setPinnedId] = useState<string | null>(null);
+
+  const currentFingerprint = fingerprint({ sourceMode, websiteText, websiteUrl, brief, ads });
+  const stale = Boolean(result && resultFingerprint && resultFingerprint !== currentFingerprint);
+
+  const blocker = useMemo(() => {
+    if (sourceMode === "text" && websiteText.trim().length < 40) {
+      return "Paste at least a short paragraph from the website, or switch to a URL.";
+    }
+    if (sourceMode === "url" && !isHttpUrl(websiteUrl)) {
+      return "Enter an http or https website URL, or switch to pasted text.";
+    }
+    if (brief.trim().length < 20) {
+      return "Add a campaign brief of at least a sentence.";
+    }
+    if (ads.length < MIN_ADS) {
+      const missing = MIN_ADS - ads.length;
+      return `Add ${missing} more ${missing === 1 ? "ad" : "ads"}. The map needs ${MIN_ADS} to ${MAX_ADS}.`;
+    }
+    if (ads.length > MAX_ADS) {
+      return `Remove ads until there are ${MAX_ADS} or fewer.`;
+    }
+    if (ads.some((ad) => !ad.imageDataUrl || !ad.headline.trim() || !ad.primaryText.trim())) {
+      return "Every ad needs an image, a headline, and primary text.";
+    }
+    return null;
+  }, [ads, brief, sourceMode, websiteText, websiteUrl]);
+
+  function updateAd(localId: string, patch: Partial<AdDraft>) {
+    setAds((current) => current.map((ad) => (ad.localId === localId ? { ...ad, ...patch } : ad)));
+  }
+
+  async function onPickImage(localId: string, file: File | undefined) {
+    if (!file) return;
+    setAdError(null);
+    try {
+      const imageDataUrl = await readImageFile(file);
+      updateAd(localId, { imageDataUrl, fileName: file.name });
+    } catch (picked) {
+      setAdError(picked instanceof Error ? picked.message : "That image could not be read.");
+    }
+  }
+
+  async function loadDemo() {
+    setLoadingDemo(true);
+    setError(null);
+    setAdError(null);
+    try {
+      const loaded = await Promise.all(
+        demoPortfolio.ads.map(async (ad) => {
+          const response = await fetch(ad.file);
+          if (!response.ok) {
+            throw new Error(`Could not load ${ad.file}.`);
+          }
+          const svg = await response.text();
+          return {
+            localId: ad.id,
+            headline: ad.headline,
+            primaryText: ad.primaryText,
+            fileName: ad.file.split("/").pop() ?? ad.file,
+            imageDataUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+          } satisfies AdDraft;
+        }),
+      );
+      setSourceMode("text");
+      setWebsiteText(demoPortfolio.websiteText);
+      setWebsiteUrl("");
+      setBrief(demoPortfolio.brief);
+      setAds(loaded);
+      setResult(null);
+      setResultFingerprint(null);
+      setHoverId(null);
+      setPinnedId(null);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "The demo data did not load.");
+    } finally {
+      setLoadingDemo(false);
+    }
+  }
+
+  async function analyze() {
+    if (blocker) return;
+    setAnalyzing(true);
+    setError(null);
+    setHoverId(null);
+    setPinnedId(null);
+    const sentFingerprint = currentFingerprint;
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source:
+            sourceMode === "text"
+              ? { kind: "text", websiteText: websiteText.trim() }
+              : { kind: "url", websiteUrl: websiteUrl.trim() },
+          brief: brief.trim(),
+          ads: ads.map((ad) => ({
+            id: ad.localId,
+            headline: ad.headline.trim(),
+            primaryText: ad.primaryText.trim(),
+            imageDataUrl: ad.imageDataUrl,
+          })),
+        }),
+      });
+      const body: unknown = await response.json().catch(() => null);
+      if (!response.ok) {
+        const message =
+          body && typeof body === "object" && "error" in body && typeof body.error === "string"
+            ? body.error
+            : `The analysis failed (${response.status}).`;
+        setError(message);
+        return;
+      }
+      const parsed = analysisResponseSchema.safeParse(body);
+      if (!parsed.success) {
+        setError("The analysis response did not match the expected format. Nothing was filled in.");
+        return;
+      }
+      setResult(parsed.data);
+      setResultFingerprint(sentFingerprint);
+      requestAnimationFrame(() => {
+        document.getElementById("coverage")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    } catch {
+      setError("The analysis could not be reached. Check that the app is still running.");
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
+  const imageById = new Map(ads.map((ad) => [ad.localId, ad.imageDataUrl]));
+  const mapAds: MapAd[] = (result?.ads ?? []).flatMap((ad) => {
+    const imageDataUrl = imageById.get(ad.id);
+    if (!imageDataUrl) return [];
+    return [{ ...ad, imageDataUrl }];
+  });
+  const activeId = hoverId ?? pinnedId;
+  const activeAd = mapAds.find((ad) => ad.id === activeId) ?? null;
+
+  return (
+    <main className="mx-auto flex w-full max-w-[88rem] flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
+      <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <p className="text-sm text-muted-foreground">Meta ad creative coverage</p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
+            Creative Intelligence Lab
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
+            See which motivations and formats are already in a portfolio, and which cells
+            are empty. Since Andromeda, different creative ideas can reach different
+            people. This page only maps coverage. It does not predict performance, scores,
+            or click-through.
+          </p>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-10 shrink-0"
+          onClick={() => void loadDemo()}
+          disabled={loadingDemo || analyzing}
+        >
+          {loadingDemo ? "Loading demo…" : "Load demo data"}
+        </Button>
+      </header>
+
+      <section className="space-y-4" aria-labelledby="brand-heading">
+        <div>
+          <h2 id="brand-heading" className="text-xl font-semibold tracking-tight">
+            1. Brand and brief
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Paste the website, or give a public URL. Then add the campaign brief in a
+            sentence or two.
+          </p>
+        </div>
+        <Card>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant={sourceMode === "text" ? "default" : "outline"}
+                onClick={() => setSourceMode("text")}
+              >
+                Paste text
+              </Button>
+              <Button
+                type="button"
+                variant={sourceMode === "url" ? "default" : "outline"}
+                onClick={() => setSourceMode("url")}
+              >
+                Website URL
+              </Button>
+            </div>
+            {sourceMode === "text" ? (
+              <div className="space-y-2">
+                <Label htmlFor="website-text">Website text</Label>
+                <Textarea
+                  id="website-text"
+                  value={websiteText}
+                  onChange={(event) => setWebsiteText(event.target.value)}
+                  className="min-h-40"
+                  placeholder="Paste the about page, offer, and who the product is for."
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="website-url">Website URL</Label>
+                <Input
+                  id="website-url"
+                  type="url"
+                  inputMode="url"
+                  value={websiteUrl}
+                  onChange={(event) => setWebsiteUrl(event.target.value)}
+                  placeholder="https://example.com"
+                />
+                <p className="text-xs text-muted-foreground">
+                  The lab fetches public page text. If the site blocks that, paste the text
+                  instead.
+                </p>
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="brief">Campaign brief</Label>
+              <Textarea
+                id="brief"
+                value={brief}
+                onChange={(event) => setBrief(event.target.value)}
+                className="min-h-28"
+                placeholder="Who is this for, and what should the work say?"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="space-y-4" aria-labelledby="ads-heading">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 id="ads-heading" className="text-xl font-semibold tracking-tight">
+              2. Existing ads
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Add {MIN_ADS}–{MAX_ADS} ads. Each one needs the image, the headline, and the
+              primary text.
+            </p>
+          </div>
+          <Badge variant="outline">
+            {ads.length} of {MIN_ADS}–{MAX_ADS} ads
+          </Badge>
+        </div>
+
+        {ads.length === 0 ? (
+          <div className="rounded-xl border border-dashed px-4 py-10 text-center">
+            <p className="text-sm text-muted-foreground">
+              No ads yet. Load the Bønne &amp; Co demo, or add your own.
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Button type="button" onClick={() => void loadDemo()} disabled={loadingDemo || analyzing}>
+                {loadingDemo ? "Loading demo…" : "Load demo data"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAds([emptyAd()])}
+                disabled={analyzing}
+              >
+                Add an ad
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {ads.map((ad, index) => (
+              <Card key={ad.localId} size="sm">
+                <CardHeader>
+                  <CardTitle>Ad {index + 1}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-3">
+                    <div className="flex h-28 w-24 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
+                      {ad.imageDataUrl ? (
+                        <>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={ad.imageDataUrl} alt="" className="h-full w-full object-cover" />
+                        </>
+                      ) : (
+                        <span className="px-2 text-center text-[11px] text-muted-foreground">
+                          No image
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border px-2.5 text-sm font-medium hover:bg-muted">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            void onPickImage(ad.localId, file);
+                            event.target.value = "";
+                          }}
+                        />
+                        {ad.imageDataUrl ? "Replace image" : "Upload image"}
+                      </label>
+                      {ad.fileName ? (
+                        <p className="truncate text-xs text-muted-foreground">{ad.fileName}</p>
+                      ) : null}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="self-start"
+                        onClick={() => setAds((current) => current.filter((item) => item.localId !== ad.localId))}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`headline-${ad.localId}`}>Headline</Label>
+                    <Input
+                      id={`headline-${ad.localId}`}
+                      value={ad.headline}
+                      onChange={(event) => updateAd(ad.localId, { headline: event.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`primary-${ad.localId}`}>Primary text</Label>
+                    <Textarea
+                      id={`primary-${ad.localId}`}
+                      value={ad.primaryText}
+                      onChange={(event) => updateAd(ad.localId, { primaryText: event.target.value })}
+                      className="min-h-20"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {ads.length > 0 ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setAds((current) => (current.length >= MAX_ADS ? current : [...current, emptyAd()]))}
+            disabled={ads.length >= MAX_ADS || analyzing}
+          >
+            Add an ad
+          </Button>
+        ) : null}
+        {adError ? <p className="text-sm text-destructive">{adError}</p> : null}
+      </section>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <Button
+          type="button"
+          className="h-10"
+          onClick={() => void analyze()}
+          disabled={Boolean(blocker) || analyzing || loadingDemo}
+        >
+          {analyzing ? "Reading the ads…" : "Analyze coverage"}
+        </Button>
+        <p className="text-sm text-muted-foreground">
+          {blocker ?? "Ready. The map will place each ad and show why."}
+        </p>
+      </div>
+
+      {error ? (
+        <Alert variant="destructive">
+          <AlertTitle>Analysis stopped</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      {result ? (
+        <section id="coverage" className="scroll-mt-4 space-y-4">
+          <ModeBanner result={result} />
+          {stale ? (
+            <Alert>
+              <AlertTitle>The inputs changed</AlertTitle>
+              <AlertDescription>
+                This map is from the last run. Analyze again to place the current ads.
+              </AlertDescription>
+            </Alert>
+          ) : null}
+          <BrandSummaryCard brand={result.brand} />
+          <div className="sticky top-2 z-30">
+            <WhyPanel ad={activeAd} />
+          </div>
+          {mapAds.length === result.ads.length ? (
+            <CoverageMap
+              ads={mapAds}
+              pinnedId={pinnedId}
+              onHover={setHoverId}
+              onPin={setPinnedId}
+            />
+          ) : (
+            <Alert variant="destructive">
+              <AlertTitle>The map is missing an image</AlertTitle>
+              <AlertDescription>
+                An analyzed ad no longer matches an uploaded image. Analyze again.
+              </AlertDescription>
+            </Alert>
+          )}
+        </section>
+      ) : (
+        <section id="coverage" className="rounded-xl border border-dashed px-4 py-8">
+          <h2 className="text-xl font-semibold tracking-tight">3. Coverage map</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            The map appears here after you analyze at least {MIN_ADS} ads. Empty cells have
+            no ad. Thin cells have one. Nothing on this page is a performance prediction.
+          </p>
+        </section>
+      )}
+    </main>
+  );
+}
+
+function ModeBanner({ result }: { result: AnalysisResponse }) {
+  return (
+    <Alert>
+      <AlertTitle>{result.mode === "mock" ? "Mock mode" : "Live model"}</AlertTitle>
+      <AlertDescription>
+        {result.modeReason}{" "}
+        {result.mode === "mock"
+          ? "Demo ads use prepared labels. Other copy is labeled from the words in the text. These are not Muse Spark results."
+          : "Labels come from the model. They describe the ads. They are not a forecast."}
+      </AlertDescription>
+    </Alert>
+  );
+}
+
+function BrandSummaryCard({ brand }: { brand: BrandSummary }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Brand summary</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-2">
+        <SummaryItem label="Offer" value={brand.offer} />
+        <SummaryItem label="Tone" value={brand.tone} />
+        <SummaryItem label="Audiences" value={brand.audiences.join("; ")} />
+        <SummaryItem label="Key benefits" value={brand.keyBenefits.join("; ")} />
+        <div className="md:col-span-2">
+          <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Why</p>
+          <p className="mt-1 text-sm leading-relaxed">{brand.why}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SummaryItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
+      <p className="mt-1 text-sm leading-relaxed">{value}</p>
+    </div>
+  );
+}

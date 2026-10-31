@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+
+    <rect width="800" height="1000" fill="#f7f4ef"/>
+    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="240" fill="#3c2415" font-family="Georgia, serif" font-size="78">One origin</text>
+    <text x="48" y="320" fill="#3f6b45" font-family="Georgia, serif" font-size="36">Nothing blended away</text>
+    
+    <rect x="250" y="446" width="300" height="338" rx="16" fill="#6b3a22"/>
+    <rect x="292" y="400" width="216" height="61" rx="8" fill="#3d2416"/>
+    <rect x="298" y="577" width="204" height="100" rx="6" fill="#f4efe4"/>
+  
+    <rect x="300" y="620" width="200" height="70" rx="6" fill="#3f6b45"/>
+    <text x="400" y="662" text-anchor="middle" fill="#f7f4ef" font-family="Georgia, serif" font-size="22">Single origin</text>
+    <text x="48" y="920" fill="#6d5344" font-family="Georgia, serif" font-size="28">Roast date on the bag.</text>
+  
+</svg>

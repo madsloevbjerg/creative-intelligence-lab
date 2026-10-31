@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+
+    <rect width="800" height="1000" fill="#e7c9a4"/>
+    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <rect x="160" y="180" width="480" height="360" rx="8" fill="#f7f1e6"/>
+    <rect x="190" y="210" width="420" height="250" fill="#b7c9d4"/>
+    <rect x="188" y="430" width="424" height="22" fill="#c4a06a"/>
+    <ellipse cx="400" cy="700" rx="90" ry="22" fill="#3c2415"/>
+    <path d="M320 520 h160 v120 a80 70 0 0 1 -160 0 z" fill="#f7f1e6" stroke="#3c2415" stroke-width="8"/>
+    <path d="M480 560 h36 a36 40 0 0 1 0 70 h-36" fill="none" stroke="#3c2415" stroke-width="8"/>
+    <rect x="620" y="250" width="18" height="220" fill="#3f6b45"/>
+    <ellipse cx="629" cy="240" rx="46" ry="28" fill="#2f6a3a"/>
+    <text x="48" y="860" fill="#3c2415" font-family="Georgia, serif" font-size="64">This week</text>
+    <text x="48" y="930" fill="#3c2415" font-family="Georgia, serif" font-size="40">Aarhus</text>
+  
+</svg>

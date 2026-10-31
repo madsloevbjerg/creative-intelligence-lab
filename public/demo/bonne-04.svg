@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+
+    <rect width="800" height="1000" fill="#d7e6ee"/>
+    <text x="48" y="78" fill="#1d3a4a" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="240" fill="#1d3a4a" font-family="Georgia, serif" font-size="72">Every</text>
+    <text x="48" y="330" fill="#1d3a4a" font-family="Georgia, serif" font-size="72">Monday</text>
+    <rect x="180" y="430" width="440" height="390" rx="8" fill="#f7f4ef"/>
+    <rect x="210" y="460" width="380" height="300" rx="4" fill="#c5d5df"/>
+    <rect x="150" y="800" width="500" height="28" rx="4" fill="#8aa0ae"/>
+    
+    <rect x="330" y="663" width="150" height="169" rx="16" fill="#6b3a22"/>
+    <rect x="351" y="640" width="108" height="31" rx="8" fill="#3d2416"/>
+    <rect x="354" y="728" width="102" height="50" rx="6" fill="#f4efe4"/>
+  
+    <text x="48" y="920" fill="#1d3a4a" font-family="Georgia, serif" font-size="28">On the mat. You boil the water.</text>
+  
+</svg>

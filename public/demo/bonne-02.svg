@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+
+    <rect width="800" height="1000" fill="#2c2118"/>
+    <text x="48" y="78" fill="#f3ecdf" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="280" fill="#e2c48a" font-family="Georgia, serif" font-size="28" letter-spacing="3">STAY THREE MONTHS</text>
+    <text x="48" y="420" fill="#f6f1e8" font-family="Georgia, serif" font-size="92">3rd bag</text>
+    <text x="48" y="530" fill="#f6f1e8" font-family="Georgia, serif" font-size="92">free</text>
+    
+    <rect x="500" y="711" width="200" height="225" rx="16" fill="#8a5a38"/>
+    <rect x="528" y="680" width="144" height="41" rx="8" fill="#e2c48a"/>
+    <rect x="532" y="798" width="136" height="67" rx="6" fill="#f4efe4"/>
+  
+  
+</svg>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+
+    <rect width="800" height="1000" fill="#efe6d6"/>
+    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="160" fill="#8a5a32" font-family="Georgia, serif" font-size="26" letter-spacing="3">SWIPE</text>
+    <rect x="48" y="220" width="220" height="620" rx="18" fill="#e7d3b0"/>
+    <rect x="290" y="220" width="220" height="620" rx="18" fill="#d7b98a"/>
+    <rect x="532" y="220" width="220" height="620" rx="18" fill="#c4a06a"/>
+    <text x="78" y="300" fill="#3c2415" font-family="Georgia, serif" font-size="28">Home</text>
+    <text x="320" y="300" fill="#3c2415" font-family="Georgia, serif" font-size="28">Office</text>
+    <text x="562" y="300" fill="#3c2415" font-family="Georgia, serif" font-size="28">Gift</text>
+    <text x="78" y="390" fill="#3c2415" font-family="Georgia, serif" font-size="48">79</text>
+    <text x="320" y="390" fill="#3c2415" font-family="Georgia, serif" font-size="48">69</text>
+    <text x="562" y="390" fill="#3c2415" font-family="Georgia, serif" font-size="48">89</text>
+    
+    <rect x="95" y="538" width="120" height="136" rx="16" fill="#6b3a22"/>
+    <rect x="112" y="520" width="86" height="25" rx="8" fill="#3d2416"/>
+    <rect x="114" y="591" width="82" height="40" rx="6" fill="#f4efe4"/>
+  
+    
+    <rect x="338" y="538" width="120" height="136" rx="16" fill="#6b3a22"/>
+    <rect x="355" y="520" width="86" height="25" rx="8" fill="#3d2416"/>
+    <rect x="357" y="591" width="82" height="40" rx="6" fill="#f4efe4"/>
+  
+    
+    <rect x="580" y="538" width="120" height="136" rx="16" fill="#6b3a22"/>
+    <rect x="597" y="520" width="86" height="25" rx="8" fill="#3d2416"/>
+    <rect x="599" y="591" width="82" height="40" rx="6" fill="#f4efe4"/>
+  
+    <text x="48" y="920" fill="#6d5344" font-family="Georgia, serif" font-size="26">Three prices. One subscription.</text>
+  
+</svg>

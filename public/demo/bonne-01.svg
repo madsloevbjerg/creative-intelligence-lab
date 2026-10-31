@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+
+    <rect width="800" height="1000" fill="#f3ecdf"/>
+    <text x="48" y="78" fill="#3c2415" font-family="Georgia, 'Times New Roman', serif" font-size="28">Bønne &amp; Co</text>
+    <text x="48" y="280" fill="#8a5a32" font-family="Georgia, serif" font-size="28" letter-spacing="3">WEEKLY BAG</text>
+    <text x="48" y="430" fill="#3c2415" font-family="Georgia, serif" font-size="132" font-weight="700">49 kr</text>
+    <text x="48" y="500" fill="#3c2415" font-family="Georgia, serif" font-size="42">a week</text>
+    
+    <rect x="470" y="654" width="220" height="248" rx="16" fill="#6b3a22"/>
+    <rect x="501" y="620" width="158" height="45" rx="8" fill="#3d2416"/>
+    <rect x="505" y="750" width="150" height="73" rx="6" fill="#f4efe4"/>
+  
+    <text x="48" y="900" fill="#6d5344" font-family="Georgia, serif" font-size="28">Specialty coffee, delivered.</text>
+  
+</svg>
