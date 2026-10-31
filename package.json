@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:mock": "tsx scripts/validate-mock.ts"
+    "check:mock": "tsx scripts/validate-mock.ts",
+    "check:budget": "tsx --tsconfig scripts/tsconfig.budget.json scripts/validate-budget.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

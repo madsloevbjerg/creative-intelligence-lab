@@ -12,7 +12,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { CoverageMap, WhyPanel, type MapAd } from "@/components/coverage-map";
 import { readImageFile } from "@/components/read-image";
 import { demoPortfolio } from "@/lib/demo";
-import { analysisResponseSchema, type AnalysisResponse, type BrandSummary } from "@/lib/schemas";
+import { formatBudgetUsd, formatUsd } from "@/lib/money";
+import {
+  analysisResponseSchema,
+  costSummarySchema,
+  type AnalysisResponse,
+  type BrandSummary,
+} from "@/lib/schemas";
 import { MAX_ADS, MIN_ADS } from "@/lib/taxonomy";
 
 type SourceMode = "text" | "url";
@@ -75,6 +81,7 @@ export function LabApp() {
   const [loadingDemo, setLoadingDemo] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorCost, setErrorCost] = useState<AnalysisResponse["cost"] | null>(null);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [resultFingerprint, setResultFingerprint] = useState<string | null>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
@@ -162,6 +169,7 @@ export function LabApp() {
     if (blocker) return;
     setAnalyzing(true);
     setError(null);
+    setErrorCost(null);
     setHoverId(null);
     setPinnedId(null);
     const sentFingerprint = currentFingerprint;
@@ -189,6 +197,10 @@ export function LabApp() {
           body && typeof body === "object" && "error" in body && typeof body.error === "string"
             ? body.error
             : `The analysis failed (${response.status}).`;
+        const costParsed = costSummarySchema.safeParse(
+          body && typeof body === "object" && "cost" in body ? body.cost : null,
+        );
+        setErrorCost(costParsed.success ? costParsed.data : null);
         setError(message);
         return;
       }
@@ -448,15 +460,19 @@ export function LabApp() {
       </div>
 
       {error ? (
-        <Alert variant="destructive">
-          <AlertTitle>Analysis stopped</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+        <div className="space-y-3">
+          {errorCost ? <CostLine cost={errorCost} /> : null}
+          <Alert variant="destructive">
+            <AlertTitle>Analysis stopped</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
       ) : null}
 
       {result ? (
         <section id="coverage" className="scroll-mt-4 space-y-4">
           <ModeBanner result={result} />
+          <CostLine cost={result.cost} />
           {stale ? (
             <Alert>
               <AlertTitle>The inputs changed</AlertTitle>
@@ -495,6 +511,20 @@ export function LabApp() {
         </section>
       )}
     </main>
+  );
+}
+
+function CostLine({ cost }: { cost: AnalysisResponse["cost"] }) {
+  return (
+    <div className="rounded-xl border bg-card px-4 py-3">
+      <p className="text-sm">
+        Estimated API cost this run: {formatUsd(cost.runUsd)} · total: {formatUsd(cost.totalUsd)} of{" "}
+        {formatBudgetUsd(cost.budgetUsd)} budget
+      </p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Estimate based on Meta&apos;s list prices. Mock calls are $0.
+      </p>
+    </div>
   );
 }
 

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { ModelOutputError, UserFacingError } from "@/lib/errors";
-import { adapterMode, classifyAd, segmentImage, summarizeBrand } from "@/lib/meta";
+import { adapterMode, classifyAd, currentCost, runWithCost, segmentImage, summarizeBrand } from "@/lib/meta";
 import {
   analysisResponseSchema,
   analyzeRequestSchema,
@@ -10,6 +10,25 @@ import {
 import { websiteTextFromUrl } from "@/lib/website";
 
 export async function analyzePortfolio(body: unknown): Promise<AnalysisResponse> {
+  return runWithCost(async () => {
+    try {
+      return await analyzePortfolioInner(body);
+    } catch (error) {
+      if (error instanceof UserFacingError) {
+        let cost: AnalysisResponse["cost"] | undefined;
+        try {
+          cost = currentCost();
+        } catch {
+          cost = undefined;
+        }
+        throw new UserFacingError(error.message, error.status, cost);
+      }
+      throw error;
+    }
+  });
+}
+
+async function analyzePortfolioInner(body: unknown): Promise<AnalysisResponse> {
   const request = analyzeRequestSchema.safeParse(body);
   if (!request.success) {
     const message = request.error.issues[0]?.message ?? "The form is incomplete.";
@@ -43,6 +62,12 @@ export async function analyzePortfolio(body: unknown): Promise<AnalysisResponse>
         classification,
       });
     } catch (error) {
+      if (error instanceof UserFacingError) {
+        throw new UserFacingError(
+          `Could not read “${ad.headline}”. ${error.message}`,
+          error.status,
+        );
+      }
       const detail = error instanceof Error ? error.message : "Unknown error.";
       throw new UserFacingError(`Could not read “${ad.headline}”. ${detail}`, 422);
     }
@@ -68,6 +93,7 @@ export async function analyzePortfolio(body: unknown): Promise<AnalysisResponse>
     modeReason: mode.reason,
     brand,
     ads,
+    cost: currentCost(),
   };
 
   const checked = analysisResponseSchema.safeParse(result);

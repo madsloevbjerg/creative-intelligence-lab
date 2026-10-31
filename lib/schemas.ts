@@ -122,11 +122,18 @@ export const analyzedAdSchema = z.object({
   classification: classificationSchema,
 });
 
+export const costSummarySchema = z.object({
+  runUsd: z.number().min(0),
+  totalUsd: z.number().min(0),
+  budgetUsd: z.number().min(0),
+});
+
 export const analysisResponseSchema = z.object({
   mode: z.enum(["mock", "live"]),
   modeReason: nonEmpty,
   brand: brandSummarySchema,
   ads: z.array(analyzedAdSchema).min(1),
+  cost: costSummarySchema,
 });
 
 export type Segmentation = z.infer<typeof segmentationSchema>;

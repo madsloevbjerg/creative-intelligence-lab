@@ -1,8 +1,13 @@
 import "server-only";
 
+import { AsyncLocalStorage } from "node:async_hooks";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+
 import OpenAI from "openai";
 
-import { ModelOutputError } from "@/lib/errors";
+import { ModelOutputError, UserFacingError, type CostSummary } from "@/lib/errors";
+import { formatBudgetUsd, formatUsd } from "@/lib/money";
 import {
   mockBrandSummary,
   mockClassification,
@@ -30,6 +35,191 @@ import {
 import { SEGMENT_PROMPTS, type Format, type Motivation } from "@/lib/taxonomy";
 
 const META_BASE_URL = "https://api.meta.ai/v1";
+
+/**
+ * Official list prices. One place only.
+ * Muse Spark: https://dev.meta.ai list rates per 1M tokens.
+ * SAM 3.1: $2.50 per 1,000 images. Muse Image: $0.01 per image.
+ */
+export const LIST_PRICES = {
+  museSpark: {
+    model: "muse-spark-1.3",
+    inputUsdPerMillion: 1.25,
+    outputUsdPerMillion: 4.25,
+  },
+  sam: {
+    model: "sam-3.1",
+    usdPerThousandImages: 2.5,
+  },
+  museImage: {
+    model: "muse-image-1.0",
+    usdPerImage: 0.01,
+  },
+} as const;
+
+/** Output tokens reserved when deciding whether a Spark call fits the budget. */
+const SPARK_OUTPUT_ALLOWANCE = 800;
+
+const DEFAULT_BUDGET_USD = 100;
+
+type RunLedger = { usd: number };
+
+const runLedger = new AsyncLocalStorage<RunLedger>();
+let ledgerQueue: Promise<unknown> = Promise.resolve();
+
+export function sparkCostUsd(inputTokens: number, outputTokens: number): number {
+  return (
+    (inputTokens * LIST_PRICES.museSpark.inputUsdPerMillion) / 1_000_000 +
+    (outputTokens * LIST_PRICES.museSpark.outputUsdPerMillion) / 1_000_000
+  );
+}
+
+export function samCallUsd(): number {
+  return LIST_PRICES.sam.usdPerThousandImages / 1000;
+}
+
+export function imageCostUsd(images: number): number {
+  return images * LIST_PRICES.museImage.usdPerImage;
+}
+
+export function budgetLimitUsd(): number {
+  const raw = process.env.BUDGET_LIMIT_USD;
+  if (raw === undefined || raw.trim() === "") return DEFAULT_BUDGET_USD;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) {
+    throw new UserFacingError(
+      "BUDGET_LIMIT_USD must be empty or a number that is zero or greater. No model call was made.",
+      500,
+    );
+  }
+  return value;
+}
+
+function roundUsd(value: number): number {
+  return Math.round(value * 1e8) / 1e8;
+}
+
+const SPEND_FILE = path.join(process.cwd(), ".data", "spend.json");
+
+export function readSpendTotalUsd(): number {
+  let raw: string;
+  try {
+    raw = readFileSync(SPEND_FILE, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return 0;
+    throw new UserFacingError("The spend file could not be read. No model call was made.", 500);
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch {
+    throw new UserFacingError(
+      "The spend file .data/spend.json is not valid JSON. Fix or delete it before a live model call.",
+      500,
+    );
+  }
+
+  const total = (parsed as { totalUsd?: unknown }).totalUsd;
+  if (typeof total !== "number" || !Number.isFinite(total) || total < 0) {
+    throw new UserFacingError(
+      "The spend file .data/spend.json has no usable totalUsd. Fix or delete it before a live model call.",
+      500,
+    );
+  }
+  return total;
+}
+
+function writeSpendTotal(totalUsd: number): void {
+  mkdirSync(path.dirname(SPEND_FILE), { recursive: true });
+  const safe = Math.max(0, roundUsd(totalUsd));
+  writeFileSync(SPEND_FILE, `${JSON.stringify({ totalUsd: safe }, null, 2)}\n`);
+}
+
+function withLedger<T>(task: () => T): Promise<T> {
+  const run = ledgerQueue.then(task, task);
+  ledgerQueue = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+function addRunUsd(usd: number): void {
+  const run = runLedger.getStore();
+  if (run) run.usd = roundUsd(run.usd + usd);
+}
+
+function assertFits(totalUsd: number, additionalUsd: number, label: string): void {
+  const limit = budgetLimitUsd();
+  const next = roundUsd(totalUsd + additionalUsd);
+  if (next > roundUsd(limit)) {
+    throw new UserFacingError(
+      `Stopped before the ${label} call. Estimated spend would reach ${formatUsd(next)}, which is over the ${formatBudgetUsd(limit)} budget. This call was not sent.`,
+      402,
+    );
+  }
+}
+
+/** Charge a known list price, or refuse before the call if it would break the cap. */
+export async function chargeKnownUsd(usd: number, label: string): Promise<void> {
+  await withLedger(() => {
+    const total = readSpendTotalUsd();
+    assertFits(total, usd, label);
+    writeSpendTotal(total + usd);
+    addRunUsd(usd);
+  });
+}
+
+/** Hold an estimate for a token-priced call. Settled to real usage after the response. */
+export async function reserveEstimateUsd(estimateUsd: number, label: string): Promise<void> {
+  await chargeKnownUsd(estimateUsd, label);
+}
+
+export async function settleEstimateUsd(estimateUsd: number, actualUsd: number): Promise<void> {
+  const delta = roundUsd(actualUsd - estimateUsd);
+  if (delta === 0) return;
+  await withLedger(() => {
+    writeSpendTotal(readSpendTotalUsd() + delta);
+    addRunUsd(delta);
+  });
+}
+
+export function usageCostUsd(
+  usage:
+    | {
+        prompt_tokens?: number | null;
+        completion_tokens?: number | null;
+        input_tokens?: number | null;
+        output_tokens?: number | null;
+      }
+    | null
+    | undefined,
+): number | null {
+  if (!usage) return null;
+  const input = usage.prompt_tokens ?? usage.input_tokens;
+  const output = usage.completion_tokens ?? usage.output_tokens;
+  if (typeof input !== "number" || typeof output !== "number") return null;
+  if (!Number.isFinite(input) || !Number.isFinite(output) || input < 0 || output < 0) return null;
+  return sparkCostUsd(input, output);
+}
+
+function sparkEstimateUsd(text: string): number {
+  const inputTokens = Math.max(1, Math.ceil(text.length / 4));
+  return sparkCostUsd(inputTokens, SPARK_OUTPUT_ALLOWANCE);
+}
+
+export function currentCost(): CostSummary {
+  return {
+    runUsd: roundUsd(runLedger.getStore()?.usd ?? 0),
+    totalUsd: roundUsd(readSpendTotalUsd()),
+    budgetUsd: budgetLimitUsd(),
+  };
+}
+
+export function runWithCost<T>(task: () => Promise<T>): Promise<T> {
+  return runLedger.run({ usd: 0 }, task);
+}
 
 export type AdapterMode = {
   mode: "mock" | "live";
@@ -88,6 +278,9 @@ async function museJson(input: {
   userText: string;
   imageUrl?: string;
 }): Promise<unknown> {
+  const estimate = sparkEstimateUsd([input.system, input.userText, input.imageUrl ?? ""].join("\n"));
+  await reserveEstimateUsd(estimate, "Muse Spark");
+
   const client = liveClient();
   const userContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [
     { type: "text", text: input.userText },
@@ -115,6 +308,9 @@ async function museJson(input: {
     },
   });
 
+  const actual = usageCostUsd(response.usage);
+  if (actual !== null) await settleEstimateUsd(estimate, actual);
+
   const content = response.choices[0]?.message?.content;
   if (!content) {
     throw new ModelOutputError(`${input.schemaName} came back empty.`);
@@ -129,6 +325,7 @@ type SegmentHit = Segmentation["product"];
  * Empty output is a real "no match", not a missing field.
  */
 async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit> {
+  await chargeKnownUsd(samCallUsd(), "SAM 3.1");
   const client = liveClient();
   const events = await client.responses.create({
     model: "sam-3.1",
@@ -285,6 +482,7 @@ export async function generateMockup(input: {
   return withOneRetry(mockupSchema, "Mockup", async () => {
     if (isMock()) return mockMockup(input);
 
+    await chargeKnownUsd(imageCostUsd(1), "Muse Image");
     const client = liveClient();
     const body = {
       model: "muse-image-1.0",

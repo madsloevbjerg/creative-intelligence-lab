@@ -49,6 +49,25 @@ Copy `.env.example` to `.env.local` if you want to set variables. `.env.local` i
 - Leave `MODEL_API_KEY` empty to use mock data.
 - `USE_MOCK=true` forces mock data even if a key is present.
 - A live call happens only when a key is set and `USE_MOCK` is not true. Milestone 1 does not require that, and the demo does not make a live call.
+- `BUDGET_LIMIT_USD` caps estimated live spend. Leave it blank for $100. The running total is stored in `.data/spend.json`, which is gitignored.
+
+## How to test the cost line and the budget cap
+
+Mock calls cost $0. After you analyze the demo, the page shows a line like:
+
+`Estimated API cost this run: $0.00 · total: $0.00 of $100 budget`
+
+Under it: “Estimate based on Meta's list prices.”
+
+The prices in `lib/meta.ts` are Muse Spark $1.25 per 1M input tokens and $4.25 per 1M output tokens, SAM 3.1 $2.50 per 1,000 images ($0.0025 per call), and Muse Image $0.01 per image. Spark’s real charge uses the `usage` field from the response. Before that response arrives, the cap checks a rough token estimate so a call that would not fit is refused and not sent.
+
+To check the math and the cap without a model key:
+
+```bash
+npm run check:budget
+```
+
+To see the refusal in the app, put a tiny cap in `.env.local`, set a real `MODEL_API_KEY`, and set `USE_MOCK=false`. Restart `npm run dev`. The next live call that would pass the cap stops, and the page shows the budget error. Delete `.data/spend.json` to reset the total. With no key, the demo stays at $0 and never hits the cap.
 
 ## What is in the repo
 
@@ -58,7 +77,7 @@ Copy `.env.example` to `.env.local` if you want to set variables. `.env.local` i
 - `app/api/analyze/route.ts` — the server route that runs an analysis
 - `lib/taxonomy.ts` — the only list of motivations, formats, and segment phrases
 - `lib/schemas.ts` — the zod checks for every model response
-- `lib/meta.ts` — the only place that can call Meta’s models
+- `lib/meta.ts` — the only place that can call Meta’s models, plus the price list and budget cap
 - `lib/mock.ts` — fake but checked results for demos without a key
 - `lib/demo.ts` — Bønne & Co copy
 - `public/demo/` — original SVG ad placeholders (drawn for this project)

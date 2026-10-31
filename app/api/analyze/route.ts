@@ -17,7 +17,10 @@ export async function POST(request: Request) {
     return Response.json(result);
   } catch (error) {
     if (error instanceof UserFacingError) {
-      return Response.json({ error: error.message }, { status: error.status });
+      return Response.json(
+        { error: error.message, cost: error.cost },
+        { status: error.status },
+      );
     }
     const message = error instanceof Error ? error.message : "Unknown error.";
     console.error("analyze failed:", message);

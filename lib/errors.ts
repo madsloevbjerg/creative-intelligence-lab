@@ -8,14 +8,22 @@ export class ModelOutputError extends Error {
   }
 }
 
+export type CostSummary = {
+  runUsd: number;
+  totalUsd: number;
+  budgetUsd: number;
+};
+
 /** A message that is safe to show in the UI, with an HTTP status. */
 export class UserFacingError extends Error {
   readonly status: number;
+  cost?: CostSummary;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, cost?: CostSummary) {
     super(message);
     this.name = "UserFacingError";
     this.status = status;
+    this.cost = cost;
   }
 }
 
