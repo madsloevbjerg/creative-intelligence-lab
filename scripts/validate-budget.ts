@@ -90,7 +90,7 @@ async function main(): Promise<void> {
   near(readSpendTotalUsd(), actual, "spark settle uses real usage");
 
   const before = readSpendTotalUsd();
-  const snapshot = await runWithCost(async () => {
+  const snapshot = await runWithCost("mock", async () => {
     await segmentImage({
       imageUrl: "data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C/svg%3E",
       headline: "Coffee for 49 kr a week",
