@@ -129,6 +129,8 @@ export const costSummarySchema = z.object({
   cachedUsd: z.number().min(0),
   totalUsd: z.number().min(0),
   budgetUsd: z.number().min(0),
+  failedAttempts: z.number().int().min(0),
+  failedUsd: z.number().min(0),
 });
 
 export const analysisResponseSchema = z.object({

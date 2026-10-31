@@ -10,7 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CoverageMap, WhyPanel, type MapAd } from "@/components/coverage-map";
+import { CoverageStory } from "@/components/coverage-story";
+import { FeedFrame } from "@/components/feed-frame";
 import { readImageFile } from "@/components/read-image";
+import { SamCropView } from "@/components/sam-crop-view";
+import { demoFileDataUrl } from "@/lib/demo-data-url";
 import { demoPortfolio } from "@/lib/demo";
 import { formatBudgetUsd, formatUsd } from "@/lib/money";
 import {
@@ -89,6 +93,22 @@ export function LabApp() {
   const [resultFingerprint, setResultFingerprint] = useState<string | null>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [pinnedId, setPinnedId] = useState<string | null>(null);
+  const [cropView, setCropView] = useState(false);
+  const [manifest, setManifest] = useState<{
+    picks: Record<
+      string,
+      {
+        candidate: string;
+        regenerated: boolean;
+        fit: string;
+        reason: string;
+        crop: { left: number; top: number; width: number; height: number };
+        imageWidth: number;
+        imageHeight: number;
+        bagCount: number;
+      }
+    >;
+  } | null>(null);
 
   const currentFingerprint = fingerprint({
     sourceMode,
@@ -149,13 +169,13 @@ export function LabApp() {
           if (!response.ok) {
             throw new Error(`Could not load ${ad.file}.`);
           }
-          const svg = await response.text();
+          const bytes = new Uint8Array(await response.arrayBuffer());
           return {
             localId: ad.id,
             headline: ad.headline,
             primaryText: ad.primaryText,
             fileName: ad.file.split("/").pop() ?? ad.file,
-            imageDataUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+            imageDataUrl: demoFileDataUrl(ad.file, bytes),
           } satisfies AdDraft;
         }),
       );
@@ -163,6 +183,10 @@ export function LabApp() {
       setWebsiteText(demoPortfolio.websiteText);
       setWebsiteUrl("");
       setBrief(demoPortfolio.brief);
+      const manifestResponse = await fetch("/demo/manifest.json");
+      if (manifestResponse.ok) {
+        setManifest((await manifestResponse.json()) as NonNullable<typeof manifest>);
+      }
       setAds(loaded);
       setResult(null);
       setResultFingerprint(null);
@@ -514,8 +538,10 @@ export function LabApp() {
             </Alert>
           ) : null}
           <BrandSummaryCard brand={result.brand} />
-          <div className="sticky top-2 z-30">
+          <CoverageStory ads={mapAds} />
+          <div className="sticky top-2 z-30 space-y-3">
             <WhyPanel ad={activeAd} />
+            {activeAd ? <AdInspect ad={activeAd} manifest={manifest} cropView={cropView} onToggle={() => setCropView((value) => !value)} /> : null}
           </div>
           {mapAds.length === result.ads.length ? (
             <CoverageMap
@@ -546,12 +572,94 @@ export function LabApp() {
   );
 }
 
+function AdInspect({
+  ad,
+  manifest,
+  cropView,
+  onToggle,
+}: {
+  ad: MapAd;
+  manifest: {
+    picks: Record<
+      string,
+      {
+        crop: { left: number; top: number; width: number; height: number };
+        imageWidth: number;
+        imageHeight: number;
+        reason: string;
+      }
+    >;
+  } | null;
+  cropView: boolean;
+  onToggle: () => void;
+}) {
+  const demo = demoPortfolio.ads.find((item) => item.id === ad.id);
+  const pick = demo ? manifest?.picks[demo.id] : undefined;
+  const elements = [
+    ["Product", ad.segmentation.product],
+    ["Person", ad.segmentation.person],
+    ["Text overlay", ad.segmentation.textOverlay],
+    ["Setting", ad.segmentation.setting],
+    ["Logo", ad.segmentation.logo],
+  ] as const;
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-medium">{ad.headline}</p>
+        <div className="flex gap-2">
+          <Button type="button" variant={cropView ? "outline" : "default"} onClick={() => cropView && onToggle()}>
+            Final ad
+          </Button>
+          <Button
+            type="button"
+            variant={cropView ? "default" : "outline"}
+            onClick={() => !cropView && onToggle()}
+            disabled={!pick || !demo}
+          >
+            SAM 3.1 mask
+          </Button>
+        </div>
+      </div>
+      <div className="mt-3">
+        {cropView && pick && demo ? (
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              SAM 3.1 at work. Green is the coffee-bag mask. The pale frame is the crop used for the ad.
+            </p>
+            <SamCropView
+              rawUrl={demo.rawFile}
+              maskUrl={demo.maskFile}
+              crop={pick.crop}
+              imageWidth={pick.imageWidth}
+              imageHeight={pick.imageHeight}
+            />
+            <p className="text-xs text-muted-foreground">{pick.reason}</p>
+          </div>
+        ) : (
+          <FeedFrame imageUrl={ad.imageDataUrl} headline={ad.headline} primaryText={ad.primaryText} />
+        )}
+      </div>
+      <ul className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
+        {elements.map(([label, hit]) => (
+          <li key={label}>
+            <span className="font-medium">{label}: </span>
+            {hit.found ? "found" : "not found"}. {hit.note}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function CostLine({ cost }: { cost: AnalysisResponse["cost"] }) {
   return (
     <div className="rounded-xl border bg-card px-4 py-3">
       <p className="text-sm">
         Estimated API cost this run: {formatUsd(cost.runUsd)} · from cache: {formatUsd(cost.cachedUsd)} ·
         total: {formatUsd(cost.totalUsd)} of {formatBudgetUsd(cost.budgetUsd)} budget
+      </p>
+      <p className="mt-1 text-sm">
+        Failed attempts: {cost.failedAttempts}, {formatUsd(cost.failedUsd)}
       </p>
       <p className="mt-1 text-xs text-muted-foreground">
         Estimate based on Meta&apos;s list prices. Cache hits are $0. Mock calls are $0.

@@ -13,6 +13,8 @@ export type CostSummary = {
   cachedUsd: number;
   totalUsd: number;
   budgetUsd: number;
+  failedAttempts: number;
+  failedUsd: number;
 };
 
 /** A message that is safe to show in the UI, with an HTTP status. */

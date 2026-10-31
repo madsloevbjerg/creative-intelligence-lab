@@ -7,6 +7,8 @@
 export type DemoAd = {
   id: string;
   file: string;
+  rawFile: string;
+  maskFile: string;
   headline: string;
   primaryText: string;
 };
@@ -22,56 +24,72 @@ Nothing here is a limited drop or a slogan about status. The company is small, t
   ads: [
     {
       id: "dcl-01",
-      file: "/demo/dcl-01.svg",
+      file: "/demo/dcl-01.png",
+      rawFile: "/demo/dcl-01-raw.png",
+      maskFile: "/demo/dcl-01-mask.png",
       headline: "Coffee for 49 kr a week",
       primaryText:
         "Specialty coffee, delivered. One bag, one low weekly price. Cancel any time.",
     },
     {
       id: "dcl-02",
-      file: "/demo/dcl-02.svg",
+      file: "/demo/dcl-02.png",
+      rawFile: "/demo/dcl-02-raw.png",
+      maskFile: "/demo/dcl-02-mask.png",
       headline: "Your third bag is free",
       primaryText:
         "Stay three months and the third bag is on us. Same beans, lower cost per cup.",
     },
     {
       id: "dcl-03",
-      file: "/demo/dcl-03.svg",
+      file: "/demo/dcl-03.png",
+      rawFile: "/demo/dcl-03-raw.png",
+      maskFile: "/demo/dcl-03-mask.png",
       headline: "Three prices, one subscription",
       primaryText:
         "Compare Home, Office, and Gift. Swipe to see what each plan costs per cup.",
     },
     {
       id: "dcl-04",
-      file: "/demo/dcl-04.svg",
+      file: "/demo/dcl-04.png",
+      rawFile: "/demo/dcl-04-raw.png",
+      maskFile: "/demo/dcl-04-mask.png",
       headline: "Beans on the mat every Monday",
       primaryText:
         "Pick a day. We roast, pack, and deliver. You just boil water.",
     },
     {
       id: "dcl-05",
-      file: "/demo/dcl-05.svg",
+      file: "/demo/dcl-05.png",
+      rawFile: "/demo/dcl-05-raw.png",
+      maskFile: "/demo/dcl-05-mask.png",
       headline: "From bag to cup in four steps",
       primaryText:
         "Open, grind, pour, drink. The subscription removes the shop run.",
     },
     {
       id: "dcl-06",
-      file: "/demo/dcl-06.svg",
+      file: "/demo/dcl-06.png",
+      rawFile: "/demo/dcl-06-raw.png",
+      maskFile: "/demo/dcl-06-mask.png",
       headline: "Monday coffee, already handled",
       primaryText:
         "A 10-second look at a bag landing at the door before the kettle boils.",
     },
     {
       id: "dcl-07",
-      file: "/demo/dcl-07.svg",
+      file: "/demo/dcl-07.png",
+      rawFile: "/demo/dcl-07-raw.png",
+      maskFile: "/demo/dcl-07-mask.png",
       headline: "Roasted this week in Aarhus",
       primaryText:
         "Small lots, named farms, roasted after you order. A cup by the window, the week it was meant for.",
     },
     {
       id: "dcl-08",
-      file: "/demo/dcl-08.svg",
+      file: "/demo/dcl-08.png",
+      rawFile: "/demo/dcl-08-raw.png",
+      maskFile: "/demo/dcl-08-mask.png",
       headline: "One origin. Nothing blended away.",
       primaryText:
         "Single-origin beans, roast date on the bag, tasting notes you can actually taste.",

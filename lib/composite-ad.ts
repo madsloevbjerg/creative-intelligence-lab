@@ -7,12 +7,21 @@ import { adOverlaySvg } from "@/lib/wordmark";
 export const COMPOSITE_WIDTH = 800;
 export const COMPOSITE_HEIGHT = 1000;
 
-export async function compositeAd(photo: Buffer, headline: string): Promise<Buffer> {
-  const base = await sharp(photo)
-    .rotate()
-    .resize(COMPOSITE_WIDTH, COMPOSITE_HEIGHT, { fit: "cover", position: "attention" })
-    .png()
-    .toBuffer();
+export async function compositeAd(
+  photo: Buffer,
+  headline: string,
+  crop?: { left: number; top: number; width: number; height: number },
+): Promise<Buffer> {
+  let image = sharp(photo).rotate();
+  if (crop) {
+    image = image.extract({
+      left: crop.left,
+      top: crop.top,
+      width: crop.width,
+      height: crop.height,
+    });
+  }
+  const base = await image.resize(COMPOSITE_WIDTH, COMPOSITE_HEIGHT, { fit: "fill" }).png().toBuffer();
   const overlay = Buffer.from(adOverlaySvg({ width: COMPOSITE_WIDTH, height: COMPOSITE_HEIGHT, headline }));
   return sharp(base)
     .composite([{ input: overlay, top: 0, left: 0 }])

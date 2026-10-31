@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
+import { demoFileDataUrl } from "../lib/demo-data-url";
 import { demoPortfolio } from "../lib/demo";
 import { formatUsd } from "../lib/money";
 import {
@@ -16,8 +17,8 @@ import {
 function dataUrlFor(publicPath: string): string {
   const name = publicPath.split("/").pop();
   if (!name) throw new Error("Missing demo file name.");
-  const svg = readFileSync(path.join(process.cwd(), "public", "demo", name), "utf8");
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  const bytes = readFileSync(path.join(process.cwd(), "public", "demo", name));
+  return demoFileDataUrl(name, bytes);
 }
 
 const notRequested = { found: false, note: "Not requested" };

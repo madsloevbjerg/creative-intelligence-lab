@@ -6,10 +6,10 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import OpenAI from "openai";
-import type { ZodType } from "zod";
+import { z, type ZodType } from "zod";
 
 import { readCache, requestKey, writeCache, type CacheScope } from "@/lib/cache";
-import { ModelOutputError, UserFacingError, type CostSummary } from "@/lib/errors";
+import { formatZodIssues, ModelOutputError, UserFacingError, type CostSummary } from "@/lib/errors";
 import { imageSha256 } from "@/lib/image-bytes";
 import { imageUrlForModel } from "@/lib/model-image";
 import { formatBudgetUsd, formatUsd } from "@/lib/money";
@@ -77,6 +77,8 @@ const DEFAULT_BUDGET_USD = 120;
 type RunLedger = {
   usd: number;
   cachedUsd: number;
+  failedAttempts: number;
+  failedUsd: number;
   mode: "mock" | "live";
   briefs: number;
   mockups: number;
@@ -236,17 +238,62 @@ function addCachedUsd(usd: number): void {
 }
 
 export function currentCost(): CostSummary {
+  const run = runLedger.getStore();
   return {
-    runUsd: roundUsd(runLedger.getStore()?.usd ?? 0),
-    cachedUsd: roundUsd(runLedger.getStore()?.cachedUsd ?? 0),
+    runUsd: roundUsd(run?.usd ?? 0),
+    cachedUsd: roundUsd(run?.cachedUsd ?? 0),
     totalUsd: roundUsd(readSpendTotalUsd()),
     budgetUsd: budgetLimitUsd(),
+    failedAttempts: run?.failedAttempts ?? 0,
+    failedUsd: roundUsd(run?.failedUsd ?? 0),
   };
+}
+
+function noteFailedAttempt(usd: number): void {
+  const run = runLedger.getStore();
+  if (!run) return;
+  run.failedAttempts += 1;
+  run.failedUsd = roundUsd(run.failedUsd + Math.max(0, usd));
+}
+
+/** One call, and at most one retry. A failed attempt keeps its charge on the cost line. */
+async function retryCharged<T>(
+  schema: ZodType<T>,
+  label: string,
+  produce: () => Promise<unknown>,
+): Promise<T> {
+  let lastMessage = "The response was empty.";
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const before = readSpendTotalUsd();
+    try {
+      const raw = await produce();
+      const parsed = schema.safeParse(raw);
+      if (parsed.success) return parsed.data;
+      lastMessage = formatZodIssues(parsed.error);
+    } catch (error) {
+      if (!(error instanceof ModelOutputError)) throw error;
+      lastMessage = error.message;
+    }
+    noteFailedAttempt(roundUsd(readSpendTotalUsd() - before));
+    if (attempt === 2) break;
+  }
+  throw new ModelOutputError(
+    `${label} was still invalid after one retry. Nothing was filled in. ${lastMessage}`,
+  );
 }
 
 export function runWithCost<T>(mode: "mock" | "live", task: () => Promise<T>): Promise<T> {
   return runLedger.run(
-    { usd: 0, cachedUsd: 0, mode, briefs: 0, mockups: 0, liveClaimed: false },
+    {
+      usd: 0,
+      cachedUsd: 0,
+      failedAttempts: 0,
+      failedUsd: 0,
+      mode,
+      briefs: 0,
+      mockups: 0,
+      liveClaimed: false,
+    },
     task,
   );
 }
@@ -535,16 +582,7 @@ export function brandKeyMaterial(userText: string) {
   };
 }
 
-async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit> {
-  const imageSha = imageSha256(imageUrl);
-  const cacheScope: CacheScope = isDemoImageSha(imageSha) ? "demo" : "private";
-  const key = requestKey(samKeyMaterial(imageSha, phrase));
-  const hit = readCache(cacheScope, key, segmentHitSchema);
-  if (hit) {
-    addCachedUsd(hit.priceUsd);
-    return hit.result;
-  }
-
+async function callSam(imageUrl: string, phrase: string) {
   const modelImageUrl = await imageUrlForModel(imageUrl);
   await ensureLiveClaimed();
   await chargeKnownUsd(samCallUsd(), "SAM 3.1");
@@ -566,26 +604,39 @@ async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit>
     ],
   });
 
-  const { parseImageStream, recordsOfKind } = await import("@meta-sam/parser");
-  let result;
+  const { parseImageStream } = await import("@meta-sam/parser");
   try {
     const parsed = parseImageStream(events);
-    result = await parsed.finalResult;
+    return await parsed.finalResult;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown parser error.";
     throw new ModelOutputError(`Could not read the segmentation for “${phrase}”. ${message}`);
   }
+}
+
+async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit> {
+  const imageSha = imageSha256(imageUrl);
+  const cacheScope: CacheScope = isDemoImageSha(imageSha) ? "demo" : "private";
+  const key = requestKey(samKeyMaterial(imageSha, phrase));
+  const hit = readCache(cacheScope, key, segmentHitSchema);
+  if (hit) {
+    addCachedUsd(hit.priceUsd);
+    return hit.result;
+  }
+
+  const result = await callSam(imageUrl, phrase);
   if (result.outcome.status !== "completed") {
     const detail = result.outcome.detail ? ` ${result.outcome.detail}` : "";
     throw new ModelOutputError(
-      `Segmentation for “${phrase}” did not finish (${result.outcome.reason}).${detail}`,
+      `Segmentation for “${phrase}” did not finish (${result.outcome.reason ?? "unknown"}).${detail}`,
     );
   }
 
+  const { recordsOfKind } = await import("@meta-sam/parser");
   const boxes = recordsOfKind(result.records, "box");
   const failed = result.diagnostics.some((item) => item.severity === "error");
-  const finish = (hit: SegmentHit): SegmentHit => {
-    const checked = segmentHitSchema.parse(hit);
+  const finish = (foundHit: SegmentHit): SegmentHit => {
+    const checked = segmentHitSchema.parse(foundHit);
     writeCache(cacheScope, key, { priceUsd: samCallUsd(), result: checked });
     return checked;
   };
@@ -603,9 +654,97 @@ async function segmentOne(imageUrl: string, phrase: string): Promise<SegmentHit>
   return finish({ found: true, note: `${countLabel} for “${phrase}”.` });
 }
 
+const regionBoxSchema = z.object({
+  left: z.number(),
+  top: z.number(),
+  right: z.number(),
+  bottom: z.number(),
+});
+
+const segmentRegionSchema = z.object({
+  found: z.boolean(),
+  note: z.string().min(1),
+  boxes: z.array(regionBoxSchema),
+  masks: z.array(
+    regionBoxSchema.extend({
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+      encoding: z.enum(["lossless", "one_bit"]),
+      payload: z.string().min(1),
+    }),
+  ),
+});
+
+export type SegmentRegion = z.infer<typeof segmentRegionSchema>;
+
+/**
+ * SAM 3.1 masks for one phrase, including every box so a crop can keep them.
+ * Cached separately from the found/note used by ad classification.
+ */
+export async function segmentRegions(input: {
+  imageUrl: string;
+  phrase: string;
+  cacheScope?: CacheScope;
+}): Promise<SegmentRegion> {
+  return retryCharged(segmentRegionSchema, `Segmentation “${input.phrase}”`, async () => {
+    const imageSha = imageSha256(input.imageUrl);
+    const cacheScope = input.cacheScope ?? (isDemoImageSha(imageSha) ? "demo" : "private");
+    const key = requestKey({ ...samKeyMaterial(imageSha, input.phrase), task: "regions" as const });
+    const hit = readCache(cacheScope, key, segmentRegionSchema);
+    if (hit) {
+      addCachedUsd(hit.priceUsd);
+      return hit.result;
+    }
+
+    const result = await callSam(input.imageUrl, input.phrase);
+    if (result.outcome.status !== "completed") {
+      const detail = result.outcome.detail ? ` ${result.outcome.detail}` : "";
+      throw new ModelOutputError(
+        `Segmentation for “${input.phrase}” did not finish (${result.outcome.reason ?? "unknown"}).${detail}`,
+      );
+    }
+
+    const { recordsOfKind } = await import("@meta-sam/parser");
+    const boxRecords = recordsOfKind(result.records, "box");
+    const maskRecords = recordsOfKind(result.records, "mask");
+    const boxes = [
+      ...boxRecords.map((box) => ({
+        left: box.left,
+        top: box.top,
+        right: box.right,
+        bottom: box.bottom,
+      })),
+      ...maskRecords.map((mask) => mask.bounds),
+    ];
+    const masks = maskRecords.map((mask) => ({
+      left: mask.bounds.left,
+      top: mask.bounds.top,
+      right: mask.bounds.right,
+      bottom: mask.bounds.bottom,
+      width: mask.mask.width,
+      height: mask.mask.height,
+      encoding: mask.mask.encoding,
+      payload: mask.mask.payload,
+    }));
+    const failed = result.diagnostics.some((item) => item.severity === "error");
+    if (failed && boxes.length === 0 && masks.length === 0) {
+      throw new ModelOutputError(`Could not read the segmentation for “${input.phrase}”.`);
+    }
+    const found = boxes.length > 0 || masks.length > 0;
+    const note = found
+      ? boxes.length === 1
+        ? `1 match for “${input.phrase}”.`
+        : `${boxes.length} matches for “${input.phrase}”.`
+      : "No match";
+    const region = segmentRegionSchema.parse({ found, note, boxes, masks });
+    writeCache(cacheScope, key, { priceUsd: samCallUsd(), result: region });
+    return region;
+  });
+}
+
 /** One SAM 3.1 call for a single noun phrase. Used by the smoke script. */
 export async function segmentPhrase(imageUrl: string, phrase: string): Promise<SegmentHit> {
-  return withOneRetry(segmentHitSchema, `Segmentation “${phrase}”`, () => segmentOne(imageUrl, phrase));
+  return retryCharged(segmentHitSchema, `Segmentation “${phrase}”`, () => segmentOne(imageUrl, phrase));
 }
 
 export async function segmentImage(input: { imageUrl: string; headline: string; primaryText: string }): Promise<Segmentation> {
@@ -620,7 +759,7 @@ export async function segmentImage(input: { imageUrl: string; headline: string; 
 
   const hits = await Promise.all(
     SEGMENT_PROMPTS.map(async (prompt) => {
-      const hit = await withOneRetry(
+      const hit = await retryCharged(
         segmentationSchema.shape[prompt.key],
         `Segmentation “${prompt.phrase}”`,
         () => segmentOne(input.imageUrl, prompt.phrase),
@@ -638,14 +777,15 @@ export async function classifyAd(input: {
   primaryText: string;
   segmentation: Segmentation;
 }): Promise<Classification> {
-  return withOneRetry(classificationSchema, "Classification", async () => {
-    if (isMock()) {
-      return mockClassification({
+  if (isMock()) {
+    return withOneRetry(classificationSchema, "Classification", async () =>
+      mockClassification({
         headline: input.headline,
         primaryText: input.primaryText,
-      });
-    }
-
+      }),
+    );
+  }
+  return retryCharged(classificationSchema, "Classification", async () => {
     const userText = classifyUserText(input);
     const imageSha = imageSha256(input.imageUrl);
     return museJson({
@@ -665,8 +805,10 @@ export async function summarizeBrand(input: {
   websiteText: string;
   brief: string;
 }): Promise<BrandSummary> {
-  return withOneRetry(brandSummarySchema, "Brand summary", async () => {
-    if (isMock()) return mockBrandSummary(input);
+  if (isMock()) {
+    return withOneRetry(brandSummarySchema, "Brand summary", async () => mockBrandSummary(input));
+  }
+  return retryCharged(brandSummarySchema, "Brand summary", async () => {
     const userText = brandUserText(input.websiteText, input.brief);
     return museJson({
       schemaName: "BrandSummary",

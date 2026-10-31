@@ -1,0 +1,132 @@
+{
+  "picks": {
+    "dcl-01": {
+      "candidate": "1c",
+      "regenerated": false,
+      "regenerationReason": null,
+      "fit": "tight",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 31px of padding, less than the 38px asked for.",
+      "crop": {
+        "left": 480,
+        "top": 57,
+        "width": 978,
+        "height": 1223
+      },
+      "imageWidth": 1920,
+      "imageHeight": 1280,
+      "bagCount": 1
+    },
+    "dcl-02": {
+      "candidate": "2c",
+      "regenerated": true,
+      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "fit": "fits",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 38px of padding.",
+      "crop": {
+        "left": 613,
+        "top": 397,
+        "width": 662,
+        "height": 828
+      },
+      "imageWidth": 1920,
+      "imageHeight": 1280,
+      "bagCount": 3
+    },
+    "dcl-03": {
+      "candidate": "3a",
+      "regenerated": true,
+      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "fit": "tight",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 1px of padding, less than the 38px asked for.",
+      "crop": {
+        "left": 547,
+        "top": 260,
+        "width": 816,
+        "height": 1020
+      },
+      "imageWidth": 1920,
+      "imageHeight": 1280,
+      "bagCount": 1
+    },
+    "dcl-04": {
+      "candidate": "4a",
+      "regenerated": false,
+      "regenerationReason": null,
+      "fit": "fits",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 38px of padding.",
+      "crop": {
+        "left": 576,
+        "top": 247,
+        "width": 707,
+        "height": 884
+      },
+      "imageWidth": 1920,
+      "imageHeight": 1280,
+      "bagCount": 1
+    },
+    "dcl-05": {
+      "candidate": "5c",
+      "regenerated": true,
+      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "fit": "tight",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 19px of padding, less than the 38px asked for.",
+      "crop": {
+        "left": 592,
+        "top": 713,
+        "width": 453,
+        "height": 567
+      },
+      "imageWidth": 1920,
+      "imageHeight": 1280,
+      "bagCount": 1
+    },
+    "dcl-06": {
+      "candidate": "6a",
+      "regenerated": true,
+      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "fit": "tight",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 29px of padding, less than the 38px asked for.",
+      "crop": {
+        "left": 52,
+        "top": 492,
+        "width": 1142,
+        "height": 1428
+      },
+      "imageWidth": 1280,
+      "imageHeight": 1920,
+      "bagCount": 1
+    },
+    "dcl-07": {
+      "candidate": "7b",
+      "regenerated": true,
+      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "fit": "tight",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 17px of padding, less than the 38px asked for.",
+      "crop": {
+        "left": 622,
+        "top": 731,
+        "width": 439,
+        "height": 549
+      },
+      "imageWidth": 1920,
+      "imageHeight": 1280,
+      "bagCount": 1
+    },
+    "dcl-08": {
+      "candidate": "8a",
+      "regenerated": true,
+      "regenerationReason": "No crop of this aspect ratio can hold the full mask and still leave room for the wordmark and the headline.",
+      "fit": "fits",
+      "reason": "A 0.800 crop keeps the mask clear of the wordmark and the headline, with 38px of padding.",
+      "crop": {
+        "left": 351,
+        "top": 802,
+        "width": 566,
+        "height": 708
+      },
+      "imageWidth": 1280,
+      "imageHeight": 1920,
+      "bagCount": 1
+    }
+  }
+}

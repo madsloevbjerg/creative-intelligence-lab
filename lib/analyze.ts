@@ -76,6 +76,8 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
           cachedUsd: cached.cachedUsd,
           totalUsd: readSpendTotalUsd(),
           budgetUsd: budgetLimitUsd(),
+          failedAttempts: 0,
+          failedUsd: 0,
         },
       });
       if (checked.success) return checked.data;

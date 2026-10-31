@@ -2,6 +2,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { requestKey, writeCache } from "../lib/cache";
+import { demoFileDataUrl } from "../lib/demo-data-url";
 import { demoPortfolio } from "../lib/demo";
 import { isExactDemoSubmission, loadCachedDemo } from "../lib/demo-cache";
 import { UserFacingError } from "../lib/errors";
@@ -128,12 +129,12 @@ async function main(): Promise<void> {
   if (decodedImageBytes(tiny) > MAX_IMAGE_BYTES) fail("a tiny svg was rejected");
 
   const demoAds = demoPortfolio.ads.map((ad) => {
-    const svg = readFileSync(path.join(process.cwd(), "public", ad.file.replace(/^\//, "")), "utf8");
+    const bytes = readFileSync(path.join(process.cwd(), "public", ad.file.replace(/^\//, "")));
     return {
       id: ad.id,
       headline: ad.headline,
       primaryText: ad.primaryText,
-      imageDataUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+      imageDataUrl: demoFileDataUrl(ad.file, bytes),
     };
   });
   const demoSubmission = {
@@ -142,7 +143,10 @@ async function main(): Promise<void> {
     ads: demoAds,
   };
   if (!isExactDemoSubmission(demoSubmission)) fail("demo files do not match the data URLs the page sends");
-  if (loadCachedDemo(demoSubmission) !== null) fail("an empty demo cache should not replay results");
+  const replay = loadCachedDemo(demoSubmission);
+  if (!replay || replay.ads.length !== demoPortfolio.ads.length) {
+    fail("the committed demo cache should replay every ad without a model call");
+  }
 
   const probe = `data:image/svg+xml;charset=utf-8,${encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>")}`;
   const probeKey = requestKey(samKeyMaterial(imageSha256(probe), "coffee bag"));

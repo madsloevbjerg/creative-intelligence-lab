@@ -37,8 +37,11 @@ export function adOverlaySvg(input: { width: number; height: number; headline: s
   const scrimTop = Math.round(height * 0.68);
   const lineHeight = Math.round(width * 0.055);
   const headlineSize = Math.round(width * 0.048);
-  const brandSize = Math.round(width * 0.028);
+  const brandSize = Math.round(width * 0.036);
   const pad = Math.round(width * 0.05);
+  const pillHeight = Math.round(width * 0.09);
+  const pillWidth = Math.round(width * 0.64);
+  const pillY = Math.round(width * 0.04);
   const firstBaseline = height - pad - (lines.length === 2 ? lineHeight : 0);
   const headlineText = lines
     .map((line, index) => {
@@ -57,10 +60,8 @@ export function adOverlaySvg(input: { width: number; height: number; headline: s
     </linearGradient>
   </defs>
   <rect x="0" y="${scrimTop}" width="${width}" height="${height - scrimTop}" fill="url(#scrim)"/>
-  <rect x="${pad}" y="${Math.round(width * 0.045)}" width="${Math.round(width * 0.46)}" height="${Math.round(width * 0.07)}" rx="${Math.round(width * 0.035)}" fill="${ink}" fill-opacity="0.55"/>
-  <circle cx="${pad + Math.round(width * 0.028)}" cy="${Math.round(width * 0.08)}" r="${Math.round(width * 0.016)}" fill="${deepGreen}"/>
-  <circle cx="${pad + Math.round(width * 0.028)}" cy="${Math.round(width * 0.08)}" r="${Math.round(width * 0.007)}" fill="${cream}"/>
-  <text x="${pad + Math.round(width * 0.054)}" y="${Math.round(width * 0.088)}" font-family="Noto Serif, serif" font-size="${brandSize}" font-weight="700" fill="${paper}">${escapeXml(brandKit.name)}</text>
+  <rect x="${pad}" y="${pillY}" width="${pillWidth}" height="${pillHeight}" rx="${Math.round(pillHeight / 2)}" fill="${deepGreen}"/>
+  <text x="${pad + Math.round(pillHeight * 0.45)}" y="${pillY + Math.round(pillHeight * 0.68)}" font-family="Noto Serif, serif" font-size="${brandSize}" font-weight="700" fill="${cream}">${escapeXml(brandKit.name)}</text>
   ${headlineText}
 </svg>`;
 }
