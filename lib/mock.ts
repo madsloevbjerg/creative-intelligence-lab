@@ -69,8 +69,8 @@ const MOTIVATION_RULES: { motivation: Motivation; pattern: RegExp }[] = [
     pattern: /\b(tired of|problem|solution|instead of|the fix)\b/i,
   },
   {
-    motivation: "Emotion/nostalgia",
-    pattern: /\b(remember|nostalgia|nostalgic|childhood|memory|comfort)\b/i,
+    motivation: "Emotion/ritual",
+    pattern: /\b(ritual|nostalgia|nostalgic|childhood|memory|comfort|sunday)\b/i,
   },
 ];
 

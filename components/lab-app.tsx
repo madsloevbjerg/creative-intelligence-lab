@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CoverageMap, WhyPanel, type MapAd } from "@/components/coverage-map";
-import { conflictQuote, offBrandMotivations, rankGaps, topGaps, writtenConstraints } from "@/lib/gaps";
+import { conflictQuote, offBrandMotivations, rankGaps, topGaps } from "@/lib/gaps";
 import { CoverageStory } from "@/components/coverage-story";
 import { FeedFrame } from "@/components/feed-frame";
 import { readImageFile } from "@/components/read-image";
@@ -267,21 +267,7 @@ export function LabApp() {
   });
   const activeId = hoverId ?? pinnedId;
   const activeAd = mapAds.find((ad) => ad.id === activeId) ?? null;
-  const constraintLines = (() => {
-    const fromModel = result?.constraints ?? { exclusions: [], focusPoints: [] };
-    const written = writtenConstraints(`${websiteText}\n${brief}`);
-    const exclusions = [...fromModel.exclusions];
-    for (const line of written.exclusions) {
-      if (!exclusions.some((item) => item.toLowerCase().includes(line.slice(0, 16).toLowerCase()))) {
-        exclusions.push(line);
-      }
-    }
-    const focusPoints = [...fromModel.focusPoints];
-    for (const line of written.focusPoints) {
-      if (!focusPoints.some((item) => item.toLowerCase().includes(line.toLowerCase()))) focusPoints.push(line);
-    }
-    return { exclusions, focusPoints };
-  })();
+  const constraintLines = result?.constraints ?? { exclusions: [], focusPoints: [] };
   const offBrand = offBrandMotivations(constraintLines.exclusions);
   const topGapList = topGaps(
     rankGaps({

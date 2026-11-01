@@ -1,8 +1,8 @@
 # Handoff
 
-Creative Intelligence Lab maps which motivation-and-format combinations a Meta ad portfolio already uses. It does not predict results. The demo brand is Danish Coffee Lab.
+Creative Intelligence Lab maps which motivation-and-execution combinations a Meta ad portfolio already uses. It does not predict results. The demo brand is Danish Coffee Lab.
 
-Another agent can take over from this file. Do not put secret values in the repo.
+Another agent can take over from this file. Do not put secret values in the repo. Deadline for the remaining plan: Nov 4, 2026, 9:00 PM ET.
 
 ## Run it locally
 
@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Click **Load demo data**, leave the access code blank, then **Analyze coverage**. With the committed cache, that replay costs $0 and must not show a mock banner when `MODEL_API_KEY` is set and `USE_MOCK` is not true.
+Open http://localhost:3000. Click **Load demo data**, leave the access code blank, then **Analyze coverage**.
 
 Checks:
 
@@ -24,84 +24,122 @@ npm run check:budget
 npm run check:safety
 npm run check:crop
 npm run check:text
+npm run check:gaps
 npm run build
 ```
 
-`npm run m2:smoke` makes one live SAM call, one classification, one brand summary, and one image if they are not already cached. Do not run it unless you mean to spend.
+`npm run m2:smoke` makes live calls if they are not already cached. Do not run it unless you mean to spend.
 
-## Environment variable names
+## Environment variables
 
-Copy `.env.example` to `.env.local`. `.env.local` is gitignored. Never commit values.
+Names only. No values belong in git. Copy `.env.example` to `.env.local`. `.env.local` and `.env*.local` are gitignored (`.env*` plus those two lines, with `!.env.example`).
 
-- `MODEL_API_KEY` — Meta Model API key. Empty means mock mode.
-- `USE_MOCK` — `true` forces mock mode even when a key is set.
-- `LIVE_ACCESS_CODE` — server-only passcode required before any live call. Empty means live mode is off.
-- `BUDGET_LIMIT_USD` — hard cap on estimated live spend. Blank means 120.
-- `LIVE_RUNS_PER_HOUR` — how many live analysis runs the server may start per hour. Blank means 10. Mock runs do not count.
+| Name | Where the value comes from |
+| --- | --- |
+| `MODEL_API_KEY` | The Meta Model API key. Create it on the Meta Model API site at https://dev.meta.ai (the same site `lib/meta.ts` cites for list prices). In Cursor cloud agents it is a Runtime Secret named `MODEL_API_KEY`. Empty means mock mode. |
+| `USE_MOCK` | Set in `.env.local`. `true` forces mock data even when a key is present. If the key is missing, the app uses mock data anyway. `.env.example` ships this as `true`. |
+| `LIVE_ACCESS_CODE` | A passcode you choose. Set it only in `.env.local` or the host's secret store. The server compares the form field to this value. If it is empty, live mode is off and every visitor gets mock data. Never put it in client code. |
+| `BUDGET_LIMIT_USD` | Set in `.env.local`. The hard cap on estimated live spend, in US dollars. Blank means 120. `.env.example` sets `120`. Mock calls and cache hits are $0 and do not count. |
+| `LIVE_RUNS_PER_HOUR` | Set in `.env.local`. How many live analysis runs the server may start per hour. Blank means 10. Mock runs do not count. |
 
-Scripts also read `PLACE_ONLY` and `SKIP_CLASSIFY` as local switches. They are not app configuration.
+The live spend ledger is `.data/spend.json` (gitignored, a number only, no key). A copy with the same contents is committed as `data/spend.json` so the total is visible. The hourly run log is `.data/live-runs.json` and stays gitignored. It stores timestamps only.
 
-The spend ledger is `.data/spend.json` (gitignored). Cache hits and mock calls are $0. Saved demo results live in `data/cache/` and are committed. That folder has no secrets.
+## Meta Model API
+
+Base URL: `https://api.meta.ai/v1`. Auth: `Authorization: Bearer` using `MODEL_API_KEY`. The OpenAI SDK client is created in `lib/meta.ts` (`liveClient`).
+
+Models:
+
+- `muse-spark-1.3` — chat completions. `client.chat.completions.create` with `response_format: { type: "json_schema", json_schema: { name, strict: true, schema } }`. Used for classification, brand summary, constraints, and (in the unfinished M5 helpers) concept copy and persona.
+- `sam-3.1` — Responses API. `client.responses.create` with `stream: true`, `metadata: { mask_encoding: "one_bit" }`, and one user message whose content is `{ type: "input_text", text: phrase }` plus `{ type: "input_image", image_url, detail: "auto" }`. The stream is parsed with `@meta-sam/parser` (`parseImageStream`, then `recordsOfKind` for `box` and `mask`). Empty output is a real "no match". One noun phrase per call. SVG inputs are rasterized to PNG first (`lib/model-image.ts`); the API rejects `image/svg+xml`.
+- `muse-image-1.0` — two paths. Demo stills use the Responses API: `client.responses.create({ model, input: prompt, store: false })` and read `image_generation_call`. That call does not take a size. The older mockup path uses `client.images.generate` (`/images/generations`) with `size: "1024x1024"`, `response_format: "b64_json"`, `output_format: "png"`.
+
+List prices in `LIST_PRICES` (`lib/meta.ts`), cited there as the https://dev.meta.ai list rates:
+
+- Muse Spark: $1.25 per 1M input tokens, $4.25 per 1M output tokens. The cap holds an estimate before the call, then settles to `usage`.
+- SAM 3.1: $2.50 per 1,000 images ($0.0025 per call).
+- Muse Image: $0.01 per image.
+
+SAM phrases in `SEGMENT_PROMPTS` (`lib/taxonomy.ts`): `bag` (product), `person`, `words` (text overlay), `background` (setting), `green logo`. On the demo ads, `bag` is the reliable product phrase (`coffee bag` was used earlier for crops and sometimes missed). `person` matches when a person or a large arm is in frame. `words` misses the headline on some composited ads. `background` misses the setting on some ads. `green logo` is inconsistent across ads; a later pass found it more often, but do not treat a miss as "there is no wordmark". `green label` was used only to place type on the bag label (`brandLabel`); on ad 6 it matched the green phone screen, not the bag. Phrases that did not match in earlier probes: `white text`, `headline text`, `text`, `letters`, `logo`, `brand name`. Never invent a mask when SAM says no match.
+
+Pages this repo cites (no other Meta doc pages were fetched into the tree):
+
+- https://dev.meta.ai — list prices, referenced in `lib/meta.ts`
+- https://api.meta.ai/v1 — API base, referenced in `lib/meta.ts` and `.env.example`
+- https://engineering.fb.com/2026/10/28/ml-applications/meta-andromeda-next-gen-ads-retrieval-gpu-co-design/ — Andromeda, referenced in `README.md` and the page intro
 
 ## Project structure
 
 - `app/page.tsx` — the one page
 - `app/api/analyze/route.ts` — the only analysis route
-- `components/lab-app.tsx` — form, results, per-ad view, cost line
-- `components/coverage-map.tsx` — motivation × execution grid. Delivery is a badge. Empty cells have no label. Top gaps are highlighted. Off-brand rows are marked, not ranked.
-- `components/coverage-story.tsx` — the summary bar, counted from the classifications on screen
-- `components/feed-frame.tsx` — Meta-style frame around a finished ad
-- `components/sam-crop-view.tsx` — bag mask, crop rectangle, and coloured boxes from cached element masks
-- `lib/taxonomy.ts` — motivations, execution styles, delivery badges, and SAM phrases. Do not duplicate these lists.
-- `lib/gaps.ts` — deterministic gap ranking, off-brand rows, and brief-conflict quotes. Hypotheses are not forecasts.
-- `lib/meta.ts` — the only module that calls Meta. Prices, cache, and the $120 cap live here
-- `lib/schemas.ts` — zod checks for every model response
-- `lib/mock.ts` and `lib/mock-fixtures.ts` — labels used when there is no live call
+- `components/lab-app.tsx` — form, results, per-ad view, cost line, why list, brief-conflict flags
+- `components/coverage-map.tsx` — motivation × execution grid. Delivery (Static, Carousel, Video) is a badge. Top gaps are the only coloured cells.
+- `components/coverage-story.tsx` — summary bar, counted from the classifications on screen
+- `components/sam-crop-view.tsx` — bag mask, crop rectangle, coloured boxes from cached element masks
+- `lib/meta.ts` — the only module that calls Meta. Prices, cache reads/writes, spend cap, `classifyAd`, `segmentImage`, `segmentRegions`, `summarizeBrand`, `extractConstraints`, `generateDemoStill`, plus unfinished `writeConceptCopy` and `writePersona`
+- `lib/cache.ts` — request hash to `data/cache/<sha>.json` (demo, committed) or `.data/cache` (private, gitignored, currently empty)
+- `lib/taxonomy.ts` — motivations, `EXECUTIONS`, `DELIVERIES`, `EXECUTION_FIT`, SAM phrases. Zod enums in `lib/schemas.ts` import these lists.
+- `lib/gaps.ts` — `rankGaps` / `topGaps`, `offBrandMotivations`, `conflictQuote`. Rewritten in the interrupted batch (see status).
+- `lib/smart-crop.ts` — `smartCrop` and `frameSubjects` for 4:5 and 9:16
+- `lib/place-text.ts` — `placeText`. Wordmark stays top-left. Headline can move. `safeZone` is for Stories/Reels later.
+- `lib/brand-label.ts` — `brandLabel(image, labelMask, name)`. Prints the name on the green label. Separate from the top-left pill. See status.
+- `lib/wordmark.ts` — pill and headline overlay
+- `lib/composite-ad.ts` — crop, overlay, contact sheets
 - `lib/demo.ts` — Danish Coffee Lab copy and the eight ad paths
-- `lib/demo-cache.ts` — replays an exact demo submission from `data/cache/`
 - `lib/brand-kit.ts` — bag, palette, photo style
-- `lib/smart-crop.ts` — 4:5 and 9:16 crop around SAM boxes
-- `lib/place-text.ts` — `placeText(image, masks, aspectRatio, options)`. The wordmark stays top-left. The headline can sit at the top, bottom, or a side. `options.safeZone` is for Stories/Reels in M5.
-- `lib/wordmark.ts` — wordmark pill pinned top-left, sized to the name. Headline position comes from `placeText`.
-- `lib/phone-notice.ts` — the lock-screen card drawn onto ad 6
-- `lib/composite-ad.ts` — crop, overlay, and contact sheets
-- `public/demo/` — the eight final ads, raw photos, bag masks, `manifest.json`, candidates, and redo stills
-- `lib/demo-manifest.json` — same manifest the UI fetches: crop, and `placement.reason` per ad
-- `docs/m3/` — prompts, the selection note, and the labelled contact sheet `final-ads.png`
-- `scripts/` — mock, budget, safety, crop, and placeText checks, plus the M2 and M3 runners
+- `public/demo/` — final ads, raw photos, masks, candidates, redo stills, `manifest.json`
+- `docs/m3/prompts.md` — photo prompts. `docs/m3/final-ads.png` is the 8-ad sheet.
+- `data/cache/` — committed model results. Filenames are hashes. No API keys.
+- `data/spend.json` — snapshot of tracked spend (same number as `.data/spend.json`)
 
-There is no database. An analysis stays in the browser until refresh.
+There is no database. An analysis stays in the browser until refresh. Retries: `retryCharged` and `withOneRetry` allow at most 2 attempts.
 
-## What is done
+## Exact status
+
+### Done (M0–M4 and the fixes that landed before this stop)
 
 - M0–M1: one-page app, demo brand, mock analysis, coverage map, budget cap, access code, hourly limit.
-- M2: live Muse Spark, SAM 3.1, and Muse Image, with cache. SVG is rasterized before it is sent. The documented image call does not take a size.
-- M3: eight visually different ads, three motivations (Price/value 1–3, Convenience/time 4–6, Quality/performance 7–8). Scenes that were flattened back to “bag on a table” were restored. 1, 2, and 4 are the original picks. 6 and 8 are crops of the original photos. 3, 5, and 7 were regenerated as the same scene, not a new one.
-- Placement: the wordmark stays top-left on every ad. Only the headline moves. If the top-left corner meets a face or the phone, the placement sentence says so. Ad 6 has a coded delivery notification. Ad 8’s headline sits above the bag, off the drum face.
-- M4: matrix columns are execution styles. Delivery (Static, Carousel, Video) is a badge. Muse Spark extracts exclusions and focus points from the brief and website. Ads 1 and 2 are flagged against “This is not a discount campaign.” Status/identity and Fear of missing out are off-brand, not gaps. Gap rank is code in `lib/gaps.ts`. Each ad has a why in a list.
+- M2: live Muse Spark, SAM 3.1, and Muse Image, with cache.
+- M3: eight visually different ads. Scenes: 1 bold price still, 2 three bags, 3 woman in a café with the bag, 4 doorstep, 5 gooseneck pour with the bag, 6 phone notification with the bag, 7 person in a kitchen with the bag, 8 Aarhus roastery with the bag. Wordmark pill is top-left. Headlines move. Ad 6 has a coded lock-screen card.
+- M4: matrix columns are execution styles. Delivery is a badge. Muse Spark extracts exclusions and focus points. Ads 1 and 2 conflict with a discount exclusion. Summary bar counts motivations from the classifications. Why list is on the page. Empty cells have no "EMPTY" label.
 
-## What is left
+### Half-done (this interrupted batch — files exist, the work was not finished or re-checked end to end)
 
-- M5: concept briefs, image mockups, placements, and one AI persona. Reuse `placeText` with a Stories/Reels `safeZone` (`REELS_SAFE_ZONE` in `lib/place-text.ts`). Feed ads use an open safe zone.
-- M6: deploy, README, and the submission. Update this file at the end of each milestone.
+- Ranking rewrite is in `lib/gaps.ts`, `lib/taxonomy.ts` (`Emotion/ritual`, `EXECUTION_FIT`), `scripts/validate-gaps.ts`, and `scripts/validate-mock.ts`. `components/coverage-map.tsx` now leaves one-ad cells uncoloured; only the top-gap wash is coloured. `components/lab-app.tsx` no longer merges a hardcoded phrase list into the model constraints. These edits are in the working tree that this handoff commits. They were not deployed or re-verified in the browser after the stop.
+- `lib/brand-label.ts` exists. `scripts/m3-place.ts` calls it. A `PLACE_ONLY` run printed the name on all 8 ads, then a skip set for ads 1, 2, and 6 was added and was **not** re-run. The PNGs in `public/demo/dcl-0N.png` are still that printed pass. Visual read of that pass: 3, 4, 5, 7, and 8 look printed on the bag label; 1 is axis-aligned on a tilted bag; 2 hits only the rear bag; 6 hit the green phone screen, not the bag. Treat 1, 2, and 6 as not accepted.
+- Website text in `lib/demo.ts` gained one sentence (Aarhus roastery, tasting note "dark cherry and cocoa"). Brand summary and constraint caches were **not** regenerated after that sentence, so a live demo replay may miss the brand/constraint cache until those two calls are run again.
+- M5 helpers only: `conceptCopySchema`, `personaSchema`, `writeConceptCopy`, `writePersona`, and the system prompts in `lib/prompts.ts`. No `docs/m5/`, no concept candidate images, no persona portraits, no M5 contact sheet.
+
+### Left
+
+Finish the interrupted ranking if a fresh `npm run check:gaps` or the live page disagrees with the rules below, then the rest of the plan.
+
+Ranking rules (the intended behavior of `lib/gaps.ts`):
+
+- At most one gap per motivation in the top 3.
+- Prefer motivations with zero ads over a new execution of a motivation that already has ads.
+- Boost a motivation when an extracted focus point matches it. "Ritual" maps to `Emotion/ritual` (renamed from `Emotion/nostalgia`).
+- Off-brand motivations stay out of the gap list (`Status/identity` when exclusions mention status; `Fear of missing out` when they mention limited drops, scarcity, or FOMO).
+- Execution for a gap comes from `EXECUTION_FIT` in `lib/taxonomy.ts` (first fitting style whose cell is empty), not from Danish Coffee Lab special cases.
+- Each reason starts with `Hypothesis:` and must not predict performance.
+
+Also left:
+
+- Quiet one-ad cells are coded; confirm them in the browser.
+- `brandLabel` on the bag label for the 8 ads and later mockups. Drop it where it looks pasted. Keep the top-left pill.
+- Hardcoding audit: conflict flags, off-brand rows, ranking, and the summary sentence must be driven by the brief, the website text, and model output. Demo files (`lib/demo.ts`, fixtures) may stay brand-specific. `lib/gaps.ts` still has general keyword rules (discount language, ritual → Emotion/ritual). Re-read those before calling the audit done.
+- M5: Danish copy with an English translation under it; 3 candidates (a, b, c) per concept; a human pick; Feed 4:5 and Reels 9:16 with `placeText` safe zones; one AI persona whose images are labelled `AI-generated persona, fictional`; a before/after view; MD/PDF export. Stop for picks before locking candidates.
+- M6: deploy that serves the cached demo with no mock banner, plus passcode-gated uploads; README with the Andromeda link above and the no-performance-prediction principle; a submission checklist; a 2-minute click path; make the repo public only when asked.
+- Generality test: run the same flow on a second brand and confirm nothing Danish Coffee Lab-specific is required for ranking, flags, or the summary sentence.
 
 ## Known issues
 
-- SAM phrases are `bag`, `person`, `words`, `background`, and `green logo`. `words` still misses the headline on some ads. `background` misses the setting on some ads. Do not invent a mask when SAM returns no match.
-- On ads 3, 6, and 7 the wordmark stays top-left even though that corner meets a face or the phone. A nudge inside the corner could not clear it. The sentence says so.
-- The phone card is axis-aligned inside the SAM phone box. The phone in the photo is slightly tilted.
-- Ad 6 was classified as a Static lifestyle scene. It is a still of a phone, so the model did not call it Video.
-- Remotes: `origin` is the Origin git remote. No GitHub remote is configured. Do not create a GitHub repo from here.
+- `words` and `background` still miss elements that are visibly present on some ads. `green label` is not safe on ad 6.
+- On ads 3, 6, and 7 the wordmark stays top-left even when that corner meets hair or the phone. The placement sentence says so.
+- The phone notification is axis-aligned. The phone in the photo is slightly tilted.
+- Ad 6's last committed classification (before this batch) called the still Static, not Video.
+- `scripts/validate-safety.ts` assigns the literal strings `test-key-not-used` and `owner-secret` as fake env values for tests. They are not credentials.
 
-## Demo scenes
+## Costs so far
 
-| Ad | Scene | Headline band |
-| --- | --- | --- |
-| 1 | Bold price still | bottom, clear of the bag. Wordmark top-left. |
-| 2 | Three bags, all visible | bottom. Wordmark top-left. |
-| 3 | Woman in a café, bag on the table | bottom, on the table, not on the cup. Wordmark stays top-left and still meets her hair. |
-| 4 | Doorstep | bottom. Wordmark top-left. |
-| 5 | Gooseneck pour, bag by the cup | bottom. Wordmark top-left. |
-| 6 | Phone notification, bag beside it | bottom, off the phone. Wordmark stays top-left and still meets the phone. |
-| 7 | Person in a home kitchen with the bag | bottom. Wordmark stays top-left and still meets a face. |
-| 8 | Aarhus roastery, bag in front | top, above the bag and off the drum face. Wordmark top-left. |
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$2.09547625** of the $120 cap. Failed attempts on the last completed model run were 0. The last live cost before this stop was about $0.02 for eight `green label` SAM calls. Cache hits are $0. No GitHub remote was configured before this handoff; Origin is the existing `origin` remote.

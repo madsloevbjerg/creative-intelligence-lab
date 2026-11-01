@@ -15,7 +15,7 @@ export type DemoAd = {
 
 export const demoPortfolio = {
   brandName: "Danish Coffee Lab",
-  websiteText: `Danish Coffee Lab roasts coffee in Aarhus and sends a bag on the day you pick. You order once, and the next bag is roasted after that, not months before. The beans are single origin, the roast date is printed on the bag, and the tasting note is short enough to remember.
+  websiteText: `Danish Coffee Lab roasts coffee at its roastery in Aarhus and sends a bag on the day you pick. You order once, and the next bag is roasted after that, not months before. The beans are single origin, the roast date is printed on the bag, and the tasting note is short enough to remember. A recent lot's tasting note was dark cherry and cocoa.
 
 The subscription is for home drinkers in Denmark who already buy specialty coffee and are tired of the last-minute shop run. Plans are Home, Office, and Gift. You can see the price per cup before you start, and you can skip or cancel a week.
 

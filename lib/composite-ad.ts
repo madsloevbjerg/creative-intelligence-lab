@@ -67,7 +67,7 @@ export async function contactSheet(input: {
   cellHeight: number;
 }): Promise<Buffer> {
   const pad = 24;
-  const labelHeight = 36;
+  const labelHeight = 52;
   const gap = 16;
   const header = 72;
   const rows = Math.ceil(input.cells.length / input.columns);
@@ -90,9 +90,15 @@ export async function contactSheet(input: {
       .png()
       .toBuffer();
     layers.push({ input: fitted, left, top });
+    const labelLines = cell.label.split("\n").slice(0, 2);
     const label = Buffer.from(`<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${input.cellWidth}" height="${labelHeight}">
-  <text x="0" y="26" font-family="Noto Serif, serif" font-size="22" font-weight="700" fill="${ink}">${cell.label}</text>
+  ${labelLines
+    .map(
+      (line, lineIndex) =>
+        `<text x="0" y="${22 + lineIndex * 22}" font-family="Noto Serif, serif" font-size="16" font-weight="700" fill="${ink}">${line.replaceAll("&", "&amp;")}</text>`,
+    )
+    .join("")}
 </svg>`);
     layers.push({ input: label, left, top: top + input.cellHeight });
   }

@@ -139,7 +139,7 @@ if (!brandThrew) fail("A brief with no audience was accepted");
 
 conceptBriefSchema.parse(
   mockConceptBrief({
-    motivation: "Emotion/nostalgia",
+    motivation: "Emotion/ritual",
     execution: "Lifestyle scene",
     delivery: "Static",
     offer: brand.offer,

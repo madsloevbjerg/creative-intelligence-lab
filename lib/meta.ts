@@ -26,7 +26,7 @@ import {
   mockMockup,
   mockSegmentation,
 } from "@/lib/mock";
-import { BRAND_SYSTEM, BRIEF_SYSTEM, CLASSIFY_SYSTEM, CONSTRAINT_SYSTEM } from "@/lib/prompts";
+import { BRAND_SYSTEM, BRIEF_SYSTEM, CLASSIFY_SYSTEM, CONCEPT_COPY_SYSTEM, CONSTRAINT_SYSTEM, PERSONA_SYSTEM } from "@/lib/prompts";
 import { brandUserText, classifyUserText } from "@/lib/request-text";
 import { isDemoBrandText, isDemoImageSha } from "@/lib/demo-assets";
 import {
@@ -38,6 +38,10 @@ import {
   constraintsSchema,
   conceptBriefJsonSchema,
   conceptBriefSchema,
+  conceptCopyJsonSchema,
+  conceptCopySchema,
+  personaJsonSchema,
+  personaSchema,
   mockupSchema,
   segmentationSchema,
   withOneRetry,
@@ -45,6 +49,8 @@ import {
   type Classification,
   type Constraints,
   type ConceptBrief,
+  type ConceptCopy,
+  type Persona,
   type Mockup,
   type Segmentation,
 } from "@/lib/schemas";
@@ -922,6 +928,78 @@ function sniffImageFormat(bytes: Buffer): Mockup["outputFormat"] {
     return "webp";
   }
   throw new ModelOutputError("Muse Image returned an image in an unexpected format.");
+}
+
+export async function writeConceptCopy(input: {
+  motivation: Motivation;
+  execution: Execution;
+  hypothesis: string;
+  websiteText: string;
+  brief: string;
+}): Promise<ConceptCopy> {
+  return retryCharged(conceptCopySchema, "Concept copy", async () => {
+    const userText = [
+      `Motivation: ${input.motivation}`,
+      `Execution style: ${input.execution}`,
+      `Why this gap: ${input.hypothesis}`,
+      `Website text:\n${input.websiteText}`,
+      `Campaign brief:\n${input.brief}`,
+    ].join("\n\n");
+    return museJson({
+      schemaName: "ConceptCopy",
+      jsonSchema: conceptCopyJsonSchema,
+      schema: conceptCopySchema,
+      system: CONCEPT_COPY_SYSTEM,
+      userText,
+      cacheScope: isDemoBrandText(input.websiteText, input.brief) ? "demo" : "private",
+      keyMaterial: {
+        model: "muse-spark-1.3" as const,
+        task: "conceptCopy" as const,
+        motivation: input.motivation,
+        execution: input.execution,
+        system: CONCEPT_COPY_SYSTEM,
+        userText,
+        responseFormat: { type: "json_schema" as const, strict: true, name: "ConceptCopy" },
+      },
+    });
+  });
+}
+
+export async function writePersona(input: {
+  conceptName: string;
+  motivation: Motivation;
+  execution: Execution;
+  headlineDa: string;
+  websiteText: string;
+  brief: string;
+}): Promise<Persona> {
+  return retryCharged(personaSchema, "Persona", async () => {
+    const userText = [
+      `Concept: ${input.conceptName}`,
+      `Motivation: ${input.motivation}`,
+      `Execution style: ${input.execution}`,
+      `Danish headline: ${input.headlineDa}`,
+      "The persona is fictional and must be labelled as AI-generated. Do not base them on a real person.",
+      `Website text:\n${input.websiteText}`,
+      `Campaign brief:\n${input.brief}`,
+    ].join("\n\n");
+    return museJson({
+      schemaName: "Persona",
+      jsonSchema: personaJsonSchema,
+      schema: personaSchema,
+      system: PERSONA_SYSTEM,
+      userText,
+      cacheScope: isDemoBrandText(input.websiteText, input.brief) ? "demo" : "private",
+      keyMaterial: {
+        model: "muse-spark-1.3" as const,
+        task: "persona" as const,
+        conceptName: input.conceptName,
+        system: PERSONA_SYSTEM,
+        userText,
+        responseFormat: { type: "json_schema" as const, strict: true, name: "Persona" },
+      },
+    });
+  });
 }
 
 /**

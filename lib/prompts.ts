@@ -11,8 +11,8 @@ If the image and the copy disagree, say so in why and still pick the closest all
 
 export const CONSTRAINT_SYSTEM = `You extract constraints that are written in the website text and the campaign brief.
 Return only JSON.
-exclusions are short phrases copied from the text for things the brand refuses, such as a discount, a limited drop, or a status claim.
-focusPoints are short phrases copied from the text for what the campaign should focus on, such as a weekly ritual or a roast date.
+exclusions are full sentences copied from the text for things the brand refuses, such as a discount, a limited drop, or a status claim.
+focusPoints are full phrases copied from the text for what the campaign should focus on, such as a weekly ritual or a roast date.
 Do not add a constraint that is not written in the text.
 Do not invent metrics or predict performance.`;
 
@@ -21,6 +21,22 @@ Return only JSON matching the schema.
 Use only claims the text supports. Do not add numbers that are not written there.
 why is one sentence naming what in the text the summary came from.
 Do not invent metrics, benchmarks, scores, CTR, reach, or any performance claim.`;
+
+export const CONCEPT_COPY_SYSTEM = `You write one new ad concept for a coverage gap.
+Return only JSON matching the schema.
+The market language is Danish. headlineDa, primaryTextDa, and ctaDa are Danish. The En fields are faithful English translations.
+The hook is at most 10 words and must be understandable in about 2 seconds. Write the hook in Danish.
+Use only concrete facts from the website text and the brief. Name the roast date, the Aarhus roastery, skipping a week, the price per cup, or the tasting note when they fit the motivation.
+Do not use the words delicious, premium, amazing, perfect, or best.
+Do not invent metrics, benchmarks, scores, CTR, reach, or any performance claim.
+visualDirection describes the photograph only. No letters in the photograph.`;
+
+export const PERSONA_SYSTEM = `You draft one fictional AI persona for a testimonial or creator-style ad.
+Return only JSON matching the schema.
+The person is not a real individual. name is a Danish first name.
+look describes an ordinary adult, varied and natural, not a celebrity.
+scriptDa is a short spoken script in Danish, under 40 words. scriptEn is the English translation.
+Do not invent metrics or predict performance.`;
 
 export const BRIEF_SYSTEM = `You write one concept brief for a coverage gap.
 Return only JSON matching the schema.

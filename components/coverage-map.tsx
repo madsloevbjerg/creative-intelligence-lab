@@ -40,16 +40,6 @@ export function coverageCounts(ads: MapAd[]) {
   return { empty, thin, covered, motivationsUsed };
 }
 
-function cellClass(density: ReturnType<typeof cellDensity>): string {
-  if (density === "empty") {
-    return "border border-dashed border-[#d5cbbd] bg-[#efe8dc] text-[#6d6458]";
-  }
-  if (density === "thin") {
-    return "border border-[#c4a15a] bg-[#f6e7c4]";
-  }
-  return "border border-foreground/15 bg-card";
-}
-
 function AdThumb({
   ad,
   pinned,
@@ -187,11 +177,7 @@ export function CoverageMap({ ads, pinnedId, onHover, onPin, highlighted = [], o
                     <td
                       key={execution}
                       className={`min-h-24 min-w-[7.25rem] rounded-md p-1.5 align-top ${
-                        gap
-                          ? "border border-[#1F4A38]/40 bg-[#e7f0ea]"
-                          : quiet
-                            ? "bg-[#f6f1e8]"
-                            : cellClass(density)
+                        gap ? "border border-[#1F4A38]/40 bg-[#e7f0ea]" : "bg-[#f6f1e8]"
                       }`}
                       aria-label={
                         gap

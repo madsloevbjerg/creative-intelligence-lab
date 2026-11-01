@@ -67,6 +67,27 @@ export const conceptBriefSchema = z.object({
   hypothesis: nonEmpty.max(400),
 });
 
+export const conceptCopySchema = z.object({
+  conceptName: nonEmpty.max(60),
+  coreMessage: nonEmpty.max(280),
+  hook: hookSchema,
+  visualDirection: nonEmpty.max(600),
+  headlineDa: nonEmpty.max(80),
+  headlineEn: nonEmpty.max(80),
+  primaryTextDa: nonEmpty.max(360),
+  primaryTextEn: nonEmpty.max(360),
+  ctaDa: nonEmpty.max(40),
+  ctaEn: nonEmpty.max(40),
+});
+
+export const personaSchema = z.object({
+  name: nonEmpty.max(40),
+  look: nonEmpty.max(280),
+  tone: nonEmpty.max(160),
+  scriptDa: nonEmpty.max(400),
+  scriptEn: nonEmpty.max(400),
+});
+
 export const mockupSchema = z.object({
   prompt: nonEmpty,
   outputFormat: z.enum(["png", "jpeg", "webp"]),
@@ -155,6 +176,8 @@ export type Classification = z.infer<typeof classificationSchema>;
 export type Constraints = z.infer<typeof constraintsSchema>;
 export type BrandSummary = z.infer<typeof brandSummarySchema>;
 export type ConceptBrief = z.infer<typeof conceptBriefSchema>;
+export type ConceptCopy = z.infer<typeof conceptCopySchema>;
+export type Persona = z.infer<typeof personaSchema>;
 export type Mockup = z.infer<typeof mockupSchema>;
 export type AnalyzeRequest = z.infer<typeof analyzeRequestSchema>;
 export type AnalyzedAd = z.infer<typeof analyzedAdSchema>;
@@ -213,6 +236,27 @@ export const brandSummaryJsonSchema = strictObject({
   },
   tone: { type: "string", minLength: 1 },
   why: { type: "string", minLength: 1, maxLength: 320 },
+});
+
+export const conceptCopyJsonSchema = strictObject({
+  conceptName: { type: "string", minLength: 1, maxLength: 60 },
+  coreMessage: { type: "string", minLength: 1, maxLength: 280 },
+  hook: { type: "string", minLength: 1, maxLength: 80, pattern: hookPattern },
+  visualDirection: { type: "string", minLength: 1, maxLength: 600 },
+  headlineDa: { type: "string", minLength: 1, maxLength: 80 },
+  headlineEn: { type: "string", minLength: 1, maxLength: 80 },
+  primaryTextDa: { type: "string", minLength: 1, maxLength: 360 },
+  primaryTextEn: { type: "string", minLength: 1, maxLength: 360 },
+  ctaDa: { type: "string", minLength: 1, maxLength: 40 },
+  ctaEn: { type: "string", minLength: 1, maxLength: 40 },
+});
+
+export const personaJsonSchema = strictObject({
+  name: { type: "string", minLength: 1, maxLength: 40 },
+  look: { type: "string", minLength: 1, maxLength: 280 },
+  tone: { type: "string", minLength: 1, maxLength: 160 },
+  scriptDa: { type: "string", minLength: 1, maxLength: 400 },
+  scriptEn: { type: "string", minLength: 1, maxLength: 400 },
 });
 
 export const conceptBriefJsonSchema = strictObject({

@@ -14,7 +14,7 @@ export const MOTIVATIONS = [
   "Curiosity/novelty",
   "Fear of missing out",
   "Problem/solution",
-  "Emotion/nostalgia",
+  "Emotion/ritual",
 ] as const;
 
 /** Matrix columns. How the ad is made, not how it is delivered. */
@@ -51,6 +51,23 @@ export const MAX_ADS = 20;
 export type Motivation = (typeof MOTIVATIONS)[number];
 export type Execution = (typeof EXECUTIONS)[number];
 export type Delivery = (typeof DELIVERIES)[number];
+
+/**
+ * Which execution styles fit a motivation, most fitting first.
+ * Taxonomy only. The ranker uses the first style whose cell is empty.
+ */
+export const EXECUTION_FIT: Record<Motivation, readonly Execution[]> = {
+  "Price/value": ["Text-led", "Product focus", "Demo/how-to"],
+  "Quality/performance": ["Product focus", "Demo/how-to", "Lifestyle scene"],
+  "Convenience/time": ["Demo/how-to", "Lifestyle scene", "Text-led"],
+  "Safety/trust": ["Testimonial", "Text-led", "Product focus"],
+  "Status/identity": ["Lifestyle scene", "Person/UGC", "Text-led"],
+  "Belonging/social proof": ["Person/UGC", "Testimonial", "Lifestyle scene"],
+  "Curiosity/novelty": ["Demo/how-to", "Lifestyle scene", "Text-led"],
+  "Fear of missing out": ["Text-led", "Lifestyle scene", "Person/UGC"],
+  "Problem/solution": ["Before/after", "Demo/how-to", "Text-led"],
+  "Emotion/ritual": ["Lifestyle scene", "Person/UGC", "Demo/how-to"],
+};
 export type SegmentKey = (typeof SEGMENT_PROMPTS)[number]["key"];
 
 export function wordCount(value: string): number {

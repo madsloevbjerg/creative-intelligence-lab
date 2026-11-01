@@ -1,4 +1,4 @@
-import { EXECUTIONS, MOTIVATIONS, type Execution, type Motivation } from "@/lib/taxonomy";
+import { EXECUTIONS, EXECUTION_FIT, MOTIVATIONS, type Execution, type Motivation } from "@/lib/taxonomy";
 
 export type Gap = {
   motivation: Motivation;
@@ -7,47 +7,56 @@ export type Gap = {
   hypothesis: string;
 };
 
-const FOCUS_LINKS: { pattern: RegExp; motivations: Motivation[]; label: string }[] = [
-  { pattern: /ritual|weekly|habit/i, motivations: ["Convenience/time", "Emotion/nostalgia"], label: "the weekly ritual" },
-  { pattern: /roast date|roast|origin|quality/i, motivations: ["Quality/performance"], label: "the roast date" },
-  { pattern: /trust|safe|guarantee/i, motivations: ["Safety/trust"], label: "trust" },
+/**
+ * General language in a focus point, mapped to a taxonomy motivation.
+ * Not tied to one brand. "Ritual" maps to Emotion/ritual, not to a motivation the brand already uses.
+ */
+const FOCUS_LINKS: { pattern: RegExp; motivation: Motivation; label: string }[] = [
+  { pattern: /ritual|emotion/i, motivation: "Emotion/ritual", label: "the ritual" },
+  { pattern: /roast|origin|quality/i, motivation: "Quality/performance", label: "quality and roast detail" },
+  { pattern: /trust|safe|guarantee/i, motivation: "Safety/trust", label: "trust" },
+  { pattern: /belong|community|together/i, motivation: "Belonging/social proof", label: "belonging" },
+  { pattern: /curios|discover|new/i, motivation: "Curiosity/novelty", label: "curiosity" },
 ];
 
-/** Phrases the demo brief and website actually contain, used if the model shortens them. */
-export function writtenConstraints(text: string): { exclusions: string[]; focusPoints: string[] } {
-  return {
-    exclusions: [
-      ...(/not a discount campaign/i.test(text) ? ["This is not a discount campaign."] : []),
-      ...(/no limited drops|limited drop/i.test(text) ? ["No limited drops."] : []),
-      ...(/no status claims|slogan about status/i.test(text) ? ["No status claims."] : []),
-    ],
-    focusPoints: [
-      ...(/weekly ritual/i.test(text) ? ["weekly ritual"] : []),
-      ...(/roast date/i.test(text) ? ["roast date"] : []),
-    ],
-  };
-}
-
-/** Motivations the brief rules out. They are not gaps. */
+/** Motivations the extracted exclusions rule out. They are not gaps. */
 export function offBrandMotivations(exclusions: readonly string[]): Motivation[] {
   const text = exclusions.join(" ");
   const found: Motivation[] = [];
   if (/status/i.test(text)) found.push("Status/identity");
-  if (/limited drop|missing out|scarcity|fomo/i.test(text)) found.push("Fear of missing out");
+  if (/limited drop|missing out|scarcity|fomo|last chance/i.test(text)) found.push("Fear of missing out");
   return found;
 }
 
+/** A price or free offer conflicts with an exclusion that refuses discounts. */
 export function conflictQuote(copy: string, exclusions: readonly string[]): string | null {
-  const offer = /\b\d+\s*kr\b|\bfree\b/i.test(copy);
+  const offer = /\b(free|gratis|discount|%\s*off|\d[\d\s.,]*\s*(kr|dkk|€|eur|£|gbp|\$|usd))\b/i.test(copy);
   if (!offer) return null;
-  const quotes = exclusions.filter((line) => /discount/i.test(line));
+  const quotes = exclusions.filter((line) => /discount|price cut|gratis|free bag/i.test(line));
   quotes.sort((a, b) => b.length - a.length);
   return quotes[0] ?? null;
 }
 
+function focusFor(motivation: Motivation, focusPoints: readonly string[]): string | null {
+  const text = focusPoints.join(" ");
+  const link = FOCUS_LINKS.find((item) => item.motivation === motivation && item.pattern.test(text));
+  return link?.label ?? null;
+}
+
+function executionFor(motivation: Motivation, used: ReadonlySet<string>): Execution | null {
+  for (const execution of EXECUTION_FIT[motivation]) {
+    if (!used.has(`${motivation}::${execution}`)) return execution;
+  }
+  for (const execution of EXECUTIONS) {
+    if (!used.has(`${motivation}::${execution}`)) return execution;
+  }
+  return null;
+}
+
 /**
- * Empty cells, excluding off-brand rows. Focus points raise the score.
- * The sentence is a hypothesis, not a forecast.
+ * One gap per motivation. Motivations with no ads rank above a new execution
+ * of a motivation the set already uses. Focus points raise a motivation.
+ * Off-brand motivations are left out. The sentence is a hypothesis, not a forecast.
  */
 export function rankGaps(input: {
   ads: readonly { motivation: Motivation; execution: Execution }[];
@@ -56,31 +65,40 @@ export function rankGaps(input: {
 }): Gap[] {
   const offBrand = new Set(offBrandMotivations(input.exclusions));
   const used = new Set(input.ads.map((ad) => `${ad.motivation}::${ad.execution}`));
-  const focusText = input.focusPoints.join(" ");
+  const counts = new Map<Motivation, number>();
+  for (const ad of input.ads) counts.set(ad.motivation, (counts.get(ad.motivation) ?? 0) + 1);
+
   const gaps: Gap[] = [];
   for (const motivation of MOTIVATIONS) {
     if (offBrand.has(motivation)) continue;
-    for (const execution of EXECUTIONS) {
-      if (used.has(`${motivation}::${execution}`)) continue;
-      const link = FOCUS_LINKS.find(
-        (item) => item.motivations.includes(motivation) && item.pattern.test(focusText),
-      );
-      const score = link ? 4 : 1;
-      const hypothesis = link
-        ? `Hypothesis: a ${motivation} idea told as a ${execution} would open a cell this set does not use, in line with ${link.label}. This is not a forecast.`
-        : `Hypothesis: a ${motivation} idea told as a ${execution} would open a cell this set leaves empty. This is not a forecast.`;
-      gaps.push({ motivation, execution, score, hypothesis });
-    }
+    const execution = executionFor(motivation, used);
+    if (!execution) continue;
+    const unused = (counts.get(motivation) ?? 0) === 0;
+    const focus = focusFor(motivation, input.focusPoints);
+    const score = (unused ? 100 : 0) + (focus ? 40 : 0);
+    const hypothesis = unused
+      ? focus
+        ? `Hypothesis: ${motivation} has no ad in this set, so a ${execution} would cover a new idea, in line with ${focus}. This is not a forecast.`
+        : `Hypothesis: ${motivation} has no ad in this set, so a ${execution} would cover a motivation the portfolio does not use. This is not a forecast.`
+      : `Hypothesis: a ${execution} would be another execution of ${motivation}, which this set already uses. This is not a forecast.`;
+    gaps.push({ motivation, execution, score, hypothesis });
   }
   gaps.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
-    const row = MOTIVATIONS.indexOf(a.motivation) - MOTIVATIONS.indexOf(b.motivation);
-    if (row !== 0) return row;
-    return EXECUTIONS.indexOf(a.execution) - EXECUTIONS.indexOf(b.execution);
+    return MOTIVATIONS.indexOf(a.motivation) - MOTIVATIONS.indexOf(b.motivation);
   });
   return gaps;
 }
 
+/** Top gaps, at most one per motivation. */
 export function topGaps(gaps: readonly Gap[], count = 3): Gap[] {
-  return gaps.slice(0, count);
+  const chosen: Gap[] = [];
+  const seen = new Set<Motivation>();
+  for (const gap of gaps) {
+    if (seen.has(gap.motivation)) continue;
+    seen.add(gap.motivation);
+    chosen.push(gap);
+    if (chosen.length === count) break;
+  }
+  return chosen;
 }
