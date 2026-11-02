@@ -130,11 +130,11 @@ async function main(): Promise<void> {
   const finals: { label: string; image: Buffer }[] = [];
   const labelNotes: string[] = [];
   const labelBoxes = new Map<string, MaskBox | null>();
-  if (process.env.MODEL_API_KEY?.trim()) {
+  if (process.env.PLACE_ONLY !== "1" && process.env.MODEL_API_KEY?.trim()) {
     await runWithCost("live", async () => {
       for (const ad of demoPortfolio.ads) {
         const number = ad.id.slice(4);
-        const clean = ad.id === "dcl-06" ? "public/demo/candidates/dcl-06-a.png" : `public/demo/dcl-${number}-raw.png`;
+        const clean = ad.id === "dcl-01" ? "public/demo/candidates/dcl-01-c.png" : ad.id === "dcl-06" ? "public/demo/candidates/dcl-06-a.png" : `public/demo/dcl-${number}-raw.png`;
         const bytes = readFileSync(path.join(process.cwd(), clean));
         const imageUrl = pngDataUrl(bytes);
         const cached = readCachedRegions(imageUrl, "green label", "demo");
@@ -150,11 +150,15 @@ async function main(): Promise<void> {
   }
 
   for (const ad of demoPortfolio.ads) {
+    if (process.env.PLACE_ONLY === "1" && !["dcl-01", "dcl-02", "dcl-06"].includes(ad.id)) {
+      finals.push({ label: String(Number(ad.id.slice(4))), image: readFileSync(path.join(process.cwd(), "public", ad.file)) });
+      continue;
+    }
     const pick = manifest.picks[ad.id];
     if (!pick) throw new Error(ad.id);
     const number = ad.id.slice(4);
     const rawPath = path.join(process.cwd(), "public", "demo", `dcl-${number}-raw.png`);
-    const clean = ad.id === "dcl-06" ? "public/demo/candidates/dcl-06-a.png" : `public/demo/dcl-${number}-raw.png`;
+    const clean = ad.id === "dcl-01" ? "public/demo/candidates/dcl-01-c.png" : ad.id === "dcl-06" ? "public/demo/candidates/dcl-06-a.png" : `public/demo/dcl-${number}-raw.png`;
     let photo = readFileSync(path.join(process.cwd(), clean));
     const skipLabel = new Set(["dcl-01", "dcl-02", "dcl-06"]);
     const labelled = skipLabel.has(ad.id)
@@ -229,7 +233,7 @@ async function main(): Promise<void> {
   });
   mkdirSync(path.join(process.cwd(), "docs", "m3"), { recursive: true });
   writeFileSync(path.join(process.cwd(), "docs", "m3", "final-ads.png"), sheet);
-  writeFileSync("/opt/cursor/artifacts/m3_placed_ads.png", sheet);
+
 
   if (process.env.PLACE_ONLY === "1") {
     console.log("Placement only. SAM was not called.");

@@ -1,4 +1,4 @@
-import { rankGaps, topGaps } from "../lib/gaps";
+import { conflictQuote, offBrandMotivations, rankGaps, topGaps } from "../lib/gaps";
 import type { Execution, Motivation } from "../lib/taxonomy";
 
 let failures = 0;
@@ -53,6 +53,20 @@ const usedBeatsFocus = topGaps(
 if (usedBeatsFocus[0]?.motivation === "Quality/performance") {
   fail("a used motivation with a focus boost outranked unused motivations");
 }
+
+// A second brand (office furniture) must use its own focus and exclusions.
+const desks = topGaps(rankGaps({
+  ads: [{ motivation: "Convenience/time", execution: "Product focus" }],
+  focusPoints: ["durability and craftsmanship"],
+  exclusions: ["No status claims", "No scarcity", "No discount offers"],
+}));
+if (desks[0]?.motivation !== "Quality/performance") fail("desk quality focus was ignored");
+if (!desks[0]?.hypothesis.includes("durability and craftsmanship")) fail("hypothesis lost the extracted focus");
+if (conflictQuote("A free desk with every order", ["No free product offers"]) !== "No free product offers") fail("conflict rule depends on coffee bags");
+if (conflictQuote("Built to last", ["No discount offers"]) !== null) fail("non-offer flagged");
+if (offBrandMotivations([]).length) fail("exclusions inferred without evidence");
+const want = ["Emotion/ritual::Lifestyle scene", "Safety/trust::Testimonial", "Belonging/social proof::Person/UGC"];
+if (ranked.map(g => `${g.motivation}::${g.execution}`).join("|") !== want.join("|")) fail("top three executions changed");
 
 if (failures > 0) {
   console.error(`${failures} gap ranking check(s) failed`);

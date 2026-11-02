@@ -12,7 +12,7 @@ export function CoverageStory({ ads }: { ads: MapAd[] }) {
   return (
     <div className="rounded-xl border bg-card px-4 py-3">
       <p className="text-sm font-medium">
-        {ads.length} visually different {ads.length === 1 ? "ad" : "ads"}, {used.length} {noun}.
+        {ads.length} {ads.length === 1 ? "ad" : "ads"}, {used.length} {noun}.
         Visual variety is not the same as different ideas.
       </p>
       <p className="mt-1 text-sm text-muted-foreground">

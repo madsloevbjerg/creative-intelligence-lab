@@ -13,7 +13,7 @@ export type Gap = {
  */
 const FOCUS_LINKS: { pattern: RegExp; motivation: Motivation; label: string }[] = [
   { pattern: /ritual|emotion/i, motivation: "Emotion/ritual", label: "the ritual" },
-  { pattern: /roast|origin|quality/i, motivation: "Quality/performance", label: "quality and roast detail" },
+  { pattern: /\b(quality|performance|durability|craftsmanship|origin)\b/i, motivation: "Quality/performance", label: "quality and product detail" },
   { pattern: /trust|safe|guarantee/i, motivation: "Safety/trust", label: "trust" },
   { pattern: /belong|community|together/i, motivation: "Belonging/social proof", label: "belonging" },
   { pattern: /curios|discover|new/i, motivation: "Curiosity/novelty", label: "curiosity" },
@@ -32,7 +32,7 @@ export function offBrandMotivations(exclusions: readonly string[]): Motivation[]
 export function conflictQuote(copy: string, exclusions: readonly string[]): string | null {
   const offer = /\b(free|gratis|discount|%\s*off|\d[\d\s.,]*\s*(kr|dkk|€|eur|£|gbp|\$|usd))\b/i.test(copy);
   if (!offer) return null;
-  const quotes = exclusions.filter((line) => /discount|price cut|gratis|free bag/i.test(line));
+  const quotes = exclusions.filter((line) => /discount|price cut|gratis|free (?:item|product|gift|offer)/i.test(line));
   quotes.sort((a, b) => b.length - a.length);
   return quotes[0] ?? null;
 }
@@ -40,7 +40,8 @@ export function conflictQuote(copy: string, exclusions: readonly string[]): stri
 function focusFor(motivation: Motivation, focusPoints: readonly string[]): string | null {
   const text = focusPoints.join(" ");
   const link = FOCUS_LINKS.find((item) => item.motivation === motivation && item.pattern.test(text));
-  return link?.label ?? null;
+  if (!link) return null;
+  return focusPoints.find((point) => link.pattern.test(point)) ?? link.label;
 }
 
 function executionFor(motivation: Motivation, used: ReadonlySet<string>): Execution | null {
