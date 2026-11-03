@@ -4,7 +4,6 @@ import path from "node:path";
 import sharp from "sharp";
 
 import { brandKit } from "../lib/brand-kit";
-import { brandLabel } from "../lib/brand-label";
 import { compositeAd, contactSheet, rawPng } from "../lib/composite-ad";
 import { formatUsd } from "../lib/money";
 import {
@@ -118,7 +117,7 @@ async function main(): Promise<void> {
         let note = "";
         for (let attempt = 1; attempt <= 2 && !accepted; attempt += 1) {
           const still = await generateDemoStill({ prompt: promptFor(scene, extra), cacheScope: "demo" });
-          let photo = Buffer.from(still.b64Json, "base64");
+          const photo = Buffer.from(still.b64Json, "base64");
           const meta = await sharp(photo).rotate().metadata();
           const width = meta.width ?? 0;
           const height = meta.height ?? 0;
@@ -137,19 +136,6 @@ async function main(): Promise<void> {
             else phraseHits.neither += 1;
           }
           const bag = largest(found.get("bag") ?? []);
-          const label = largest(found.get("green label") ?? []);
-          const phone = largest(found.get("phone") ?? []);
-          const faceBox = largest([...(found.get("face") ?? []), ...(found.get("head") ?? [])]);
-          const labelOk =
-            label &&
-            width > 0 &&
-            (label.right - label.left) * (label.bottom - label.top) < width * height * 0.18 &&
-            !(phone && overlaps(label, phone)) &&
-            !(faceBox && overlaps(label, faceBox));
-          if (labelOk && label) {
-            const labelled = await brandLabel(photo, label, brandKit.name);
-            if (labelled) photo = Buffer.from(labelled);
-          }
           const subjects = ["person", "face", "head", "cup", "hand"]
             .flatMap((phrase) => found.get(phrase) ?? [])
             .concat(bag ? [bag] : []);

@@ -8,9 +8,9 @@ No live Meta calls were made. All model-dependent checks used committed cache or
 
 ## Placement
 
-Ads 1, 2 and 6 were regenerated without printed labels. Ad 1 uses its clean approved candidate; ad 2 uses its clean raw photograph from commit 8a9f248 (before label printing); ad 6 uses its clean approved phone candidate and cached phone mask. Raw photos and finals are updated. Ads 3, 4, 5, 7 and 8 remain byte-for-byte unchanged. The contact sheet was regenerated and visually checked.
+Ads 1, 2 and 6 were regenerated without printed labels. Ad 1 uses its clean approved candidate; ad 2 uses its clean raw photograph from commit 8a9f248 (before label printing); ad 6 uses its clean approved phone candidate and cached phone mask. A later pass turned printing off for every ad and every M5 mockup (`BRAND_LABEL_ENABLED` is false). There is no rule that keeps a printed name on ads 3, 4, 5, 7, or 8.
 
-`PLACE_ONLY=1` now bypasses all model calls even if a key is injected, only rebuilds the three rejected label placements, and preserves the other five finals. It no longer writes to a machine-specific /opt path. Run from the repository root:
+`PLACE_ONLY=1` bypasses model calls even if a key is injected and rebuilds all eight finals from the unlabeled photographs. It does not print a name on the bag. It no longer writes to a machine-specific /opt path. Run from the repository root:
 
 ```sh
 PLACE_ONLY=1 USE_MOCK=true npx tsx --tsconfig scripts/tsconfig.budget.json scripts/m3-place.ts

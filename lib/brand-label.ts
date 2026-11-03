@@ -4,15 +4,21 @@ import { labelWidth } from "@/lib/wordmark";
 import type { MaskBox } from "@/lib/smart-crop";
 
 /**
+ * Off. The bag keeps the plain green block from the photograph.
+ * The function stays so a later pass can turn printing back on in one place.
+ */
+export const BRAND_LABEL_ENABLED = false;
+
+/**
  * Prints a brand name onto the bag's green label so it looks printed on the pack.
- * Returns null when the mask is missing, tiny, or almost the whole picture.
- * The top-left wordmark pill is a separate overlay.
+ * Returns null when printing is off, or when the mask is missing, tiny, or almost the whole picture.
  */
 export async function brandLabel(
   image: Buffer,
   labelMask: MaskBox | null,
   name: string,
 ): Promise<Buffer | null> {
+  if (!BRAND_LABEL_ENABLED) return null;
   if (!labelMask) return null;
   const meta = await sharp(image).metadata();
   const width = meta.width ?? 0;

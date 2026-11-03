@@ -4,7 +4,6 @@ import path from "node:path";
 import sharp from "sharp";
 
 import { brandKit } from "../lib/brand-kit";
-import { brandLabel } from "../lib/brand-label";
 import { compositeAd, contactSheet, rawPng } from "../lib/composite-ad";
 import { demoPortfolio } from "../lib/demo";
 import { demoFileDataUrl } from "../lib/demo-data-url";
@@ -59,14 +58,6 @@ function largest(boxes: readonly MaskBox[]): MaskBox | null {
     }
   }
   return best;
-}
-
-function overlaps(a: MaskBox, b: MaskBox): boolean {
-  const width = Math.min(a.right, b.right) - Math.max(a.left, b.left);
-  const height = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-  if (width <= 0 || height <= 0) return false;
-  const label = Math.max(1, (a.right - a.left) * (a.bottom - a.top));
-  return (width * height) / label > 0.4;
 }
 
 function intoCrop(box: MaskBox, crop: { left: number; top: number; width: number; height: number }): MaskBox | null {
@@ -178,7 +169,7 @@ async function main(): Promise<void> {
         const letter = letters[sceneIndex] ?? "a";
         const id = `${index + 1}${letter}`;
         const still = await generateDemoStill({ prompt: promptFor(scene), cacheScope: "demo" });
-        let photo = Buffer.from(still.b64Json, "base64");
+        const photo = Buffer.from(still.b64Json, "base64");
         const meta = await sharp(photo).rotate().metadata();
         const width = meta.width ?? 0;
         const height = meta.height ?? 0;
@@ -190,12 +181,6 @@ async function main(): Promise<void> {
           found.set(phrase, region.boxes);
         }
         const bag = largest(found.get("bag") ?? []);
-        const phone = largest(found.get("phone") ?? []);
-        const label = largest(found.get("green label") ?? []);
-        if (label && !(phone && overlaps(label, phone))) {
-          const labelled = await brandLabel(photo, label, brandKit.name);
-          if (labelled) photo = Buffer.from(labelled);
-        }
         const subjects = ["person", "face", "cup", "hand"]
           .flatMap((phrase) => found.get(phrase) ?? [])
           .concat(bag ? [bag] : []);

@@ -105,7 +105,7 @@ There is no database. An analysis stays in the browser until refresh. Retries: `
 
 ### Done since the handoff
 
-- Merged Codex `920c246` (`codex-920c246`, based on `4eb3588`). Kept the generalized ranking rules, the office-furniture regression in `scripts/validate-gaps.ts`, `scripts/audit-demo-cache.ts`, the `PLACE_ONLY` path in `scripts/m3-place.ts`, and `docs/review/cached-demo.md`. Kept the refreshed cache, the headline design, and the M5 files. Ads 1, 2, and 6 were rebuilt with that headline design and no printed bag label. Ads 3, 4, 5, 7, and 8 still have the printed label. The demo cache was refreshed for the three rebuilt ads.
+- Merged Codex `920c246` (`codex-920c246`, based on `4eb3588`). Kept the generalized ranking rules, the office-furniture regression in `scripts/validate-gaps.ts`, `scripts/audit-demo-cache.ts`, the `PLACE_ONLY` path in `scripts/m3-place.ts`, and `docs/review/cached-demo.md`. Kept the refreshed cache, the headline design, and the M5 files.
 - The demo cache matches the current eight finals, the website text, and the brief. `npm run check:safety` passes. `scripts/refresh-demo-cache.ts` is the refresh. A headline restyle required a second refresh; both are committed.
 - After that second classify, ad 7 is `Emotion/ritual` × `Lifestyle scene`. That cell is no longer empty. The current top 3 from `rankGaps` are Safety/trust × Testimonial, Belonging/social proof × Person/UGC, and Curiosity/novelty × Demo/how-to.
 - M5 briefs were rewritten so each motivation leads. The testimonial is labelled `Illustrative testimonial: replace with a real customer quote before use` in `docs/m5/briefs.md` and on the Safety/trust × Testimonial cell. A shared headline opening, or Aarhus/ristedato in more than one headline, is rejected by `lib/brief-rules.ts`.
@@ -114,7 +114,8 @@ There is no database. An analysis stays in the browser until refresh. Retries: `
 ### Still open
 
 - Ranking rewrite is in `lib/gaps.ts` and `lib/taxonomy.ts`. `components/coverage-map.tsx` leaves one-ad cells uncoloured. These were not re-checked in the browser after the stop.
-- Ads 1, 2, and 6 have no printed bag label. Ads 3, 4, 5, 7, and 8 keep the printed label.
+- Mads picked M5 candidates **1a**, **2a**, and **3b**.
+- `BRAND_LABEL_ENABLED` in `lib/brand-label.ts` is false. Nothing calls `brandLabel`. Every bag keeps the plain green block. The old rule that ads 3, 4, 5, 7, and 8 keep a printed name is gone.
 
 ### Left
 
@@ -132,7 +133,7 @@ Ranking rules (the intended behavior of `lib/gaps.ts`):
 Also left:
 
 - Quiet one-ad cells are coded; confirm them in the browser.
-- `brandLabel` on the bag label for the 8 ads and later mockups. Drop it where it looks pasted. Keep the top-left pill.
+- The printed bag name stays off (`BRAND_LABEL_ENABLED` is false).
 - Hardcoding audit: conflict flags, off-brand rows, ranking, and the summary sentence must be driven by the brief, the website text, and model output. Demo files (`lib/demo.ts`, fixtures) may stay brand-specific. `lib/gaps.ts` still has general keyword rules (discount language, ritual → Emotion/ritual). Re-read those before calling the audit done.
 - M5 after the picks: lock a, b, or c; Feed 4:5 and Reels 9:16; one AI persona whose images are labelled `AI-generated persona, fictional`; a before/after view; MD/PDF export.
 - M6: deploy that serves the cached demo with no mock banner, plus passcode-gated uploads; README with the Andromeda link above and the no-performance-prediction principle; a submission checklist; a 2-minute click path; make the repo public only when asked.

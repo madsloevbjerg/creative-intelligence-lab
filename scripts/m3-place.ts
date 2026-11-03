@@ -3,8 +3,6 @@ import path from "node:path";
 
 import sharp from "sharp";
 
-import { brandLabel } from "../lib/brand-label";
-import { brandKit } from "../lib/brand-kit";
 import { compositeAd, contactSheet } from "../lib/composite-ad";
 import { demoPortfolio } from "../lib/demo";
 import { formatUsd } from "../lib/money";
@@ -17,7 +15,6 @@ import {
   readSpendTotalUsd,
   runWithCost,
   segmentImage,
-  segmentRegions,
   summarizeBrand,
   type SegmentRegion,
 } from "../lib/meta";
@@ -128,48 +125,14 @@ async function main(): Promise<void> {
   };
   const before = readSpendTotalUsd();
   const finals: { label: string; image: Buffer }[] = [];
-  const labelNotes: string[] = [];
-  const labelBoxes = new Map<string, MaskBox | null>();
-  if (process.env.PLACE_ONLY !== "1" && process.env.MODEL_API_KEY?.trim()) {
-    await runWithCost("live", async () => {
-      for (const ad of demoPortfolio.ads) {
-        const number = ad.id.slice(4);
-        const clean = ad.id === "dcl-01" ? "public/demo/candidates/dcl-01-c.png" : ad.id === "dcl-06" ? "public/demo/candidates/dcl-06-a.png" : `public/demo/dcl-${number}-raw.png`;
-        const bytes = readFileSync(path.join(process.cwd(), clean));
-        const imageUrl = pngDataUrl(bytes);
-        const cached = readCachedRegions(imageUrl, "green label", "demo");
-        const region = cached ?? (await segmentRegions({ imageUrl, phrase: "green label", cacheScope: "demo" }));
-        const boxes = region.found ? await tightBoxes(region) : [];
-        const box =
-          boxes.sort(
-            (a, b) => (b.right - b.left) * (b.bottom - b.top) - (a.right - a.left) * (a.bottom - a.top),
-          )[0] ?? null;
-        labelBoxes.set(ad.id, box);
-      }
-    });
-  }
 
   for (const ad of demoPortfolio.ads) {
-    if (process.env.PLACE_ONLY === "1" && !["dcl-01", "dcl-02", "dcl-06"].includes(ad.id)) {
-      finals.push({ label: String(Number(ad.id.slice(4))), image: readFileSync(path.join(process.cwd(), "public", ad.file)) });
-      continue;
-    }
     const pick = manifest.picks[ad.id];
     if (!pick) throw new Error(ad.id);
     const number = ad.id.slice(4);
     const rawPath = path.join(process.cwd(), "public", "demo", `dcl-${number}-raw.png`);
-    const clean = ad.id === "dcl-01" ? "public/demo/candidates/dcl-01-c.png" : ad.id === "dcl-06" ? "public/demo/candidates/dcl-06-a.png" : `public/demo/dcl-${number}-raw.png`;
+    const clean = (sources[ad.id] ?? [`public/demo/dcl-${number}-raw.png`])[0]!;
     let photo = readFileSync(path.join(process.cwd(), clean));
-    const skipLabel = new Set(["dcl-01", "dcl-02", "dcl-06"]);
-    const labelled = skipLabel.has(ad.id)
-      ? null
-      : await brandLabel(photo, labelBoxes.get(ad.id) ?? null, brandKit.name);
-    if (labelled) {
-      photo = Buffer.from(labelled);
-      labelNotes.push(`${Number(number)}: wordmark printed on the green label`);
-    } else {
-      labelNotes.push(`${Number(number)}: no label print (mask missing or unusable)`);
-    }
     const files = sources[ad.id] ?? [`public/demo/dcl-${number}-raw.png`];
     const masks: SubjectMask[] = [];
     const elements: { subject: string; left: number; top: number; right: number; bottom: number }[] = [];
@@ -217,8 +180,7 @@ async function main(): Promise<void> {
       placement: { band: placement.place, reason: placement.reason },
       elements,
     };
-    console.log(`${Number(number)}: ${placement.reason}`);
-    console.log(`  ${labelNotes[labelNotes.length - 1] ?? ""}`);
+    console.log(`${Number(number)}: ${placement.reason} (plain green label, no printed name)`);
   }
 
   const body = `${JSON.stringify(manifest, null, 2)}\n`;

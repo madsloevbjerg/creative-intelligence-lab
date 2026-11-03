@@ -2,6 +2,8 @@
 
 The eight existing ads are the before. These three are the after, from the current top gaps.
 
+Mads picked **1a**, **2a**, and **3b**.
+
 ## 1. Tryg start uden binding
 Safe start with no lock-in
 
