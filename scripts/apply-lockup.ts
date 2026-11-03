@@ -4,6 +4,7 @@ import path from "node:path";
 
 import sharp from "sharp";
 
+import { activeConceptCopy } from "../lib/copy-language";
 import { contactSheet } from "../lib/composite-ad";
 import { demoPortfolio } from "../lib/demo";
 import { layoutQaLine, renderLockup, type LayoutQa, type LockupMasks } from "../lib/lockup";
@@ -36,8 +37,8 @@ const SNIPPETS = [
   ["3c", "slightly wider so the pale table", 2],
 ] as const;
 const PICK_HEADLINES: Record<string, string> = {
-  "1a": "I started because I could stop.",
-  "2a": "Same Monday coffee. Different kitchens.",
+  "1a": "Cancel anytime. I just never have.",
+  "2a": "We share everything. Except this.",
   "3b": "Find the cherry. Then the cocoa.",
 };
 
@@ -298,10 +299,11 @@ async function main(): Promise<void> {
       if (result.qa.recropped) recrops.push(id);
       console.log(`${id}: ${result.qa.corner} recrop ${result.qa.recropped} phrase ${result.phrase} · ${result.qa.reason}`);
       if (PICK_HEADLINES[id]) {
+        const concept = activeConceptCopy()[String(briefIndex + 1) as "1" | "2" | "3"];
         const note =
           id === "1a"
-            ? `${id}  ${brief.copy.conceptName}\n${brief.motivation} · ${brief.execution}\nIllustrative testimonial:\nreplace with a real customer quote before use`
-            : `${id}  ${brief.copy.conceptName}\n${brief.motivation} · ${brief.execution}`;
+            ? `${id}  ${concept.name}\n${brief.motivation} · ${brief.execution}\nIllustrative testimonial:\nreplace with a real customer quote before use`
+            : `${id}  ${concept.name}\n${brief.motivation} · ${brief.execution}`;
         cells.push({ label: note, image: result.image });
       }
     }

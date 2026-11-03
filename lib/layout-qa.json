@@ -239,7 +239,7 @@
   },
   "1a": {
     "corner": "bottom-left",
-    "contrast": 7.23,
+    "contrast": 7.25,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -255,8 +255,8 @@
     "marginOk": true,
     "lines": 2,
     "lineText": [
-      "I started because",
-      "I could stop."
+      "Cancel anytime.",
+      "I just never have."
     ],
     "words": 6,
     "coverage": 8.3,
@@ -265,7 +265,7 @@
     "bagClipped": false,
     "recropped": false,
     "ok": true,
-    "reason": "bottom-left, 2 lines, contrast 7.2:1"
+    "reason": "bottom-left, 2 lines, contrast 7.3:1"
   },
   "1c": {
     "corner": "bottom-left",
@@ -315,11 +315,11 @@
     "marginOk": true,
     "lines": 2,
     "lineText": [
-      "Same Monday coffee.",
-      "Different kitchens."
+      "We share everything.",
+      "Except this."
     ],
     "words": 5,
-    "coverage": 9.9,
+    "coverage": 10,
     "fontSize": 40,
     "wordmarkSize": 18,
     "bagClipped": false,

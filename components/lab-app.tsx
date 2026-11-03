@@ -16,6 +16,7 @@ import { FeedFrame } from "@/components/feed-frame";
 import { readImageFile } from "@/components/read-image";
 import { SamCropView } from "@/components/sam-crop-view";
 import { demoFileDataUrl } from "@/lib/demo-data-url";
+import { demoCopyLanguage } from "@/lib/copy-language";
 import { demoPortfolio } from "@/lib/demo";
 import { formatBudgetUsd, formatUsd } from "@/lib/money";
 import {
@@ -285,7 +286,7 @@ export function LabApp() {
     <main className="mx-auto flex w-full max-w-[88rem] flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <p className="text-sm text-muted-foreground">Meta ad creative coverage</p>
+          <p className="text-sm text-muted-foreground">Meta ad creative coverage · Copy language: {demoCopyLanguage === "en" ? "English" : "Danish"}</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
             Creative Intelligence Lab
           </h1>
