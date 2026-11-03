@@ -203,7 +203,7 @@
       "bagCount": 1,
       "placement": {
         "band": "bottom",
-        "reason": "Headline placed at bottom: top band overlapped phone and hand. Wordmark stays top-left: a nudge inside the corner would still meet the phone"
+        "reason": "Headline placed at bottom: top band overlapped phone and hand. Wordmark moved to the bottom-left: the top-left would have covered the phone"
       },
       "elements": [
         {

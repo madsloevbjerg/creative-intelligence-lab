@@ -174,10 +174,15 @@ function textBlock(frame: CropRect, headline: string, maxChars: number, maxLines
 }
 
 function slots(frame: CropRect, safe: SafeZone, wordmark: CropRect, headline: string): Slot[] {
-  const left = frame.left + safe.left * frame.width;
-  const right = frame.left + frame.width * (1 - safe.right);
-  const top = Math.max(frame.top + safe.top * frame.height, wordmark.top + wordmark.height + frame.height * 0.012);
-  const bottom = frame.top + frame.height * (1 - safe.bottom);
+  const left = frame.left + Math.max(safe.left, 0.05) * frame.width;
+  const right = frame.left + frame.width * (1 - Math.max(safe.right, 0.05));
+  const wordmarkLow = wordmark.top > frame.top + frame.height * 0.45;
+  const top = wordmarkLow
+    ? frame.top + safe.top * frame.height + frame.height * 0.03
+    : Math.max(frame.top + safe.top * frame.height, wordmark.top + wordmark.height + frame.height * 0.02);
+  const bottom = wordmarkLow
+    ? wordmark.top - frame.height * 0.02
+    : frame.top + frame.height * (1 - safe.bottom);
   const wide = textBlock(frame, headline, 28, 2);
   const narrow = textBlock(frame, headline, 16, 3);
   const box = (x: number, y: number, block: { width: number; height: number }): CropRect => ({
@@ -215,17 +220,44 @@ export function defaultWordmark(frame: CropRect): CropRect {
 function nudgeWordmark(frame: CropRect, blocked: readonly MaskBox[]): { left: number; top: number; nudged: boolean; clearOf: string } {
   const base = defaultWordmark(frame);
   const areaOf = (rect: CropRect) => overlapOf(rect, blocked);
-  if (areaOf(base) === 0) return { left: base.left, top: base.top, nudged: false, clearOf: "" };
-  for (const shift of [0.04, 0.08, 0.12]) {
-    for (const drop of [0, 0.04, 0.08]) {
-      const left = base.left + shift * frame.width;
-      const top = base.top + drop * frame.height;
-      if (left + base.width > frame.left + frame.width * 0.58) continue;
-      if (top + base.height > frame.top + frame.height * 0.28) continue;
-      const rect = { left: Math.round(left), top: Math.round(top), width: base.width, height: base.height };
-      if (areaOf(rect) === 0) {
-        return { left: rect.left, top: rect.top, nudged: true, clearOf: shift >= drop ? "right" : "down" };
-      }
+  const marginX = Math.round(frame.width * 0.05);
+  const marginY = Math.round(Math.max(frame.width * 0.04, frame.height * 0.03));
+  const corners: { rect: CropRect; clearOf: string }[] = [
+    { rect: base, clearOf: "" },
+    {
+      rect: { ...base, left: Math.round(frame.left + frame.width - marginX - base.width) },
+      clearOf: "the top-right",
+    },
+    {
+      rect: { ...base, top: Math.round(frame.top + frame.height - marginY - base.height) },
+      clearOf: "the bottom-left",
+    },
+    {
+      rect: {
+        ...base,
+        left: Math.round(frame.left + frame.width - marginX - base.width),
+        top: Math.round(frame.top + frame.height - marginY - base.height),
+      },
+      clearOf: "the bottom-right",
+    },
+  ];
+  for (const shift of [0.06, 0.12]) {
+    const left = base.left + shift * frame.width;
+    if (left + base.width < frame.left + frame.width * 0.72) {
+      corners.splice(1, 0, {
+        rect: { ...base, left: Math.round(left) },
+        clearOf: "the right, still in the top band",
+      });
+    }
+  }
+  for (const corner of corners) {
+    if (areaOf(corner.rect) === 0) {
+      return {
+        left: corner.rect.left,
+        top: corner.rect.top,
+        nudged: corner.clearOf !== "",
+        clearOf: corner.clearOf,
+      };
     }
   }
   return { left: base.left, top: base.top, nudged: false, clearOf: "stays" };
@@ -249,13 +281,13 @@ export function placeText(
   const phones = masks.filter((mask) => mask.subject === "phone").map((mask) => mask.box);
   const cups = masks.filter((mask) => mask.subject === "cup").map((mask) => mask.box);
   const roasters = masks.filter((mask) => mask.subject === "roaster").map((mask) => roasterKey(mask.box));
-  const hard = [...faces, ...bags, ...phones, ...cups, ...roasters];
-  const wordmarkNudge = nudgeWordmark(frame, [...faces, ...phones]);
+  const wordmarkNudge = nudgeWordmark(frame, phones);
   const wordmarkRect = {
     ...defaultWordmark(frame),
     left: wordmarkNudge.left,
     top: wordmarkNudge.top,
   };
+  const hard = [...faces, ...bags, ...phones, ...cups, ...roasters, asBox(wordmarkRect)];
   const optionsSlots = slots(frame, safe, wordmarkRect, headline);
 
   const clear = (rect: CropRect, boxes: readonly MaskBox[]) => overlapOf(rect, boxes) === 0;
@@ -298,11 +330,11 @@ export function placeText(
     reason = `Headline placed ${placeName(chosen.place)}: a full band would cover the bag or the roaster`;
   }
   if (wordmarkNudge.nudged) {
-    const covered = phones.length > 0 && faces.length === 0 ? "the phone" : "a face";
-    reason = `${reason}. Wordmark nudged ${wordmarkNudge.clearOf} within the top-left: it would have covered ${covered}`;
-  } else if (overlapOf(wordmarkRect, [...faces, ...phones]) > 0) {
-    const covered = phones.length > 0 && faces.length === 0 ? "the phone" : "a face";
-    reason = `${reason}. Wordmark stays top-left: a nudge inside the corner would still meet ${covered}`;
+    reason = `${reason}. Wordmark moved to ${wordmarkNudge.clearOf}: the top-left would have covered the phone`;
+  } else if (overlapOf(wordmarkRect, faces) > 0) {
+    reason = `${reason}. Wordmark stays top-left: a nudge inside the corner would still meet a face`;
+  } else if (overlapOf(wordmarkRect, phones) > 0) {
+    reason = `${reason}. Wordmark stays top-left: no corner was clear of the phone`;
   }
 
   return {

@@ -94,32 +94,37 @@ export function adOverlaySvg(input: {
   const pillPadX = Math.round(pillHeight * 0.55);
   const textWidth = labelWidth(brandKit.name, brandSize);
   const pillWidth = Math.min(Math.round(width * 0.92), Math.round(textWidth + pillPadX * 2));
+  const inset = Math.round(width * 0.05);
   const pillX = Math.round(input.wordmark.left);
   const pillY = Math.round(input.wordmark.top);
-  const textX = Math.round(input.headlineBox.left);
-  const firstBaseline = Math.round(input.headlineBox.top + lineHeight);
+  const textX = Math.max(inset, Math.round(input.headlineBox.left));
+  const low = input.headlineBox.top > height * 0.45;
+  const boxBottom = Math.round(Math.min(height - inset, input.headlineBox.top + input.headlineBox.height));
+  const firstBaseline = low
+    ? boxBottom - (lines.length - 1) * lineHeight
+    : Math.max(pillY + pillHeight + Math.round(width * 0.045), Math.round(input.headlineBox.top)) + Math.round(lineHeight * 0.85);
   const headlineText = lines
     .map((line, index) => {
       const y = firstBaseline + index * lineHeight;
       return `<text x="${textX}" y="${y}" font-family="Noto Serif, serif" font-size="${headlineSize}" font-weight="700" fill="${paper}">${escapeXml(line)}</text>`;
     })
     .join("");
-  const longest = Math.max(...lines.map((line) => labelWidth(line, headlineSize)));
-  const scrimX = Math.max(0, textX - Math.round(width * 0.02));
-  const scrimY = Math.max(0, Math.round(input.headlineBox.top));
-  const scrimW = Math.min(width - scrimX, longest + Math.round(width * 0.06));
-  const scrimH = Math.min(height - scrimY, lineHeight * lines.length + Math.round(width * 0.04));
+  const bandPad = Math.round(width * 0.045);
+  const scrimY = low
+    ? Math.max(0, firstBaseline - lineHeight - bandPad)
+    : Math.max(0, firstBaseline - lineHeight - bandPad);
+  const scrimH = low ? height - scrimY : Math.min(height - scrimY, lineHeight * lines.length + bandPad * 2);
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <defs>
-    <linearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${ink}" stop-opacity="0.15"/>
-      <stop offset="0.45" stop-color="${ink}" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="${ink}" stop-opacity="0.15"/>
+    <linearGradient id="scrim" x1="0" y1="${low ? 0 : 1}" x2="0" y2="${low ? 1 : 0}">
+      <stop offset="0" stop-color="${ink}" stop-opacity="0"/>
+      <stop offset="0.42" stop-color="${ink}" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="${ink}" stop-opacity="0.5"/>
     </linearGradient>
   </defs>
-  <rect x="${scrimX}" y="${scrimY}" width="${scrimW}" height="${scrimH}" rx="${Math.round(width * 0.02)}" fill="url(#scrim)"/>
+  <rect x="0" y="${scrimY}" width="${width}" height="${scrimH}" fill="url(#scrim)"/>
   <rect x="${pillX}" y="${pillY}" width="${pillWidth}" height="${pillHeight}" rx="${Math.round(pillHeight / 2)}" fill="${deepGreen}"/>
   <text x="${pillX + pillPadX}" y="${pillY + Math.round(pillHeight * 0.68)}" font-family="Noto Serif, serif" font-size="${brandSize}" font-weight="700" fill="${cream}">${escapeXml(brandKit.name)}</text>
   ${headlineText}
