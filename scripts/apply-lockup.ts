@@ -38,7 +38,7 @@ const SNIPPETS = [
 ] as const;
 const PICK_HEADLINES: Record<string, string> = {
   "1a": "Cancel anytime. I just never have.",
-  "2a": "We share everything. Except this.",
+  "2a": "We argue about everything. Except the coffee.",
   "3b": "Find the cherry. Then the cocoa.",
 };
 
@@ -284,7 +284,7 @@ async function main(): Promise<void> {
     for (const [id, snippet, briefIndex] of SNIPPETS) {
       const brief = briefs[briefIndex];
       if (!brief) throw new Error(id);
-      const photo = id === "2a" ? readFileSync("public/demo/m5/c2-a-raw.png") : await sharp(await cachedStill(snippet)).rotate().png().toBuffer();
+      const photo = id === "2a" ? readFileSync("public/demo/m5/v2-b-raw.png") : await sharp(await cachedStill(snippet)).rotate().png().toBuffer();
       const headline = PICK_HEADLINES[id] ?? brief.copy.headlineDa;
       const result = await paint(photo, headline, dataUrl(photo), null);
       if (!result) {

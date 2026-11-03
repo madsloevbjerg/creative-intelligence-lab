@@ -19,7 +19,7 @@ const after = [
   {
     src: "/demo/m5/2a.png",
     tall: "/demo/m5/persona-916.png",
-    title: "The one thing we don't share",
+    title: "The one thing we agree on",
     meta: "Belonging/social proof · Person/UGC",
     note: "AI-generated persona, fictional",
   },

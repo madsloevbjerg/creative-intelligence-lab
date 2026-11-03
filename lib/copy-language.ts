@@ -16,10 +16,10 @@ export const conceptCopy = {
       label: "Illustrative testimonial: replace with a real customer quote before use.",
     },
     "2": {
-      name: "The one thing we don't share",
-      headline: "We share everything. Except this.",
+      name: "The one thing we agree on",
+      headline: "We argue about everything. Except the coffee.",
       primary:
-        "House rule for Monday's bag: whoever reaches it first, brews it. The price per cup is on the page before you start, and you can skip a week.",
+        "At home we argue about everything else. The coffee is the one thing we agree on. The price per cup is on the page before you start, and you can skip a week.",
     },
     "3": {
       name: "The two-cup kitchen experiment",
@@ -37,10 +37,10 @@ export const conceptCopy = {
       label: "Illustrativt citat: udskift med et rigtigt kundecitat før brug.",
     },
     "2": {
-      name: "Det eneste vi ikke deler",
-      headline: "Vi deler alt. Bare ikke den her.",
+      name: "Det eneste vi er enige om",
+      headline: "Vi skændes om alt. Bare ikke kaffen.",
       primary:
-        "Husregel for mandagens pose: den der når den først, brygger den. Prisen pr. kop står der, før du starter, og du kan springe en uge over.",
+        "Derhjemme skændes vi om alt det andet. Kaffen er det eneste, vi er enige om. Prisen pr. kop står der, før du starter, og du kan springe en uge over.",
     },
     "3": {
       name: "Køkkenforsøget med to kopper",

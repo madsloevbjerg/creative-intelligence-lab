@@ -90,6 +90,31 @@ function orphan(line: string, totalWords: number): boolean {
   return totalWords > 1 && wordsOf(line).length < 2;
 }
 
+function splitBalanced(words: string[], fontSize: number, maxWidth: number, slots: number): string[] | null {
+  if (slots < 1) return null;
+  if (slots === 1) {
+    const line = words.join(" ");
+    return fits(line, fontSize, maxWidth) && !orphan(line, words.length) ? [line] : null;
+  }
+  let best: string[] | null = null;
+  let bestScore = Number.POSITIVE_INFINITY;
+  const minSide = words.length >= 4 ? 2 : 1;
+  for (let split = minSide; split <= words.length - minSide; split += 1) {
+    const leftWords = words.slice(0, split);
+    const rightWords = words.slice(split);
+    const left = leftWords.join(" ");
+    if (orphan(left, words.length) || !fits(left, fontSize, maxWidth)) continue;
+    const rest = splitBalanced(rightWords, fontSize, maxWidth, slots - 1);
+    if (!rest) continue;
+    const score = Math.abs(labelWidth(left, fontSize) - labelWidth(rest[0] ?? "", fontSize));
+    if (score < bestScore) {
+      bestScore = score;
+      best = [left, ...rest];
+    }
+  }
+  return best;
+}
+
 /** Prefer two lines of similar width. Break after a sentence. Never leave one word on its own line. */
 export function balanceHeadline(headline: string, fontSize: number, maxWidth: number): string[] {
   const raw = headline.trim();
@@ -102,6 +127,16 @@ export function balanceHeadline(headline: string, fontSize: number, maxWidth: nu
     sentences.every((line) => fits(line, fontSize, maxWidth) && !orphan(line, words.length))
   ) {
     return sentences;
+  }
+  if (sentences.length >= 2) {
+    const tail = sentences.slice(1);
+    const tailLines = tail.filter((line) => fits(line, fontSize, maxWidth) && !orphan(line, words.length));
+    const slots = lockupConfig.maxLines - tailLines.length;
+    const headWords = wordsOf(sentences[0] ?? "");
+    if (slots >= 1 && tailLines.length === tail.length) {
+      const head = splitBalanced(headWords, fontSize, maxWidth, slots);
+      if (head && [...head, ...tailLines].length <= lockupConfig.maxLines) return [...head, ...tailLines];
+    }
   }
   if (fits(raw, fontSize, maxWidth)) return [raw];
   let best: string[] | null = null;
