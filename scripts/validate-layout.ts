@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import sharp from "sharp";
 
 import { brandKit } from "../lib/brand-kit";
-import { contrastRatio, renderLockup, type LayoutQa } from "../lib/lockup";
+import { balanceHeadline, contrastRatio, renderLockup, type LayoutQa } from "../lib/lockup";
 import { lockupConfig } from "../lib/lockup-config";
 
 let failures = 0;
@@ -17,10 +17,16 @@ function assertRecord(name: string, qa: LayoutQa): void {
   if (qa.words > lockupConfig.maxWords) fail(`${name} has ${qa.words} words`);
   if (qa.lines > lockupConfig.maxLines) fail(`${name} has ${qa.lines} lines`);
   if (!qa.marginOk) fail(`${name} misses the margin`);
+  if (qa.bagClipped) fail(`${name} clips the bag`);
+  if (qa.fontSize < 800 * lockupConfig.minHeadlineSizeFraction - 0.5) fail(`${name} headline is under 5% of width`);
+  if (qa.wordmarkSize < 800 * lockupConfig.minWordmarkSizeFraction - 0.5) fail(`${name} wordmark is under 2.2% of width`);
   for (const key of ["face", "head", "hands", "bag"] as const) {
     if (qa.overlapPx[key] > 0) fail(`${name} overlaps ${key} by ${qa.overlapPx[key]}px`);
   }
-  if (qa.fontSize < 1) fail(`${name} has no font size`);
+  for (const line of qa.lineText ?? []) {
+    const count = line.trim().split(/\s+/).filter(Boolean).length;
+    if (qa.words > 1 && count < 2) fail(`${name} leaves a single word on a line: ${line}`);
+  }
 }
 
 async function main(): Promise<void> {
@@ -95,6 +101,14 @@ const blended: [number, number, number] = [
   paper[2] * (1 - lockupConfig.boxOpacity) + ink[2] * lockupConfig.boxOpacity,
 ];
 if (contrastRatio(parse(cream), blended) < lockupConfig.minContrast) fail("cream on the green box is under 4.5:1");
+
+const cherry = balanceHeadline("Find the cherry. Then the cocoa.", 40, 520);
+if (cherry.join(" / ") !== "Find the cherry. / Then the cocoa.") fail(`sentence break was ${cherry.join(" / ")}`);
+for (const sample of ["Coffee for 49 kr a week", "Three prices, one subscription", "From bag to cup in four steps"]) {
+  const lines = balanceHeadline(sample, 40, 520);
+  if (lines.some((line) => line.trim().split(/\s+/).length < 2)) fail(`orphan in ${sample}: ${lines.join(" / ")}`);
+  if (lines.length > 2) fail(`${sample} used ${lines.length} lines`);
+}
 
 const stored = JSON.parse(readFileSync("lib/layout-qa.json", "utf8")) as Record<string, LayoutQa>;
 const names = Object.keys(stored);

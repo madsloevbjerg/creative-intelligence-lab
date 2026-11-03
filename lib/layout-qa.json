@@ -1,7 +1,7 @@
 {
   "dcl-01": {
-    "corner": "bottom-left",
-    "contrast": 7.12,
+    "corner": "top-left",
+    "contrast": 7.11,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -15,17 +15,22 @@
       "bag": 0
     },
     "marginOk": true,
-    "lines": 2,
+    "lines": 1,
+    "lineText": [
+      "Coffee for 49 kr a week"
+    ],
     "words": 6,
-    "coverage": 10,
+    "coverage": 8,
     "fontSize": 40,
-    "recropped": true,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
     "ok": true,
-    "reason": "bottom-left, 2 lines, contrast 7.1:1"
+    "reason": "top-left, 1 line, contrast 7.1:1"
   },
   "dcl-02": {
-    "corner": "bottom-left",
-    "contrast": 7.47,
+    "corner": "top-left",
+    "contrast": 7.23,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -39,63 +44,20 @@
       "bag": 0
     },
     "marginOk": true,
-    "lines": 2,
+    "lines": 1,
+    "lineText": [
+      "Your third bag is free"
+    ],
     "words": 5,
-    "coverage": 7,
+    "coverage": 7.6,
     "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
     "recropped": false,
     "ok": true,
-    "reason": "bottom-left, 2 lines, contrast 7.5:1"
+    "reason": "top-left, 1 line, contrast 7.2:1"
   },
   "dcl-03": {
-    "corner": "bottom-left",
-    "contrast": 6.91,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 3,
-    "words": 4,
-    "coverage": 9.9,
-    "fontSize": 40,
-    "recropped": false,
-    "ok": true,
-    "reason": "bottom-left, 3 lines, contrast 6.9:1"
-  },
-  "dcl-04": {
-    "corner": "bottom-left",
-    "contrast": 7.36,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 2,
-    "words": 6,
-    "coverage": 13.1,
-    "fontSize": 40,
-    "recropped": false,
-    "ok": true,
-    "reason": "bottom-left, 2 lines, contrast 7.4:1"
-  },
-  "dcl-05": {
     "corner": "bottom-left",
     "contrast": 6.95,
     "overlapPx": {
@@ -111,17 +73,23 @@
       "bag": 0
     },
     "marginOk": true,
-    "lines": 3,
-    "words": 7,
-    "coverage": 9.3,
+    "lines": 2,
+    "lineText": [
+      "Three prices,",
+      "one subscription"
+    ],
+    "words": 4,
+    "coverage": 8.1,
     "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
     "recropped": false,
     "ok": true,
-    "reason": "bottom-left, 3 lines, contrast 7.0:1"
+    "reason": "bottom-left, 2 lines, contrast 7.0:1"
   },
-  "dcl-06": {
+  "dcl-04": {
     "corner": "bottom-left",
-    "contrast": 6.97,
+    "contrast": 7.97,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -136,16 +104,82 @@
     },
     "marginOk": true,
     "lines": 2,
-    "words": 4,
-    "coverage": 9.7,
+    "lineText": [
+      "Beans on the mat",
+      "every Monday"
+    ],
+    "words": 6,
+    "coverage": 8.3,
     "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 8.0:1"
+  },
+  "dcl-05": {
+    "corner": "top-left",
+    "contrast": 7,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "lineText": [
+      "From bag to cup",
+      "in four steps"
+    ],
+    "words": 7,
+    "coverage": 7.9,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 7.0:1"
+  },
+  "dcl-06": {
+    "corner": "bottom-left",
+    "contrast": 7.02,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "lineText": [
+      "Monday coffee,",
+      "already handled"
+    ],
+    "words": 4,
+    "coverage": 8,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
     "recropped": false,
     "ok": true,
     "reason": "bottom-left, 2 lines, contrast 7.0:1"
   },
   "dcl-07": {
     "corner": "bottom-left",
-    "contrast": 7.34,
+    "contrast": 7.59,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -160,16 +194,22 @@
     },
     "marginOk": true,
     "lines": 2,
+    "lineText": [
+      "Roasted this",
+      "week in Aarhus"
+    ],
     "words": 5,
-    "coverage": 10.5,
+    "coverage": 7.7,
     "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
     "recropped": false,
     "ok": true,
-    "reason": "bottom-left, 2 lines, contrast 7.3:1"
+    "reason": "bottom-left, 2 lines, contrast 7.6:1"
   },
   "dcl-08": {
     "corner": "top-left",
-    "contrast": 7.22,
+    "contrast": 7.21,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -184,16 +224,22 @@
     },
     "marginOk": true,
     "lines": 2,
+    "lineText": [
+      "One origin.",
+      "Nothing blended away."
+    ],
     "words": 5,
-    "coverage": 11.3,
+    "coverage": 10.6,
     "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
     "recropped": false,
     "ok": true,
     "reason": "top-left, 2 lines, contrast 7.2:1"
   },
   "1a": {
     "corner": "bottom-left",
-    "contrast": 7.24,
+    "contrast": 7.23,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -208,159 +254,21 @@
     },
     "marginOk": true,
     "lines": 2,
+    "lineText": [
+      "I started because",
+      "I could stop."
+    ],
     "words": 6,
-    "coverage": 10,
+    "coverage": 8.3,
     "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
     "recropped": false,
     "ok": true,
     "reason": "bottom-left, 2 lines, contrast 7.2:1"
   },
   "1c": {
     "corner": "bottom-left",
-    "contrast": 7.01,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 2,
-    "words": 7,
-    "coverage": 12.6,
-    "fontSize": 40,
-    "recropped": false,
-    "ok": true,
-    "reason": "bottom-left, 2 lines, contrast 7.0:1"
-  },
-  "2a": {
-    "corner": "top-left",
-    "contrast": 6.92,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 2,
-    "words": 5,
-    "coverage": 11.9,
-    "fontSize": 40,
-    "recropped": false,
-    "ok": true,
-    "reason": "top-left, 2 lines, contrast 6.9:1"
-  },
-  "2b": {
-    "corner": "bottom-left",
-    "contrast": 6.87,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 3,
-    "words": 7,
-    "coverage": 15.6,
-    "fontSize": 40,
-    "recropped": true,
-    "ok": true,
-    "reason": "bottom-left, 3 lines, contrast 6.9:1"
-  },
-  "2c": {
-    "corner": "top-left",
-    "contrast": 6.85,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 3,
-    "words": 7,
-    "coverage": 15.6,
-    "fontSize": 40,
-    "recropped": false,
-    "ok": true,
-    "reason": "top-left, 3 lines, contrast 6.9:1"
-  },
-  "3a": {
-    "corner": "top-left",
-    "contrast": 6.87,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 2,
-    "words": 7,
-    "coverage": 13.8,
-    "fontSize": 40,
-    "recropped": false,
-    "ok": true,
-    "reason": "top-left, 2 lines, contrast 6.9:1"
-  },
-  "3b": {
-    "corner": "top-left",
-    "contrast": 6.95,
-    "overlapPx": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "overlapPct": {
-      "face": 0,
-      "head": 0,
-      "hands": 0,
-      "bag": 0
-    },
-    "marginOk": true,
-    "lines": 2,
-    "words": 6,
-    "coverage": 14,
-    "fontSize": 40,
-    "recropped": false,
-    "ok": true,
-    "reason": "top-left, 2 lines, contrast 6.9:1"
-  },
-  "3c": {
-    "corner": "top-left",
     "contrast": 6.99,
     "overlapPx": {
       "face": 0,
@@ -376,11 +284,199 @@
     },
     "marginOk": true,
     "lines": 2,
+    "lineText": [
+      "“Jeg startede, fordi jeg",
+      "kunne stoppe igen”"
+    ],
     "words": 7,
-    "coverage": 13.8,
+    "coverage": 10.5,
     "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.0:1"
+  },
+  "2a": {
+    "corner": "top-left",
+    "contrast": 6.93,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "lineText": [
+      "Same Monday coffee.",
+      "Different kitchens."
+    ],
+    "words": 5,
+    "coverage": 9.9,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 6.9:1"
+  },
+  "2b": {
+    "corner": "top-left",
+    "contrast": 6.9,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "lineText": [
+      "Sammen om",
+      "mandagskaffen, hver i",
+      "sit køkken"
+    ],
+    "words": 7,
+    "coverage": 13,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
     "recropped": true,
     "ok": true,
+    "reason": "top-left, 3 lines, contrast 6.9:1"
+  },
+  "2c": {
+    "corner": "top-left",
+    "contrast": 6.86,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "lineText": [
+      "Sammen om",
+      "mandagskaffen, hver i",
+      "sit køkken"
+    ],
+    "words": 7,
+    "coverage": 13,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 3 lines, contrast 6.9:1"
+  },
+  "3a": {
+    "corner": "top-left",
+    "contrast": 7,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "lineText": [
+      "Lav et lille smageforsøg",
+      "i dit køkken"
+    ],
+    "words": 7,
+    "coverage": 11,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
     "reason": "top-left, 2 lines, contrast 7.0:1"
+  },
+  "3b": {
+    "corner": "top-left",
+    "contrast": 6.97,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "lineText": [
+      "Find the cherry.",
+      "Then the cocoa."
+    ],
+    "words": 6,
+    "coverage": 7.8,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 7.0:1"
+  },
+  "3c": {
+    "corner": "bottom-left",
+    "contrast": 7.62,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "lineText": [
+      "Lav et lille smageforsøg",
+      "i dit køkken"
+    ],
+    "words": 7,
+    "coverage": 11,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": true,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.6:1"
   }
 }

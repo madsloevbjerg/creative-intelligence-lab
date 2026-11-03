@@ -151,4 +151,4 @@ Also left:
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.5935105** of the $120 cap. The lockup pass spent about $0.25 on hands/face/head/bag masks and about $0.18 refreshing the eight final ads. Origin is the `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.769946** of the $120 cap. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`, so a re-render does not reclassify it. Origin is the `origin` remote.

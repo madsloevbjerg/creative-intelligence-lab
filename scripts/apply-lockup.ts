@@ -70,13 +70,41 @@ function scale(box: MaskBox, crop: { width: number; height: number }): MaskBox {
   };
 }
 
+async function tightBoxes(region: { found: boolean; boxes: MaskBox[]; masks: { left: number; top: number; width: number; height: number; payload: string; encoding: "lossless" | "one_bit" }[] }): Promise<MaskBox[]> {
+  if (!region.found) return [];
+  if (region.masks.length === 0) return region.boxes;
+  const { decodeMaskToRaster } = await import("@meta-sam/parser");
+  const found = region.masks.map((mask) => {
+    const raster = decodeMaskToRaster(mask);
+    let left = mask.width;
+    let top = mask.height;
+    let right = 0;
+    let bottom = 0;
+    let count = 0;
+    for (let y = 0; y < mask.height; y += 1) {
+      for (let x = 0; x < mask.width; x += 1) {
+        if (raster[y * mask.width + x] !== 1) continue;
+        count += 1;
+        if (x < left) left = x;
+        if (y < top) top = y;
+        if (x + 1 > right) right = x + 1;
+        if (y + 1 > bottom) bottom = y + 1;
+      }
+    }
+    return { count, box: { left: mask.left + left, top: mask.top + top, right: mask.left + right, bottom: mask.top + bottom } };
+  });
+  const largestCount = Math.max(0, ...found.map((item) => item.count));
+  const kept = found.filter((item) => item.count >= Math.max(400, largestCount * 0.12));
+  return (kept.length > 0 ? kept : found).map((item) => item.box);
+}
+
 async function regionBoxes(url: string, phrase: string, live: boolean): Promise<MaskBox[]> {
   const cached = readCachedRegions(url, phrase, "demo");
-  if (cached) return cached.boxes;
+  if (cached) return tightBoxes(cached);
   if (!live) return [];
   const region = await segmentRegions({ imageUrl: url, phrase, cacheScope: "demo" });
   console.log(`  SAM ${phrase}: ${region.found ? region.boxes.length : 0}`);
-  return region.boxes;
+  return tightBoxes(region);
 }
 
 function largest(boxes: readonly MaskBox[]): MaskBox | null {
@@ -88,12 +116,25 @@ function largest(boxes: readonly MaskBox[]): MaskBox | null {
   }, null);
 }
 
+function holdsBag(
+  rect: { left: number; top: number; width: number; height: number },
+  bag: MaskBox | null,
+): boolean {
+  if (!bag) return true;
+  return (
+    bag.left >= rect.left - 1 &&
+    bag.top >= rect.top - 1 &&
+    bag.right <= rect.left + rect.width + 1 &&
+    bag.bottom <= rect.top + rect.height + 1
+  );
+}
+
 function cropsFor(
   image: { width: number; height: number },
   bag: MaskBox | null,
   base: { left: number; top: number; width: number; height: number },
 ): { left: number; top: number; width: number; height: number }[] {
-  const list = [base];
+  const list = holdsBag(base, bag) ? [base] : [];
   const height = Math.min(image.height, Math.round(image.width / FEED_ASPECT));
   const width = Math.min(image.width, Math.round(height * FEED_ASPECT));
   const push = (left: number, top: number) => {
@@ -103,20 +144,7 @@ function cropsFor(
       width,
       height,
     };
-    if (!bag) {
-      list.push(rect);
-      return;
-    }
-    const overlapW = Math.min(bag.right, rect.left + rect.width) - Math.max(bag.left, rect.left);
-    const overlapH = Math.min(bag.bottom, rect.top + rect.height) - Math.max(bag.top, rect.top);
-    const overlap = Math.max(0, overlapW) * Math.max(0, overlapH);
-    const bagArea = Math.max(1, (bag.right - bag.left) * (bag.bottom - bag.top));
-    const centerIn =
-      bag.left + (bag.right - bag.left) / 2 >= rect.left &&
-      bag.left + (bag.right - bag.left) / 2 <= rect.left + rect.width &&
-      bag.top + (bag.bottom - bag.top) / 2 >= rect.top &&
-      bag.top + (bag.bottom - bag.top) / 2 <= rect.top + rect.height;
-    if (overlap >= bagArea * 0.35 || centerIn) list.push(rect);
+    if (holdsBag(rect, bag)) list.push(rect);
   };
   if (bag) {
     for (let left = 0; left <= image.width - width; left += Math.max(24, Math.round(width / 12))) {
@@ -178,7 +206,10 @@ async function paint(
     if (!lockup.qa.ok) {
       skips += 1;
       if (skips <= 2) {
-        console.log(`  skip crop ${index}: ${lockup.qa.reason} bag ${masks.bag.length} face ${masks.face.length} head ${masks.head.length} hands ${masks.hands.length}`);
+        const bag = masks.bag[0];
+        console.log(
+          `  skip crop ${index}: ${lockup.qa.reason} box ${lockup.rect.left},${lockup.rect.top} ${lockup.rect.width}x${lockup.rect.height} bag ${bag ? `${Math.round(bag.left)},${Math.round(bag.top)}-${Math.round(bag.right)},${Math.round(bag.bottom)}` : "none"}`,
+        );
       }
       continue;
     }
@@ -186,7 +217,11 @@ async function paint(
       .composite([{ input: Buffer.from(lockup.svg), top: 0, left: 0 }])
       .png({ compressionLevel: 9 })
       .toBuffer();
-    return { image: imageOut, qa: { ...lockup.qa, recropped: index > 0 }, phrase };
+    return {
+      image: imageOut,
+      qa: { ...lockup.qa, recropped: index > 0, bagClipped: bag ? !holdsBag(crop, bag) : false },
+      phrase,
+    };
   }
   console.log(`  no clear corner for “${headline}” after ${skips} crops`);
   return null;

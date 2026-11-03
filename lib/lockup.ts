@@ -19,9 +19,12 @@ export type LayoutQa = {
   overlapPct: { face: number; head: number; hands: number; bag: number };
   marginOk: boolean;
   lines: number;
+  lineText: string[];
   words: number;
   coverage: number;
   fontSize: number;
+  wordmarkSize: number;
+  bagClipped: boolean;
   recropped: boolean;
   ok: boolean;
   reason: string;
@@ -79,20 +82,64 @@ function wordsOf(headline: string): string[] {
   return trimmed ? trimmed.split(/\s+/) : [];
 }
 
-function wrap(words: readonly string[], fontSize: number, maxWidth: number, maxLines: number): string[] {
-  const lines: string[] = [];
-  let current = "";
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
-    if (current && labelWidth(next, fontSize) > maxWidth && lines.length < maxLines - 1) {
-      lines.push(current);
-      current = word;
-    } else {
-      current = next;
+function fits(line: string, fontSize: number, maxWidth: number): boolean {
+  return labelWidth(line, fontSize) <= maxWidth + 0.5;
+}
+
+function orphan(line: string, totalWords: number): boolean {
+  return totalWords > 1 && wordsOf(line).length < 2;
+}
+
+/** Prefer two lines of similar width. Break after a sentence. Never leave one word on its own line. */
+export function balanceHeadline(headline: string, fontSize: number, maxWidth: number): string[] {
+  const raw = headline.trim();
+  const words = wordsOf(raw);
+  if (words.length <= 1) return [raw];
+  const sentences = raw.split(/(?<=\.)\s+/).map((part) => part.trim()).filter(Boolean);
+  if (
+    sentences.length >= 2 &&
+    sentences.length <= lockupConfig.maxLines &&
+    sentences.every((line) => fits(line, fontSize, maxWidth) && !orphan(line, words.length))
+  ) {
+    return sentences;
+  }
+  if (fits(raw, fontSize, maxWidth)) return [raw];
+  let best: string[] | null = null;
+  let bestScore = Number.POSITIVE_INFINITY;
+  const minSide = words.length >= 4 ? 2 : 1;
+  for (let split = minSide; split <= words.length - minSide; split += 1) {
+    const left = words.slice(0, split).join(" ");
+    const right = words.slice(split).join(" ");
+    if (orphan(left, words.length) || orphan(right, words.length)) continue;
+    if (!fits(left, fontSize, maxWidth) || !fits(right, fontSize, maxWidth)) continue;
+    const score = Math.abs(labelWidth(left, fontSize) - labelWidth(right, fontSize));
+    if (score < bestScore) {
+      bestScore = score;
+      best = [left, right];
     }
   }
-  if (current) lines.push(current);
-  return lines;
+  if (best) return best;
+  const lines: string[] = [];
+  let current: string[] = [];
+  for (const word of words) {
+    const next = [...current, word].join(" ");
+    if (current.length > 0 && !fits(next, fontSize, maxWidth) && lines.length < lockupConfig.maxLines - 1) {
+      lines.push(current.join(" "));
+      current = [word];
+    } else {
+      current.push(word);
+    }
+  }
+  if (current.length) lines.push(current.join(" "));
+  for (let index = lines.length - 1; index > 0; index -= 1) {
+    if (wordsOf(lines[index] ?? "").length >= 2) continue;
+    const previous = wordsOf(lines[index - 1] ?? "");
+    if (previous.length < 3) continue;
+    const moved = previous[previous.length - 1] ?? "";
+    lines[index - 1] = previous.slice(0, -1).join(" ");
+    lines[index] = `${moved} ${lines[index] ?? ""}`.trim();
+  }
+  return lines.slice(0, lockupConfig.maxLines);
 }
 
 function area(box: MaskBox): number {
@@ -208,11 +255,11 @@ export async function renderLockup(input: {
   const pad = Math.round(cap * lockupConfig.paddingToCap);
   const maxOuter = Math.round(width * lockupConfig.maxWidthFraction);
   const inner = Math.max(40, maxOuter - pad * 2);
-  const wordmarkSize = Math.max(10, Math.round(fontSize * lockupConfig.wordmarkSizeRatio));
+  const wordmarkSize = Math.max(10, Math.round(width * lockupConfig.minWordmarkSizeFraction));
   const tracking = wordmarkSize * lockupConfig.wordmarkTrackingEm;
   const wordmark = "DANISH COFFEE LAB";
   const wordmarkWidth = labelWidth(wordmark, wordmarkSize) + tracking * (wordmark.length - 1);
-  const wraps = [1, 0.72, 0.52, 0.38].map((fraction) => wrap(words, fontSize, Math.max(40, inner * fraction), lockupConfig.maxLines));
+  const wraps = [balanceHeadline(input.headline, fontSize, inner)];
   type Candidate = {
     lines: string[];
     boxWidth: number;
@@ -228,9 +275,9 @@ export async function renderLockup(input: {
     const lineWidths = lines.map((line) => labelWidth(line, fontSize));
     const textWidth = Math.max(wordmarkWidth, ...lineWidths, fontSize);
     const boxWidth = Math.min(maxOuter, Math.ceil(textWidth + pad * 2));
-    const lineHeight = Math.round(fontSize * 1.15);
-    const wordmarkBlock = Math.round(wordmarkSize * 1.35);
-    const gap = Math.round(fontSize * 0.28);
+    const lineHeight = fontSize;
+    const wordmarkBlock = wordmarkSize;
+    const gap = Math.round(fontSize * 0.08);
     const boxHeight = pad + wordmarkBlock + gap + lineHeight * lines.length + pad;
     for (const option of corners(width, height, input.aspect, { width: boxWidth, height: boxHeight })) {
       candidates.push({
@@ -268,9 +315,9 @@ export async function renderLockup(input: {
   const margins = marginOk(rect, width, height, input.aspect);
   const contrastOk = contrast >= lockupConfig.minContrast;
   const handsClear = hands.px === 0;
-  const lineHeight = Math.round(fontSize * 1.15);
-  const wordmarkBlock = Math.round(wordmarkSize * 1.35);
-  const gap = Math.round(fontSize * 0.28);
+  const lineHeight = fontSize;
+  const wordmarkBlock = wordmarkSize;
+  const gap = Math.round(fontSize * 0.08);
   const ok = Boolean(
     clear &&
       handsClear &&
@@ -300,9 +347,12 @@ export async function renderLockup(input: {
     },
     marginOk: margins,
     lines: lines.length,
+    lineText: lines,
     words: words.length,
     coverage: Math.round((boxWidth * boxHeight) / Math.max(1, width * height) * 1000) / 10,
     fontSize,
+    wordmarkSize,
+    bagClipped: false,
     recropped: false,
     ok,
     reason: ok

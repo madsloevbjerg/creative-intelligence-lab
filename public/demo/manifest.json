@@ -29,7 +29,7 @@
           "bottom": 1079
         }
       ],
-      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.1:1. Covers 10% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: top-left, 1 line, contrast 7.1:1. Covers 8% of the image. Margin ok. No overlap with face, head, hands, or bag."
     },
     "dcl-02": {
       "candidate": "2c pile",
@@ -74,7 +74,7 @@
           "bottom": 1062
         }
       ],
-      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.5:1. Covers 7% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: top-left, 1 line, contrast 7.2:1. Covers 7.6% of the image. Margin ok. No overlap with face, head, hands, or bag."
     },
     "dcl-03": {
       "candidate": "dcl-03-a.png",
@@ -112,7 +112,7 @@
           "bottom": 813
         }
       ],
-      "layoutQa": "Layout QA: bottom-left, 3 lines, contrast 6.9:1. Covers 9.9% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.0:1. Covers 8.1% of the image. Margin ok. No overlap with face, head, hands, or bag."
     },
     "dcl-04": {
       "candidate": "dcl-04-a.png",
@@ -143,7 +143,7 @@
           "bottom": 969
         }
       ],
-      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.4:1. Covers 13.1% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 8.0:1. Covers 8.3% of the image. Margin ok. No overlap with face, head, hands, or bag."
     },
     "dcl-05": {
       "candidate": "dcl-05-c.png",
@@ -188,7 +188,7 @@
           "bottom": 1321
         }
       ],
-      "layoutQa": "Layout QA: bottom-left, 3 lines, contrast 7.0:1. Covers 9.3% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: top-left, 2 lines, contrast 7.0:1. Covers 7.9% of the image. Margin ok. No overlap with face, head, hands, or bag."
     },
     "dcl-06": {
       "candidate": "dcl-06-a.png",
@@ -233,7 +233,7 @@
           "bottom": 266
         }
       ],
-      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.0:1. Covers 9.7% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.0:1. Covers 8% of the image. Margin ok. No overlap with face, head, hands, or bag."
     },
     "dcl-07": {
       "candidate": "dcl-07-b.png",
@@ -271,7 +271,7 @@
           "bottom": 1191
         }
       ],
-      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.3:1. Covers 10.5% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: bottom-left, 2 lines, contrast 7.6:1. Covers 7.7% of the image. Margin ok. No overlap with face, head, hands, or bag."
     },
     "dcl-08": {
       "candidate": "dcl-08-a.png",
@@ -309,7 +309,7 @@
           "bottom": 931
         }
       ],
-      "layoutQa": "Layout QA: top-left, 2 lines, contrast 7.2:1. Covers 11.3% of the image. Margin ok. No overlap with face, head, hands, or bag."
+      "layoutQa": "Layout QA: top-left, 2 lines, contrast 7.2:1. Covers 10.6% of the image. Margin ok. No overlap with face, head, hands, or bag."
     }
   }
 }

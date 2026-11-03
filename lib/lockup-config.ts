@@ -10,13 +10,13 @@ export const lockupConfig = {
   /** Inner padding as a multiple of the headline cap height. */
   paddingToCap: 1.2,
   /** Cap height as a fraction of the headline font size. */
-  capHeightRatio: 0.7,
+  capHeightRatio: 0.64,
   maxWords: 7,
   maxLines: 3,
-  /** Headline size as a fraction of image width. The 4:5 ads use this floor. */
+  /** Headline size as a fraction of image width, for 4:5 and 9:16. */
   minHeadlineSizeFraction: 0.05,
-  /** Wordmark size as a fraction of the headline size. */
-  wordmarkSizeRatio: 0.42,
+  /** Wordmark size as a fraction of image width. Secondary to the headline, still readable on a phone. */
+  minWordmarkSizeFraction: 0.022,
   /** Extra space between uppercase letters, in ems. */
   wordmarkTrackingEm: 0.14,
   cornerRadiusFraction: 0.018,

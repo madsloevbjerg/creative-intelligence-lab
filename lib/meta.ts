@@ -37,6 +37,7 @@ import {
 } from "@/lib/prompts";
 import { brandUserText, classifyUserText } from "@/lib/request-text";
 import { isDemoBrandText, isDemoImageSha } from "@/lib/demo-assets";
+import { pinnedDemoClassification } from "@/lib/pinned-classification";
 import {
   brandSummaryJsonSchema,
   brandSummarySchema,
@@ -826,6 +827,14 @@ export async function classifyAd(input: {
   return retryCharged(classificationSchema, "Classification", async () => {
     const userText = classifyUserText(input);
     const imageSha = imageSha256(input.imageUrl);
+    const pinned = pinnedDemoClassification(input.imageUrl);
+    if (pinned) {
+      writeCache("demo", requestKey(classifyKeyMaterial(imageSha, userText)), {
+        priceUsd: pinned.priceUsd,
+        result: pinned.result,
+      });
+      return pinned.result;
+    }
     return museJson({
       schemaName: "Classification",
       jsonSchema: classificationJsonSchema,
