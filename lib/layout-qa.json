@@ -299,7 +299,7 @@
   },
   "2a": {
     "corner": "bottom-left",
-    "contrast": 7.42,
+    "contrast": 7.35,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -313,20 +313,19 @@
       "bag": 0
     },
     "marginOk": true,
-    "lines": 3,
+    "lines": 2,
     "lineText": [
-      "We argue",
-      "about everything.",
+      "We argue about everything.",
       "Except the coffee."
     ],
     "words": 7,
-    "coverage": 10.6,
+    "coverage": 8.6,
     "fontSize": 40,
     "wordmarkSize": 18,
     "bagClipped": false,
     "recropped": true,
     "ok": true,
-    "reason": "bottom-left, 3 lines, contrast 7.4:1"
+    "reason": "bottom-left, 2 lines, contrast 7.4:1"
   },
   "2b": {
     "corner": "top-left",
@@ -558,7 +557,7 @@
   },
   "2a-916": {
     "corner": "top-left",
-    "contrast": 6.97,
+    "contrast": 7.11,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -572,20 +571,19 @@
       "bag": 0
     },
     "marginOk": true,
-    "lines": 3,
+    "lines": 2,
     "lineText": [
-      "We argue",
-      "about everything.",
+      "We argue about everything.",
       "Except the coffee."
     ],
     "words": 7,
-    "coverage": 7.5,
+    "coverage": 6,
     "fontSize": 40,
     "wordmarkSize": 18,
     "bagClipped": false,
     "recropped": true,
     "ok": true,
-    "reason": "top-left, 3 lines, contrast 7.0:1",
+    "reason": "top-left, 2 lines, contrast 7.1:1",
     "aspect": "9:16",
     "bottom35Pct": {
       "bag": 0,
@@ -597,7 +595,7 @@
   },
   "persona-916": {
     "corner": "top-left",
-    "contrast": 6.95,
+    "contrast": 6.96,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -611,20 +609,19 @@
       "bag": 0
     },
     "marginOk": true,
-    "lines": 3,
+    "lines": 2,
     "lineText": [
-      "We argue",
-      "about everything.",
+      "We argue about everything.",
       "Except the coffee."
     ],
     "words": 7,
-    "coverage": 7.5,
+    "coverage": 6,
     "fontSize": 40,
     "wordmarkSize": 18,
     "bagClipped": false,
-    "recropped": false,
+    "recropped": true,
     "ok": true,
-    "reason": "top-left, 3 lines, contrast 7.0:1",
+    "reason": "top-left, 2 lines, contrast 7.0:1",
     "aspect": "9:16",
     "bottom35Pct": {
       "bag": 0,

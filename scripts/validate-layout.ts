@@ -185,6 +185,13 @@ for (const name of names) {
     ].join(" "),
   );
 }
+const argue = ["We argue about everything.", "Except the coffee."];
+for (const id of ["2a", "2a-916", "persona-916"]) {
+  const lines = stored[id]?.lineText ?? [];
+  if (lines.join(" / ") !== argue.join(" / ")) {
+    fail(`${id} must break as “${argue.join(" / ")}”, got “${lines.join(" / ") || "missing"}”`);
+  }
+}
 console.log("creative       result corner       lines contrast bottom 35%");
 for (const row of rows) console.log(row);
 

@@ -27,8 +27,8 @@ const sheet = await contactSheet({
 const jpeg = await sharp(sheet).resize({ width: 1600 }).jpeg({ quality: 80 }).toBuffer();
 if (jpeg.byteLength > 900 * 1024) throw new Error(String(jpeg.byteLength));
 mkdirSync("/opt/cursor/artifacts", { recursive: true });
-writeFileSync("/opt/cursor/artifacts/final_contact_sheet_v2.jpg", jpeg);
-writeFileSync("docs/m5/final-contact-sheet-v2.jpg", jpeg);
+writeFileSync("/opt/cursor/artifacts/final_contact_sheet_v3.jpg", jpeg);
+writeFileSync("docs/m5/final-contact-sheet-v3.jpg", jpeg);
 console.log(jpeg.byteLength);
 }
 main();

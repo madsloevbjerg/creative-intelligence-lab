@@ -151,6 +151,6 @@ Also left:
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$5.44732725** of the $120 cap. That figure is the sum of the calls made to build the demo. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`. The click path is `docs/demo-click-path.md`. Origin is the `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$6.12232725** of the $120 cap. That figure is the sum of the calls made to build the demo. Ad 6’s notification is rotated to the phone-screen mask (`lib/phone-notice.ts`). `npm run check:phone` fails if the card leaves that mask. Ad 6’s classification stays pinned to Convenience/time × Lifestyle scene × Static. Concept 2’s lockup is “We argue about everything. / Except the coffee.” The inner padding for that sentence is 9px instead of 31px so it fits the 72% box at a 40px headline. The 9:16 concept 2 frame is an office kitchen. Closer retries for concepts 1 and 3 did not keep the bag and hands out of the bottom 35% and still leave a caption band, so those two verticals stay on the frames that pass `check:layout`. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`. The click path is `docs/demo-click-path.md`. Origin is the `origin` remote.
 
 Vercel, with no key, serves the cached demo. For live mode set `MODEL_API_KEY` (secret), `USE_MOCK=false`, `LIVE_ACCESS_CODE` (a passcode you choose), `BUDGET_LIMIT_USD=120`, and `LIVE_RUNS_PER_HOUR=10`.
