@@ -26,6 +26,8 @@ export type LayoutQa = {
   wordmarkSize: number;
   bagClipped: boolean;
   recropped: boolean;
+  aspect?: "4:5" | "9:16";
+  bottom35Pct?: { bag: number; face: number; head: number; hands: number; cup: number };
   ok: boolean;
   reason: string;
 };
@@ -322,7 +324,18 @@ export async function renderLockup(input: {
     const wordmarkBlock = wordmarkSize;
     const gap = Math.round(fontSize * 0.08);
     const boxHeight = pad + wordmarkBlock + gap + lineHeight * lines.length + pad;
-    for (const option of corners(width, height, input.aspect, { width: boxWidth, height: boxHeight })) {
+    const options = corners(width, height, input.aspect, { width: boxWidth, height: boxHeight });
+    if (input.aspect === "9:16" && input.masks.bag.length > 0) {
+      const bagTop = Math.min(...input.masks.bag.map((box) => box.top));
+      const band = allowedBand(width, height, input.aspect, boxHeight);
+      const y = Math.round(Math.min(band.bottom, Math.max(band.top, bagTop - boxHeight - 12)));
+      const left = Math.round(band.left);
+      options.push({
+        corner: "middle-left",
+        rect: { left, top: y, right: left + boxWidth, bottom: y + boxHeight },
+      });
+    }
+    for (const option of options) {
       candidates.push({
         lines,
         boxWidth,
@@ -334,9 +347,14 @@ export async function renderLockup(input: {
       });
     }
   }
+  const bagTop = input.masks.bag.length > 0 ? Math.min(...input.masks.bag.map((box) => box.top)) : null;
   candidates.sort((a, b) => {
     if (a.forbidden !== b.forbidden) return a.forbidden - b.forbidden;
     if (a.hands !== b.hands) return a.hands - b.hands;
+    if (input.aspect === "9:16" && bagTop !== null) {
+      const above = (rect: MaskBox) => (rect.bottom <= bagTop ? 0 : 1);
+      if (above(a.rect) !== above(b.rect)) return above(a.rect) - above(b.rect);
+    }
     if (a.corner !== b.corner) return a.corner === "bottom-left" ? -1 : 1;
     return a.lines.length - b.lines.length;
   });

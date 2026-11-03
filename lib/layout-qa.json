@@ -482,7 +482,7 @@
   },
   "3b-916": {
     "corner": "top-left",
-    "contrast": 6.95,
+    "contrast": 7.4,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -508,6 +508,130 @@
     "bagClipped": false,
     "recropped": false,
     "ok": true,
-    "reason": "top-left, 2 lines, contrast 7.0:1"
+    "reason": "top-left, 2 lines, contrast 7.4:1",
+    "aspect": "9:16",
+    "bottom35Pct": {
+      "bag": 0,
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "cup": 0
+    }
+  },
+  "1a-916": {
+    "corner": "top-left",
+    "contrast": 7.2,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "lineText": [
+      "Cancel anytime.",
+      "I just never have."
+    ],
+    "words": 6,
+    "coverage": 5.9,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 7.2:1",
+    "aspect": "9:16",
+    "bottom35Pct": {
+      "bag": 0,
+      "face": 0,
+      "head": 0,
+      "hands": 0.017506221573843645,
+      "cup": 0
+    }
+  },
+  "2a-916": {
+    "corner": "top-left",
+    "contrast": 6.97,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "lineText": [
+      "We argue",
+      "about everything.",
+      "Except the coffee."
+    ],
+    "words": 7,
+    "coverage": 7.5,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": true,
+    "ok": true,
+    "reason": "top-left, 3 lines, contrast 7.0:1",
+    "aspect": "9:16",
+    "bottom35Pct": {
+      "bag": 0,
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "cup": 0
+    }
+  },
+  "persona-916": {
+    "corner": "top-left",
+    "contrast": 6.95,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "lineText": [
+      "We argue",
+      "about everything.",
+      "Except the coffee."
+    ],
+    "words": 7,
+    "coverage": 7.5,
+    "fontSize": 40,
+    "wordmarkSize": 18,
+    "bagClipped": false,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 3 lines, contrast 7.0:1",
+    "aspect": "9:16",
+    "bottom35Pct": {
+      "bag": 0,
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "cup": 0
+    }
   }
 }
