@@ -4,6 +4,14 @@ The eight existing ads are the before. These three are the after, from the curre
 
 Mads picked **1a**, **2a**, and **3b**.
 
+On those creatives the lockup uses English, at most 7 words:
+
+- 1a: “I started because I could stop.”
+- 2a: “Same Monday coffee. Different kitchens.”
+- 3b: “Find the cherry. Then the cocoa.”
+
+1a keeps the line “Illustrative testimonial: replace with a real customer quote before use” under the image on the picks sheet. 1b has no corner clear of the face, head, hands, and bag, so it still has the previous overlay.
+
 ## 1. Tryg start uden binding
 Safe start with no lock-in
 

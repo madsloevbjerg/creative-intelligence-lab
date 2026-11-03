@@ -67,7 +67,8 @@ export async function contactSheet(input: {
   cellHeight: number;
 }): Promise<Buffer> {
   const pad = 24;
-  const labelHeight = 52;
+  const labelLines = Math.max(1, ...input.cells.map((cell) => cell.label.split("\n").length));
+  const labelHeight = 10 + Math.min(4, labelLines) * 18;
   const gap = 16;
   const header = 72;
   const rows = Math.ceil(input.cells.length / input.columns);
@@ -90,14 +91,14 @@ export async function contactSheet(input: {
       .png()
       .toBuffer();
     layers.push({ input: fitted, left, top });
-    const labelLines = cell.label.split("\n").slice(0, 2);
+    const lines = cell.label.split("\n").slice(0, 4);
     const label = Buffer.from(`<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${input.cellWidth}" height="${labelHeight}">
-  ${labelLines
-    .map(
-      (line, lineIndex) =>
-        `<text x="0" y="${22 + lineIndex * 22}" font-family="Noto Serif, serif" font-size="16" font-weight="700" fill="${ink}">${line.replaceAll("&", "&amp;")}</text>`,
-    )
+  ${lines
+    .map((line, lineIndex) => {
+      const size = lineIndex < 2 ? 16 : 13;
+      return `<text x="0" y="${16 + lineIndex * 18}" font-family="Noto Serif, serif" font-size="${size}" font-weight="700" fill="${ink}">${line.replaceAll("&", "&amp;")}</text>`;
+    })
     .join("")}
 </svg>`);
     layers.push({ input: label, left, top: top + input.cellHeight });

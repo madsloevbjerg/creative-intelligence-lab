@@ -25,6 +25,7 @@ npm run check:safety
 npm run check:crop
 npm run check:text
 npm run check:gaps
+npm run check:layout
 npm run build
 ```
 
@@ -107,9 +108,10 @@ There is no database. An analysis stays in the browser until refresh. Retries: `
 
 - Merged Codex `920c246` (`codex-920c246`, based on `4eb3588`). Kept the generalized ranking rules, the office-furniture regression in `scripts/validate-gaps.ts`, `scripts/audit-demo-cache.ts`, the `PLACE_ONLY` path in `scripts/m3-place.ts`, and `docs/review/cached-demo.md`. Kept the refreshed cache, the headline design, and the M5 files.
 - The demo cache matches the current eight finals, the website text, and the brief. `npm run check:safety` passes. `scripts/refresh-demo-cache.ts` is the refresh. A headline restyle required a second refresh; both are committed.
-- After that second classify, ad 7 is `Emotion/ritual` × `Lifestyle scene`. That cell is no longer empty. The current top 3 from `rankGaps` are Safety/trust × Testimonial, Belonging/social proof × Person/UGC, and Curiosity/novelty × Demo/how-to.
+- The lockup rebuild classified ad 7 as `Quality/performance` × `Lifestyle scene` again, so `Emotion/ritual` is an empty cell once more. The fixture in `check:gaps` still expects Emotion/ritual, Safety/trust, and Belonging as the top three.
 - M5 briefs were rewritten so each motivation leads. The testimonial is labelled `Illustrative testimonial: replace with a real customer quote before use` in `docs/m5/briefs.md` and on the Safety/trust × Testimonial cell. A shared headline opening, or Aarhus/ristedato in more than one headline, is rejected by `lib/brief-rules.ts`.
-- New stills are `public/demo/m5/1a.png` through `3c.png`. The sheet is `docs/m5/contact-sheet.png` and `docs/m5/contact-sheet.jpg`. Waiting for picks. On the six images with people, SAM `face` and `head` both matched; on the three overhead tastings, neither matched. `placeText` treats either as a hard exclusion with a margin. No persona, no 9:16 lock, no before/after page.
+- New stills are `public/demo/m5/1a.png` through `3c.png`. Mads picked **1a**, **2a**, and **3b**. The picks sheet is `docs/m5/contact-sheet-picks.png`. Waiting for design approval of the lockup. No persona, no 9:16 build, no before/after page.
+- `renderLockup` in `lib/lockup.ts` draws one deep-green lockup for the 8 ads and the M5 mockups. The numbers are in `lib/lockup-config.ts`, including the 9:16 band (top 14%, bottom 35%). `SAM` phrase `hands` is the one that matches; `hand` is the fallback. `1b` has no clear corner. Ad 8, 2a, 2c, 3a, 3b, and 3c use the top-left. Ad 1, 2b, and 3c needed another crop. Layout QA is on the per-ad view and in `lib/layout-qa.json`. `npm run check:layout` checks it.
 
 ### Still open
 
@@ -149,4 +151,4 @@ Also left:
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.1641465** of the $120 cap. After the merge, the brief rewrite was about $0.09 and the nine new stills plus their masks were about $0.27. Two classify timeouts before that left unreleased estimates on the ledger. Origin is the `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.5935105** of the $120 cap. The lockup pass spent about $0.25 on hands/face/head/bag masks and about $0.18 refreshing the eight final ads. Origin is the `origin` remote.

@@ -1,0 +1,386 @@
+{
+  "dcl-01": {
+    "corner": "bottom-left",
+    "contrast": 7.12,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 6,
+    "coverage": 10,
+    "fontSize": 40,
+    "recropped": true,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.1:1"
+  },
+  "dcl-02": {
+    "corner": "bottom-left",
+    "contrast": 7.47,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 5,
+    "coverage": 7,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.5:1"
+  },
+  "dcl-03": {
+    "corner": "bottom-left",
+    "contrast": 6.91,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "words": 4,
+    "coverage": 9.9,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 3 lines, contrast 6.9:1"
+  },
+  "dcl-04": {
+    "corner": "bottom-left",
+    "contrast": 7.36,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 6,
+    "coverage": 13.1,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.4:1"
+  },
+  "dcl-05": {
+    "corner": "bottom-left",
+    "contrast": 6.95,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "words": 7,
+    "coverage": 9.3,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 3 lines, contrast 7.0:1"
+  },
+  "dcl-06": {
+    "corner": "bottom-left",
+    "contrast": 6.97,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 4,
+    "coverage": 9.7,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.0:1"
+  },
+  "dcl-07": {
+    "corner": "bottom-left",
+    "contrast": 7.34,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 5,
+    "coverage": 10.5,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.3:1"
+  },
+  "dcl-08": {
+    "corner": "top-left",
+    "contrast": 7.22,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 5,
+    "coverage": 11.3,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 7.2:1"
+  },
+  "1a": {
+    "corner": "bottom-left",
+    "contrast": 7.24,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 6,
+    "coverage": 10,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.2:1"
+  },
+  "1c": {
+    "corner": "bottom-left",
+    "contrast": 7.01,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 7,
+    "coverage": 12.6,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "bottom-left, 2 lines, contrast 7.0:1"
+  },
+  "2a": {
+    "corner": "top-left",
+    "contrast": 6.92,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 5,
+    "coverage": 11.9,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 6.9:1"
+  },
+  "2b": {
+    "corner": "bottom-left",
+    "contrast": 6.87,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "words": 7,
+    "coverage": 15.6,
+    "fontSize": 40,
+    "recropped": true,
+    "ok": true,
+    "reason": "bottom-left, 3 lines, contrast 6.9:1"
+  },
+  "2c": {
+    "corner": "top-left",
+    "contrast": 6.85,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 3,
+    "words": 7,
+    "coverage": 15.6,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 3 lines, contrast 6.9:1"
+  },
+  "3a": {
+    "corner": "top-left",
+    "contrast": 6.87,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 7,
+    "coverage": 13.8,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 6.9:1"
+  },
+  "3b": {
+    "corner": "top-left",
+    "contrast": 6.95,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 6,
+    "coverage": 14,
+    "fontSize": 40,
+    "recropped": false,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 6.9:1"
+  },
+  "3c": {
+    "corner": "top-left",
+    "contrast": 6.99,
+    "overlapPx": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "overlapPct": {
+      "face": 0,
+      "head": 0,
+      "hands": 0,
+      "bag": 0
+    },
+    "marginOk": true,
+    "lines": 2,
+    "words": 7,
+    "coverage": 13.8,
+    "fontSize": 40,
+    "recropped": true,
+    "ok": true,
+    "reason": "top-left, 2 lines, contrast 7.0:1"
+  }
+}
