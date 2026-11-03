@@ -6,7 +6,7 @@ import { headlineLines, labelWidth } from "@/lib/wordmark";
  * M5 can pass a Stories/Reels safe zone; both stay inside it.
  */
 
-export type TextSubject = "person" | "face" | "bag" | "phone" | "hand" | "kettle" | "roaster" | "cup";
+export type TextSubject = "person" | "face" | "head" | "bag" | "phone" | "hand" | "kettle" | "roaster" | "cup";
 
 export type SubjectMask = {
   subject: TextSubject;
@@ -58,7 +58,7 @@ export type PlaceTextOptions = {
 /** Headline band only. The wordmark is separate and stays top-left. */
 export const TEXT_BAND_FRACTION = 0.16;
 
-const SUBJECT_ORDER: TextSubject[] = ["face", "person", "phone", "hand", "kettle", "cup", "bag", "roaster"];
+const SUBJECT_ORDER: TextSubject[] = ["face", "head", "person", "phone", "hand", "kettle", "cup", "bag", "roaster"];
 
 const PLACE_PREFERENCE: HeadlinePlace[] = [
   "bottom",
@@ -102,9 +102,11 @@ function asBox(rect: CropRect): MaskBox {
   };
 }
 
-/** Top quarter of each person mask when SAM did not return a face. */
+/** A face or a head, or the top of a person when SAM returned neither. */
 export function faceBoxes(masks: readonly SubjectMask[]): MaskBox[] {
-  const explicit = masks.filter((mask) => mask.subject === "face").map((mask) => mask.box);
+  const explicit = masks
+    .filter((mask) => mask.subject === "face" || mask.subject === "head")
+    .map((mask) => mask.box);
   if (explicit.length > 0) return explicit;
   return masks
     .filter((mask) => mask.subject === "person")
@@ -276,7 +278,14 @@ export function placeText(
   const safe = options.safeZone ?? OPEN_SAFE_ZONE;
   const frame = frameFor(image, aspectRatio);
   const headline = options.headline ?? "Headline";
-  const faces = faceBoxes(masks);
+  const margin = Math.round(frame.width * 0.04);
+  const expand = (box: MaskBox): MaskBox => ({
+    left: box.left - margin,
+    top: box.top - margin,
+    right: box.right + margin,
+    bottom: box.bottom + margin,
+  });
+  const faces = faceBoxes(masks).map(expand);
   const bags = masks.filter((mask) => mask.subject === "bag").map((mask) => mask.box);
   const phones = masks.filter((mask) => mask.subject === "phone").map((mask) => mask.box);
   const cups = masks.filter((mask) => mask.subject === "cup").map((mask) => mask.box);

@@ -20,7 +20,7 @@ Illustrative testimonial: replace with a real customer quote before use.
 - 2-second hook: Prøv uden at binde dig
 - CTA: Se prisen pr. kop
 - Core message: Trying a subscription feels low risk when you see the price per cup first and know you can skip or cancel.
-- Visual direction: Overhead photo of a calm kitchen table in soft morning light, two hands holding a plain light ceramic cup with light steam, small plain jug next to it, light wood surface and folded linen cloth, blurred background, no packaging, no text, no logos, no faces.
+- Visual direction: Close, calm portrait at a bright window seat. One person looks slightly off camera, mid-sentence, and holds a flat white with fine latte art. Airy and light. The cream bag is beside them. No grey clothing.
 
 ### English
 
@@ -45,7 +45,7 @@ Hypothesis: Belonging/social proof has no ad in this set, so a Person/UGC would 
 - 2-second hook: Samme morgen, samme kaffe som naboen
 - CTA: Vær med mandag
 - Core message: Monday brewing is a shared ritual among neighbours and colleagues at home.
-- Visual direction: Handheld phone photo in a small bright kitchen on Monday morning. A woman in a wool sweater smiles behind a steaming cup, kettle in hand. A plain coffee bag with its back turned sits open on the wooden table next to a dripper. Soft window light, slight motion blur, lived-in and honest. No text, no logos, no letters visible.
+- Visual direction: A shared Sunday breakfast table, seen from slightly above, with a handheld feel. Three or four adults of different ages, in different colours, pass the bag across a table of cups, food, and clutter. Warm and lively. No grey clothing.
 
 ### English
 
@@ -70,7 +70,7 @@ Hypothesis: Curiosity/novelty has no ad in this set, so a Demo/how-to would cove
 - 2-second hook: Kan du finde kirsebær og kakao?
 - CTA: Prøv forsøget hjemme
 - Core message: Discovery through a playful home tasting: brew two cups, search for dark cherry and cocoa, and compare the first cup with the last.
-- Visual direction: Overhead close-up photograph on a light wooden kitchen table: two small cups of black coffee side by side, a small ceramic dish with dark cherries and a pinch of cocoa powder beside them, one hand lifting a cup, soft morning daylight from the side, shallow depth of field, no packaging, no text, no letters visible.
+- Visual direction: Overhead tasting flat lay. A cup of clear black filter coffee, small bowls of dark cherries and cocoa nibs, a tasting spoon, the bag, and two hands mid-action. Graphic and clean.
 
 ### English
 

@@ -108,7 +108,8 @@ There is no database. An analysis stays in the browser until refresh. Retries: `
 - Merged Codex `920c246` (`codex-920c246`, based on `4eb3588`). Kept the generalized ranking rules, the office-furniture regression in `scripts/validate-gaps.ts`, `scripts/audit-demo-cache.ts`, the `PLACE_ONLY` path in `scripts/m3-place.ts`, and `docs/review/cached-demo.md`. Kept the refreshed cache, the headline design, and the M5 files. Ads 1, 2, and 6 were rebuilt with that headline design and no printed bag label. Ads 3, 4, 5, 7, and 8 still have the printed label. The demo cache was refreshed for the three rebuilt ads.
 - The demo cache matches the current eight finals, the website text, and the brief. `npm run check:safety` passes. `scripts/refresh-demo-cache.ts` is the refresh. A headline restyle required a second refresh; both are committed.
 - After that second classify, ad 7 is `Emotion/ritual` × `Lifestyle scene`. That cell is no longer empty. The current top 3 from `rankGaps` are Safety/trust × Testimonial, Belonging/social proof × Person/UGC, and Curiosity/novelty × Demo/how-to.
-- M5 is at the contact sheet only. Briefs are in `docs/m5/briefs.md` (Danish, then English). Nine stills are `public/demo/m5/1a.png` through `3c.png`. The sheet is `docs/m5/contact-sheet.png`. Waiting for picks. No persona, no 9:16 lock, no before/after page.
+- M5 briefs were rewritten so each motivation leads. The testimonial is labelled `Illustrative testimonial: replace with a real customer quote before use` in `docs/m5/briefs.md` and on the Safety/trust × Testimonial cell. A shared headline opening, or Aarhus/ristedato in more than one headline, is rejected by `lib/brief-rules.ts`.
+- New stills are `public/demo/m5/1a.png` through `3c.png`. The sheet is `docs/m5/contact-sheet.png` and `docs/m5/contact-sheet.jpg`. Waiting for picks. On the six images with people, SAM `face` and `head` both matched; on the three overhead tastings, neither matched. `placeText` treats either as a hard exclusion with a margin. No persona, no 9:16 lock, no before/after page.
 
 ### Still open
 
@@ -147,4 +148,4 @@ Also left:
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$3.805166** of the $120 cap. The merge refresh for ads 1, 2, and 6 was about $0.05 in settled model calls. Two earlier classify attempts timed out and left their pre-call estimates on the ledger (about $0.97 together) before a timeout was taught to release that hold. Origin is the `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.1641465** of the $120 cap. After the merge, the brief rewrite was about $0.09 and the nine new stills plus their masks were about $0.27. Two classify timeouts before that left unreleased estimates on the ledger. Origin is the `origin` remote.
