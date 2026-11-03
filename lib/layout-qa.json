@@ -298,8 +298,8 @@
     "reason": "bottom-left, 2 lines, contrast 7.0:1"
   },
   "2a": {
-    "corner": "top-left",
-    "contrast": 6.93,
+    "corner": "bottom-left",
+    "contrast": 7.2,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -323,9 +323,9 @@
     "fontSize": 40,
     "wordmarkSize": 18,
     "bagClipped": false,
-    "recropped": false,
+    "recropped": true,
     "ok": true,
-    "reason": "top-left, 2 lines, contrast 6.9:1"
+    "reason": "bottom-left, 2 lines, contrast 7.2:1"
   },
   "2b": {
     "corner": "top-left",

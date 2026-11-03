@@ -4,6 +4,8 @@ Copy language: English (`en`). Danish strings are still in `lib/copy-language.ts
 
 The eight existing ads are the before. These three concepts are the after. Mads picked **1a**, the new concept 2, and **3b**.
 
+Concept 2 image: candidate **c2-a**. Both flatmates are laughing and pulling the same bag, the bag is fully in frame with the plain green block, the faces look natural, and the lockup sits clear of the faces, hands, and bag. c2-b turned the label into a stripe. c2-c was similar but the tug read less clearly.
+
 ## 1. Cancel anytime
 
 - Motivation: Safety/trust
