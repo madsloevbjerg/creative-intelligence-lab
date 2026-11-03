@@ -520,21 +520,29 @@ async function museJson<T>(input: {
     });
   }
 
-  const response = await client.chat.completions.create({
-    model: "muse-spark-1.3",
-    messages: [
-      { role: "system", content: input.system },
-      { role: "user", content: userContent },
-    ],
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: input.schemaName,
-        strict: true,
-        schema: input.jsonSchema,
+  let response: OpenAI.Chat.Completions.ChatCompletion;
+  try {
+    response = await client.chat.completions.create({
+      model: "muse-spark-1.3",
+      messages: [
+        { role: "system", content: input.system },
+        { role: "user", content: userContent },
+      ],
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: input.schemaName,
+          strict: true,
+          schema: input.jsonSchema,
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    if (error instanceof ModelOutputError) throw error;
+    await settleEstimateUsd(estimate, 0);
+    const message = error instanceof Error ? error.message : "The model request failed.";
+    throw new ModelOutputError(`${input.schemaName} request failed. ${message}`);
+  }
 
   const actual = usageCostUsd(response.usage);
   const priceUsd = actual ?? estimate;

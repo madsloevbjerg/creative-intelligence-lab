@@ -194,7 +194,7 @@ async function main(): Promise<void> {
         const label = largest(found.get("green label") ?? []);
         if (label && !(phone && overlaps(label, phone))) {
           const labelled = await brandLabel(photo, label, brandKit.name);
-          if (labelled) photo = labelled;
+          if (labelled) photo = Buffer.from(labelled);
         }
         const subjects = ["person", "face", "cup", "hand"]
           .flatMap((phrase) => found.get(phrase) ?? [])
