@@ -8,7 +8,7 @@ Meta's next-gen Andromeda scores every eligible ad and encodes ad content togeth
 
 Source: [Meta Engineering, Andromeda](https://engineering.fb.com/2026/10/28/ml-applications/meta-andromeda-next-gen-ads-retrieval-gpu-co-design/)
 
-This repository is milestone 1: the input form, a demo brand, a mock analysis (no API key), and the coverage map. Concept briefs, image mockups, and export come later.
+The cached demo runs with no API key. Live mode is optional and passcode-gated.
 
 ## Run it locally
 
@@ -102,6 +102,32 @@ npm run m2:smoke
 ```
 
 If the key is missing, the command stops and does not call the API.
+
+## What it does
+
+It places each ad on a motivation-by-execution grid, names the empty cells, and shows three new concepts for the biggest gaps. The before/after view compares the eight existing ads with those concepts. Nothing on the page is a forecast.
+
+## How the Meta models are used
+
+- Muse Spark writes the brand summary, the constraints, the classification, and the concept briefs.
+- SAM 3.1 finds the bag, the person, the face, the head, and the hands. Those masks drive smartCrop, the lockup position, and layout QA.
+- Muse Image makes the ad photographs and the concept mockups, including the fictional creator still.
+
+## Design rules and layout QA
+
+`lib/lockup-config.ts` holds the lockup: one deep-green rounded rectangle, a small uppercase wordmark, and the headline. The headline is at least 5% of the image width. The wordmark is at least 2.2%. The box stays within 6% of the edges, at most 72% wide, and off the face, head, hands, and bag. On 9:16 it also stays out of the top 14% and the bottom 35%. Lines break after a sentence when there is one, prefer two lines, and do not leave a single word alone. `npm run check:layout` fails if a saved creative breaks a rule. The per-ad view shows a Layout QA line.
+
+## Cost of a full run
+
+The tracked total in `data/spend.json` is the sum of the real calls made while building this demo, not a quote for a future run. Cache hits are $0. List prices in `lib/meta.ts` are Muse Spark $1.25 per 1M input tokens and $4.25 per 1M output tokens, SAM 3.1 $0.0025 per image, and Muse Image $0.01 per image.
+
+## Copy language
+
+`lib/copy-language.ts` sets the demo to English (`en`). Danish (`da`) strings for the three concepts are in the same file. The eight existing ad headlines stay in English and keep kr.
+
+## Classifications
+
+Classifications are cached so the demo replays the same labels. A borderline ad can be classified differently if the pixels change and the call is made again. Ad 7 is pinned to Emotion/ritual so the gaps the concepts were built from do not move. Every ad has a why line for that reason.
 
 ## What is in the repo
 

@@ -151,4 +151,6 @@ Also left:
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.769946** of the $120 cap. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`, so a re-render does not reclassify it. Origin is the `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.90252525** of the $120 cap. That figure is the sum of the calls made to build the demo. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`. The click path is `docs/demo-click-path.md`. Origin is the `origin` remote.
+
+Vercel, with no key, serves the cached demo. For live mode set `MODEL_API_KEY` (secret), `USE_MOCK=false`, `LIVE_ACCESS_CODE` (a passcode you choose), `BUDGET_LIMIT_USD=120`, and `LIVE_RUNS_PER_HOUR=10`.
