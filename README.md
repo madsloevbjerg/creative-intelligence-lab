@@ -147,3 +147,7 @@ Classifications are cached so the demo replays the same labels. A borderline ad 
 - `scripts/validate-mock.ts` — checks the demo labels
 
 There is no database. The analysis stays in the browser until you refresh the page.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
