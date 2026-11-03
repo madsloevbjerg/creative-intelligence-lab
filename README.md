@@ -105,7 +105,7 @@ If the key is missing, the command stops and does not call the API.
 
 ## What it does
 
-It places each ad on a motivation-by-execution grid, names the empty cells, and shows three new concepts for the biggest gaps. The before/after view compares the eight existing ads with those concepts. Nothing on the page is a forecast.
+It places each ad on a motivation-by-execution grid, names the empty cells, and shows three new concepts for the biggest gaps. The before/after view compares the eight existing ads with those concepts, in Feed 4:5 and Reels 9:16. Concept 2 is “The one thing we agree on,” with the headline “We argue about everything. Except the coffee.” Sofie’s still is labelled AI-generated persona, fictional. Nothing on the page is a forecast.
 
 ## How the Meta models are used
 
@@ -115,7 +115,7 @@ It places each ad on a motivation-by-execution grid, names the empty cells, and 
 
 ## Design rules and layout QA
 
-`lib/lockup-config.ts` holds the lockup: one deep-green rounded rectangle, a small uppercase wordmark, and the headline. The headline is at least 5% of the image width. The wordmark is at least 2.2%. The box stays within 6% of the edges, at most 72% wide, and off the face, head, hands, and bag. On 9:16 it also stays out of the top 14% and the bottom 35%. Lines break after a sentence when there is one, prefer two lines, and do not leave a single word alone. `npm run check:layout` fails if a saved creative breaks a rule. The per-ad view shows a Layout QA line.
+`lib/lockup-config.ts` holds the lockup: one deep-green rounded rectangle, a small uppercase wordmark, and the headline. The headline is at least 5% of the image width. The wordmark is at least 2.2%. The box stays within 6% of the edges, at most 72% wide, and off the face, head, hands, and bag. On 9:16 the lockup stays out of the top 14% and the bottom 35%, and the bag, face, head, hands, and cups stay out of the bottom 35% as well. Lines break after a sentence when there is one, prefer two lines, and do not leave a single word alone. `npm run check:layout` checks every demo creative and fails if one breaks a rule. The per-ad view shows a Layout QA line.
 
 ## Cost of a full run
 

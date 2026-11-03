@@ -1,7 +1,8 @@
 "use client";
 
-import { demoCopyLanguage } from "@/lib/copy-language";
+import { activeConceptCopy, demoCopyLanguage } from "@/lib/copy-language";
 import { demoPortfolio } from "@/lib/demo";
+import persona from "../docs/m5/persona.json";
 
 const before = demoPortfolio.ads.map((ad, index) => ({
   src: ad.file,
@@ -18,10 +19,10 @@ const after = [
   },
   {
     src: "/demo/m5/2a.png",
-    tall: "/demo/m5/persona-916.png",
+    tall: "/demo/m5/2a-916.png",
     title: "The one thing we agree on",
     meta: "Belonging/social proof · Person/UGC",
-    note: "AI-generated persona, fictional",
+    note: "",
   },
   {
     src: "/demo/m5/3b.png",
@@ -47,14 +48,18 @@ function markdownExport(): string {
     "## After",
     "",
   ];
+  const copy = activeConceptCopy();
   for (const concept of after) {
-    lines.push(`### ${concept.title}`, "", concept.meta, "");
+    const key = concept.title === copy["1"].name ? "1" : concept.title === copy["2"].name ? "2" : "3";
+    lines.push(`### ${concept.title}`, "", concept.meta, "", copy[key].headline, "", copy[key].primary, "");
     if (concept.note) lines.push(concept.note, "");
   }
   lines.push(
-    "Illustrative testimonial: replace with a real customer quote before use.",
+    `### ${persona.name}`,
     "",
     "AI-generated persona, fictional.",
+    "",
+    persona.scriptEn,
     "",
   );
   return lines.join("\n");
@@ -120,6 +125,14 @@ export function BeforeAfter({ summary }: { summary: string }) {
           ))}
         </div>
       </div>
+      <figure className="max-w-[220px] space-y-2">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/demo/m5/persona-916.png" alt="" className="aspect-[9/16] w-full rounded-md object-cover" />
+        <figcaption className="text-xs text-muted-foreground">
+          {persona.name} · Reels 9:16 · AI-generated persona, fictional
+        </figcaption>
+        <p className="text-xs text-muted-foreground">{persona.scriptEn}</p>
+      </figure>
     </section>
   );
 }

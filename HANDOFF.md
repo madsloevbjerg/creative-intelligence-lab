@@ -106,18 +106,18 @@ There is no database. An analysis stays in the browser until refresh. Retries: `
 
 ### Done since the handoff
 
-- Merged Codex `920c246` (`codex-920c246`, based on `4eb3588`). Kept the generalized ranking rules, the office-furniture regression in `scripts/validate-gaps.ts`, `scripts/audit-demo-cache.ts`, the `PLACE_ONLY` path in `scripts/m3-place.ts`, and `docs/review/cached-demo.md`. Kept the refreshed cache, the headline design, and the M5 files.
-- The demo cache matches the current eight finals, the website text, and the brief. `npm run check:safety` passes. `scripts/refresh-demo-cache.ts` is the refresh. A headline restyle required a second refresh; both are committed.
-- The lockup rebuild classified ad 7 as `Quality/performance` × `Lifestyle scene` again, so `Emotion/ritual` is an empty cell once more. The fixture in `check:gaps` still expects Emotion/ritual, Safety/trust, and Belonging as the top three.
-- M5 briefs were rewritten so each motivation leads. The testimonial is labelled `Illustrative testimonial: replace with a real customer quote before use` in `docs/m5/briefs.md` and on the Safety/trust × Testimonial cell. A shared headline opening, or Aarhus/ristedato in more than one headline, is rejected by `lib/brief-rules.ts`.
-- New stills are `public/demo/m5/1a.png` through `3c.png`. Mads picked **1a**, **2a**, and **3b**. The picks sheet is `docs/m5/contact-sheet-picks.png`. Waiting for design approval of the lockup. No persona, no 9:16 build, no before/after page.
-- `renderLockup` in `lib/lockup.ts` draws one deep-green lockup for the 8 ads and the M5 mockups. The numbers are in `lib/lockup-config.ts`, including the 9:16 band (top 14%, bottom 35%). `SAM` phrase `hands` is the one that matches; `hand` is the fallback. `1b` has no clear corner. Ad 8, 2a, 2c, 3a, 3b, and 3c use the top-left. Ad 1, 2b, and 3c needed another crop. Layout QA is on the per-ad view and in `lib/layout-qa.json`. `npm run check:layout` checks it.
+- The eight ads, the three picked concepts, and Sofie use one deep-green lockup (`lib/lockup.ts`, numbers in `lib/lockup-config.ts`). Brand labels stay off (`BRAND_LABEL_ENABLED` is false).
+- Ad 7 is pinned to Emotion/ritual × Lifestyle scene × Static in `lib/pinned-classification.ts`, so the summary stays at 4 of 10 motivations.
+- Concept 2 is **The one thing we agree on**. The headline is “We argue about everything. Except the coffee.” The picked still is `v2-b` (`public/demo/m5/2a.png`). `c2-a` remains the fallback with “We share everything. Except this.”
+- Real 9:16 generations, not crops of the 4:5 stills: `1a-916`, `2a-916`, `3b-916`, and `persona-916`. The bag sits in the middle. The lockup sits above it, outside the top 14% and the bottom 35%.
+- Sofie is the fictional persona. Every surface that shows her says `AI-generated persona, fictional`. Her script is in `docs/m5/persona.json`.
+- `npm run check:layout` reads `lib/layout-qa.json`, requires the 8 ads, the 3 concepts at 4:5, the 3 concepts at 9:16, and the persona, and also checks every other saved record. A 9:16 bag, face, head, hand, or cup mask fails when more than 2% of that mask is in the bottom 35%. The command prints a pass table.
+- The before/after view and `docs/m5/export.md` use the new concept 2. The click path is `docs/demo-click-path.md`.
 
 ### Still open
 
-- Ranking rewrite is in `lib/gaps.ts` and `lib/taxonomy.ts`. `components/coverage-map.tsx` leaves one-ad cells uncoloured. These were not re-checked in the browser after the stop.
-- Mads picked M5 candidates **1a**, **2a**, and **3b**.
-- `BRAND_LABEL_ENABLED` in `lib/brand-label.ts` is false. Nothing calls `brandLabel`. Every bag keeps the plain green block. The old rule that ads 3, 4, 5, 7, and 8 keep a printed name is gone.
+- `BRAND_LABEL_ENABLED` stays false. Do not print a name on the bag.
+- One-ad cells on the coverage map are uncoloured. Confirm that in the browser if the ranking display is touched again.
 
 ### Left
 
@@ -137,8 +137,8 @@ Also left:
 - Quiet one-ad cells are coded; confirm them in the browser.
 - The printed bag name stays off (`BRAND_LABEL_ENABLED` is false).
 - Hardcoding audit: conflict flags, off-brand rows, ranking, and the summary sentence must be driven by the brief, the website text, and model output. Demo files (`lib/demo.ts`, fixtures) may stay brand-specific. `lib/gaps.ts` still has general keyword rules (discount language, ritual → Emotion/ritual). Re-read those before calling the audit done.
-- M5 after the picks: lock a, b, or c; Feed 4:5 and Reels 9:16; one AI persona whose images are labelled `AI-generated persona, fictional`; a before/after view; MD/PDF export.
-- M6: deploy that serves the cached demo with no mock banner, plus passcode-gated uploads; README with the Andromeda link above and the no-performance-prediction principle; a submission checklist; a 2-minute click path; make the repo public only when asked.
+- M5 picks, 9:16 frames, the persona, the before/after view, and the Markdown export are in the repo.
+- M6: deploy that serves the cached demo with no mock banner, plus passcode-gated uploads. The README, the Andromeda link, and `docs/demo-click-path.md` are already in the repo. Make the repo public only when asked.
 - Generality test: run the same flow on a second brand and confirm nothing Danish Coffee Lab-specific is required for ranking, flags, or the summary sentence.
 
 ## Known issues
@@ -151,6 +151,6 @@ Also left:
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$4.90252525** of the $120 cap. That figure is the sum of the calls made to build the demo. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`. The click path is `docs/demo-click-path.md`. Origin is the `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$5.44732725** of the $120 cap. That figure is the sum of the calls made to build the demo. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`. The click path is `docs/demo-click-path.md`. Origin is the `origin` remote.
 
 Vercel, with no key, serves the cached demo. For live mode set `MODEL_API_KEY` (secret), `USE_MOCK=false`, `LIVE_ACCESS_CODE` (a passcode you choose), `BUDGET_LIMIT_USD=120`, and `LIVE_RUNS_PER_HOUR=10`.
