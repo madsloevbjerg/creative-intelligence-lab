@@ -100,15 +100,19 @@ There is no database. An analysis stays in the browser until refresh. Retries: `
 
 - M0–M1: one-page app, demo brand, mock analysis, coverage map, budget cap, access code, hourly limit.
 - M2: live Muse Spark, SAM 3.1, and Muse Image, with cache.
-- M3: eight visually different ads. Scenes: 1 bold price still, 2 three bags, 3 woman in a café with the bag, 4 doorstep, 5 gooseneck pour with the bag, 6 phone notification with the bag, 7 person in a kitchen with the bag, 8 Aarhus roastery with the bag. Wordmark pill is top-left. Headlines move. Ad 6 has a coded lock-screen card.
+- M3: eight visually different ads. Scenes: 1 bold price still, 2 three bags, 3 woman in a café with the bag, 4 doorstep, 5 gooseneck pour with the bag, 6 phone notification with the bag, 7 person in a kitchen with the bag, 8 Aarhus roastery with the bag. Wordmark pill is top-left, except ad 6, where it sits bottom-left so it clears the phone. Headlines use the same left inset as the pill and a full-width soft gradient. Ad 6 has a coded lock-screen card.
 - M4: matrix columns are execution styles. Delivery is a badge. Muse Spark extracts exclusions and focus points. Ads 1 and 2 conflict with a discount exclusion. Summary bar counts motivations from the classifications. Why list is on the page. Empty cells have no "EMPTY" label.
 
-### Half-done (this interrupted batch — files exist, the work was not finished or re-checked end to end)
+### Done since the handoff
 
-- Ranking rewrite is in `lib/gaps.ts`, `lib/taxonomy.ts` (`Emotion/ritual`, `EXECUTION_FIT`), `scripts/validate-gaps.ts`, and `scripts/validate-mock.ts`. `components/coverage-map.tsx` now leaves one-ad cells uncoloured; only the top-gap wash is coloured. `components/lab-app.tsx` no longer merges a hardcoded phrase list into the model constraints. These edits are in the working tree that this handoff commits. They were not deployed or re-verified in the browser after the stop.
-- `lib/brand-label.ts` exists. `scripts/m3-place.ts` calls it. A `PLACE_ONLY` run printed the name on all 8 ads, then a skip set for ads 1, 2, and 6 was added and was **not** re-run. The PNGs in `public/demo/dcl-0N.png` are still that printed pass. Visual read of that pass: 3, 4, 5, 7, and 8 look printed on the bag label; 1 is axis-aligned on a tilted bag; 2 hits only the rear bag; 6 hit the green phone screen, not the bag. Treat 1, 2, and 6 as not accepted.
-- Website text in `lib/demo.ts` gained one sentence (Aarhus roastery, tasting note "dark cherry and cocoa"). Brand summary and constraint caches were **not** regenerated after that sentence, so a live demo replay may miss the brand/constraint cache until those two calls are run again.
-- M5 helpers only: `conceptCopySchema`, `personaSchema`, `writeConceptCopy`, `writePersona`, and the system prompts in `lib/prompts.ts`. No `docs/m5/`, no concept candidate images, no persona portraits, no M5 contact sheet.
+- The demo cache matches the current eight finals, the website text, and the brief. `npm run check:safety` passes. `scripts/refresh-demo-cache.ts` is the refresh. A headline restyle required a second refresh; both are committed.
+- After that second classify, ad 7 is `Emotion/ritual` × `Lifestyle scene`. That cell is no longer empty. The current top 3 from `rankGaps` are Safety/trust × Testimonial, Belonging/social proof × Person/UGC, and Curiosity/novelty × Demo/how-to.
+- M5 is at the contact sheet only. Briefs are in `docs/m5/briefs.md` (Danish, then English). Nine stills are `public/demo/m5/1a.png` through `3c.png`. The sheet is `docs/m5/contact-sheet.png`. Waiting for picks. No persona, no 9:16 lock, no before/after page.
+
+### Still open
+
+- Ranking rewrite is in `lib/gaps.ts` and `lib/taxonomy.ts`. `components/coverage-map.tsx` leaves one-ad cells uncoloured. These were not re-checked in the browser after the stop.
+- `brandLabel` on ads 1, 2, and 6 was not accepted: 1 is axis-aligned on a tilted bag, 2 hits only the rear bag, 6 hit the green phone screen. Ads 3, 4, 5, 7, and 8 look printed on the bag label.
 
 ### Left
 
@@ -128,18 +132,18 @@ Also left:
 - Quiet one-ad cells are coded; confirm them in the browser.
 - `brandLabel` on the bag label for the 8 ads and later mockups. Drop it where it looks pasted. Keep the top-left pill.
 - Hardcoding audit: conflict flags, off-brand rows, ranking, and the summary sentence must be driven by the brief, the website text, and model output. Demo files (`lib/demo.ts`, fixtures) may stay brand-specific. `lib/gaps.ts` still has general keyword rules (discount language, ritual → Emotion/ritual). Re-read those before calling the audit done.
-- M5: Danish copy with an English translation under it; 3 candidates (a, b, c) per concept; a human pick; Feed 4:5 and Reels 9:16 with `placeText` safe zones; one AI persona whose images are labelled `AI-generated persona, fictional`; a before/after view; MD/PDF export. Stop for picks before locking candidates.
+- M5 after the picks: lock a, b, or c; Feed 4:5 and Reels 9:16; one AI persona whose images are labelled `AI-generated persona, fictional`; a before/after view; MD/PDF export.
 - M6: deploy that serves the cached demo with no mock banner, plus passcode-gated uploads; README with the Andromeda link above and the no-performance-prediction principle; a submission checklist; a 2-minute click path; make the repo public only when asked.
 - Generality test: run the same flow on a second brand and confirm nothing Danish Coffee Lab-specific is required for ranking, flags, or the summary sentence.
 
 ## Known issues
 
 - `words` and `background` still miss elements that are visibly present on some ads. `green label` is not safe on ad 6.
-- On ads 3, 6, and 7 the wordmark stays top-left even when that corner meets hair or the phone. The placement sentence says so.
+- On ads 3 and 7 the wordmark stays top-left even when that corner meets hair. Ad 6's wordmark is bottom-left, under the headline, clear of the phone.
 - The phone notification is axis-aligned. The phone in the photo is slightly tilted.
-- Ad 6's last committed classification (before this batch) called the still Static, not Video.
+- Ad 6's latest classification calls the still Video, because of the phone. Delivery is only a badge.
 - `scripts/validate-safety.ts` assigns the literal strings `test-key-not-used` and `owner-secret` as fake env values for tests. They are not credentials.
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$2.09547625** of the $120 cap. Failed attempts on the last completed model run were 0. The last live cost before this stop was about $0.02 for eight `green label` SAM calls. Cache hits are $0. No GitHub remote was configured before this handoff; Origin is the existing `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$2.7771095** of the $120 cap. This batch: about $0.21 to refresh all eight ads (ads 1, 2, and 6 were missing as well as 3, 4, 5, 7, and 8), about $0.18 to refresh again after the headline restyle, and about $0.30 for the three briefs and nine M5 stills. Failed attempts were 0. Cache hits are $0. Origin is the `origin` remote.
