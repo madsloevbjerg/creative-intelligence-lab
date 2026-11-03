@@ -14,7 +14,7 @@ Concept 2 is now the argument behind the bag. Candidate **v2-b** is the pick: th
 
 Hypothesis: Belonging/social proof has no ad in this set, so a Person/UGC would cover a motivation the portfolio does not use. This is not a forecast.
 
-- Headline: We argue about everything. Except the coffee. The lockup breaks it as “We argue about everything. / Except the coffee.” The 9:16 frame is an office kitchen, for the Office plan.
+- Headline: We argue about everything. Except the coffee. At the shared padding and the 5% type size the first sentence wraps, so the lockup reads “We argue / about everything. / Except the coffee.” The 9:16 frame is an office kitchen, for the Office plan.
 - Primary text: At home we argue about everything else. The coffee is the one thing we agree on. The price per cup is on the page before you start, and you can skip a week.
 - Danish headline: Vi skændes om alt. Bare ikke kaffen.
 

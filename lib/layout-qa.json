@@ -299,7 +299,7 @@
   },
   "2a": {
     "corner": "bottom-left",
-    "contrast": 7.35,
+    "contrast": 7.42,
     "overlapPx": {
       "face": 0,
       "head": 0,
@@ -313,19 +313,20 @@
       "bag": 0
     },
     "marginOk": true,
-    "lines": 2,
+    "lines": 3,
     "lineText": [
-      "We argue about everything.",
+      "We argue",
+      "about everything.",
       "Except the coffee."
     ],
     "words": 7,
-    "coverage": 8.6,
+    "coverage": 10.6,
     "fontSize": 40,
     "wordmarkSize": 18,
     "bagClipped": false,
     "recropped": true,
     "ok": true,
-    "reason": "bottom-left, 2 lines, contrast 7.4:1"
+    "reason": "bottom-left, 3 lines, contrast 7.4:1"
   },
   "2b": {
     "corner": "top-left",

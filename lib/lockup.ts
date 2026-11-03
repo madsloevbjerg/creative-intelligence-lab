@@ -297,26 +297,9 @@ export async function renderLockup(input: {
   const words = wordsOf(input.headline);
   const fontSize = Math.round(width * lockupConfig.minHeadlineSizeFraction);
   const cap = fontSize * lockupConfig.capHeightRatio;
+  const pad = Math.round(cap * lockupConfig.paddingToCap);
   const maxOuter = Math.round(width * lockupConfig.maxWidthFraction);
-  const sentences = input.headline
-    .trim()
-    .split(/(?<=\.)\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
-  let pad = Math.round(cap * lockupConfig.paddingToCap);
-  const minPad = Math.max(8, Math.round(cap * 0.34));
-  let inner = Math.max(40, maxOuter - pad * 2);
-  const sentenceFits = (room: number) =>
-    sentences.length >= 2 &&
-    sentences.length <= lockupConfig.maxLines &&
-    sentences.every((line) => fits(line, fontSize, room) && !orphan(line, words.length));
-  if (sentences.length >= 2 && !sentenceFits(inner)) {
-    while (pad > minPad) {
-      pad -= 1;
-      inner = Math.max(40, maxOuter - pad * 2);
-      if (sentenceFits(inner)) break;
-    }
-  }
+  const inner = Math.max(40, maxOuter - pad * 2);
   const wordmarkSize = Math.max(10, Math.round(width * lockupConfig.minWordmarkSizeFraction));
   const tracking = wordmarkSize * lockupConfig.wordmarkTrackingEm;
   const wordmark = "DANISH COFFEE LAB";

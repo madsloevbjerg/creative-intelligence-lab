@@ -145,12 +145,18 @@ Also left:
 
 - `words` and `background` still miss elements that are visibly present on some ads. `green label` is not safe on ad 6.
 - On ads 3 and 7 the wordmark stays top-left even when that corner meets hair. Ad 6's wordmark is bottom-left, under the headline, clear of the phone.
-- The phone notification is axis-aligned. The phone in the photo is slightly tilted.
-- Ad 6's latest classification calls the still Video, because of the phone. Delivery is only a badge.
+- Ad 6's notification follows the tilted screen. Its classification is pinned to Convenience/time × Lifestyle scene × Static.
 - `scripts/validate-safety.ts` assigns the literal strings `test-key-not-used` and `owner-secret` as fake env values for tests. They are not credentials.
 
 ## Costs so far
 
-Tracked spend in `.data/spend.json` and `data/spend.json`: **$6.12232725** of the $120 cap. That figure is the sum of the calls made to build the demo. Ad 6’s notification is rotated to the phone-screen mask (`lib/phone-notice.ts`). `npm run check:phone` fails if the card leaves that mask. Ad 6’s classification stays pinned to Convenience/time × Lifestyle scene × Static. Concept 2’s lockup is “We argue about everything. / Except the coffee.” The inner padding for that sentence is 9px instead of 31px so it fits the 72% box at a 40px headline. The 9:16 concept 2 frame is an office kitchen. Closer retries for concepts 1 and 3 did not keep the bag and hands out of the bottom 35% and still leave a caption band, so those two verticals stay on the frames that pass `check:layout`. Ad 7's classification is pinned to Emotion/ritual in `lib/pinned-classification.ts`. The click path is `docs/demo-click-path.md`. Origin is the `origin` remote.
+Tracked spend in `.data/spend.json` and `data/spend.json`: **$6.27232725** of the $120 cap. That figure is the sum of the calls made to build the demo. On 9:16 only the bag and the lockup must stay out of the bottom 35%, and the lockup must stay out of the top 14%. Hands and the table may enter the lower band. Concept 2 uses the same inner padding as the other lockups. At 5% type and a 72% box the first sentence wraps, so the 4:5 lockup reads “We argue / about everything. / Except the coffee.” Twelve new vertical candidates put the bag into the bottom 35%, so the published 9:16 frames stay the ones that pass. Ad 7 is pinned to Emotion/ritual. Ad 6 is pinned to Convenience/time. The click path is `docs/demo-click-path.md`. Origin is the `origin` remote.
+
+## Remaining for Mads
+
+1. Make the repo public when you want it public.
+2. On Vercel, set `MODEL_API_KEY` (secret), `USE_MOCK=false` for live mode, `LIVE_ACCESS_CODE` to a passcode you choose, `BUDGET_LIMIT_USD=120`, and `LIVE_RUNS_PER_HOUR=10`. With no key, the cached demo still serves.
+3. Deploy.
+4. Submit.
 
 Vercel, with no key, serves the cached demo. For live mode set `MODEL_API_KEY` (secret), `USE_MOCK=false`, `LIVE_ACCESS_CODE` (a passcode you choose), `BUDGET_LIMIT_USD=120`, and `LIVE_RUNS_PER_HOUR=10`.
