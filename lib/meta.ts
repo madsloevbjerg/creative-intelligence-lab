@@ -26,7 +26,15 @@ import {
   mockMockup,
   mockSegmentation,
 } from "@/lib/mock";
-import { BRAND_SYSTEM, BRIEF_SYSTEM, CLASSIFY_SYSTEM, CONCEPT_COPY_SYSTEM, CONSTRAINT_SYSTEM, PERSONA_SYSTEM } from "@/lib/prompts";
+import {
+  BRAND_SYSTEM,
+  BRIEF_SYSTEM,
+  CLASSIFY_SYSTEM,
+  CONCEPT_COPY_SYSTEM,
+  CONSTRAINT_SYSTEM,
+  PERSONA_SYSTEM,
+  conceptCopyFocus,
+} from "@/lib/prompts";
 import { brandUserText, classifyUserText } from "@/lib/request-text";
 import { isDemoBrandText, isDemoImageSha } from "@/lib/demo-assets";
 import {
@@ -944,15 +952,21 @@ export async function writeConceptCopy(input: {
   hypothesis: string;
   websiteText: string;
   brief: string;
+  /** Set on the one allowed retry so the model sees why the last draft was rejected. */
+  revision?: string;
 }): Promise<ConceptCopy> {
   return retryCharged(conceptCopySchema, "Concept copy", async () => {
     const userText = [
       `Motivation: ${input.motivation}`,
       `Execution style: ${input.execution}`,
+      conceptCopyFocus(input.motivation, input.execution),
       `Why this gap: ${input.hypothesis}`,
+      input.revision ? `Rewrite. The previous draft was rejected: ${input.revision}` : "",
       `Website text:\n${input.websiteText}`,
       `Campaign brief:\n${input.brief}`,
-    ].join("\n\n");
+    ]
+      .filter((line) => line.length > 0)
+      .join("\n\n");
     return museJson({
       schemaName: "ConceptCopy",
       jsonSchema: conceptCopyJsonSchema,

@@ -1,3 +1,4 @@
+import { briefProblems } from "../lib/brief-rules";
 import { conflictQuote, offBrandMotivations, rankGaps, topGaps } from "../lib/gaps";
 import type { Execution, Motivation } from "../lib/taxonomy";
 
@@ -67,6 +68,22 @@ if (conflictQuote("Built to last", ["No discount offers"]) !== null) fail("non-o
 if (offBrandMotivations([]).length) fail("exclusions inferred without evidence");
 const want = ["Emotion/ritual::Lifestyle scene", "Safety/trust::Testimonial", "Belonging/social proof::Person/UGC"];
 if (ranked.map(g => `${g.motivation}::${g.execution}`).join("|") !== want.join("|")) fail("top three executions changed");
+
+const shared = briefProblems([
+  { headlineDa: "Ristet i Aarhus", hook: "En kop", primaryTextDa: "Kort tekst." },
+  { headlineDa: "Ristet i weekenden", hook: "En anden kop", primaryTextDa: "Anden tekst." },
+]);
+if (!shared.some((problem) => problem.includes("shared headline opening"))) fail("shared headline opening was allowed");
+const twoProofs = briefProblems([
+  { headlineDa: "Ristedatoen står her", hook: "En kop", primaryTextDa: "Fra Aarhus." },
+  { headlineDa: "Aarhus på posen", hook: "En kop til", primaryTextDa: "Uden tal." },
+]);
+if (!twoProofs.some((problem) => problem.includes("more than one headline"))) {
+  fail("Aarhus and ristedato were allowed in two headlines");
+}
+if (briefProblems([{ headlineDa: "Spring en uge over", hook: "Jeg kan altid opsige", primaryTextDa: "Prisen per kop står der. Ristedatoen også." }]).length) {
+  fail("a single supporting ristedato was rejected");
+}
 
 if (failures > 0) {
   console.error(`${failures} gap ranking check(s) failed`);

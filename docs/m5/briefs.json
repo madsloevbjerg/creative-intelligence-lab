@@ -1,0 +1,59 @@
+[
+  {
+    "motivation": "Safety/trust",
+    "execution": "Testimonial",
+    "hypothesis": "Hypothesis: Safety/trust has no ad in this set, so a Testimonial would cover a motivation the portfolio does not use. This is not a forecast.",
+    "copy": {
+      "conceptName": "Tryg start uden binding",
+      "conceptNameEn": "Safe start with no lock-in",
+      "coreMessage": "Trying a subscription feels low risk when you see the price per cup first and know you can skip or cancel.",
+      "hook": "Prøv uden at binde dig",
+      "hookEn": "Try without locking yourself in",
+      "visualDirection": "Overhead photo of a calm kitchen table in soft morning light, two hands holding a plain light ceramic cup with light steam, small plain jug next to it, light wood surface and folded linen cloth, blurred background, no packaging, no text, no logos, no faces.",
+      "headlineDa": "“Jeg startede, fordi jeg kunne stoppe igen”",
+      "headlineEn": "“I started because I could stop again”",
+      "primaryTextDa": "“Jeg så prisen pr. kop før jeg gik i gang. Jeg kan springe en uge over og opsige når jeg vil. Jeg kan se ristedato på posen.”",
+      "primaryTextEn": "“I saw the price per cup before I started. I can skip a week and cancel when I want. I can see the roast date on the bag.”",
+      "ctaDa": "Se prisen pr. kop",
+      "ctaEn": "See the price per cup"
+    }
+  },
+  {
+    "motivation": "Belonging/social proof",
+    "execution": "Person/UGC",
+    "hypothesis": "Hypothesis: Belonging/social proof has no ad in this set, so a Person/UGC would cover a motivation the portfolio does not use. This is not a forecast.",
+    "copy": {
+      "conceptName": "Fælles mandagskaffe",
+      "conceptNameEn": "Shared Monday coffee",
+      "coreMessage": "Monday brewing is a shared ritual among neighbours and colleagues at home.",
+      "hook": "Samme morgen, samme kaffe som naboen",
+      "hookEn": "Same morning, same coffee as the neighbour",
+      "visualDirection": "Handheld phone photo in a small bright kitchen on Monday morning. A woman in a wool sweater smiles behind a steaming cup, kettle in hand. A plain coffee bag with its back turned sits open on the wooden table next to a dripper. Soft window light, slight motion blur, lived-in and honest. No text, no logos, no letters visible.",
+      "headlineDa": "Sammen om mandagskaffen, hver i sit køkken",
+      "headlineEn": "Together for Monday coffee, each in their own kitchen",
+      "primaryTextDa": "Posen lander mandag morgen. Du brygger, og det gør naboen og kollegaen også. Samme kaffe til ugens start, med ristedato på posen og smag af mørk kirsebær og kakao. Du kan springe en uge over, når det passer.",
+      "primaryTextEn": "The bag lands on Monday morning. You brew, and so do the neighbour and the colleague. Same coffee to start the week, with roast date on the bag and notes of dark cherry and cocoa. You can skip a week whenever it suits.",
+      "ctaDa": "Vær med mandag",
+      "ctaEn": "Join us Monday"
+    }
+  },
+  {
+    "motivation": "Curiosity/novelty",
+    "execution": "Demo/how-to",
+    "hypothesis": "Hypothesis: Curiosity/novelty has no ad in this set, so a Demo/how-to would cover a motivation the portfolio does not use. This is not a forecast.",
+    "copy": {
+      "conceptName": "Køkkenforsøget med to kopper",
+      "conceptNameEn": "The Two-Cup Kitchen Experiment",
+      "coreMessage": "Discovery through a playful home tasting: brew two cups, search for dark cherry and cocoa, and compare the first cup with the last.",
+      "hook": "Kan du finde kirsebær og kakao?",
+      "hookEn": "Can you find cherry and cocoa?",
+      "visualDirection": "Overhead close-up photograph on a light wooden kitchen table: two small cups of black coffee side by side, a small ceramic dish with dark cherries and a pinch of cocoa powder beside them, one hand lifting a cup, soft morning daylight from the side, shallow depth of field, no packaging, no text, no letters visible.",
+      "headlineDa": "Lav et lille smageforsøg i dit køkken",
+      "headlineEn": "Run a little tasting test in your kitchen",
+      "primaryTextDa": "Tag to kopper fra samme pose. Find først mørk kirsebær. Så kakao. Skriv ikke noget ned. Drik første kop frisk. Gem legen til sidste kop. Smag igen. Hvad har flyttet sig?",
+      "primaryTextEn": "Take two cups from the same bag. Find dark cherry first. Then cocoa. Write nothing down. Drink the first cup fresh. Save the game for the last cup. Taste again. What has shifted?",
+      "ctaDa": "Prøv forsøget hjemme",
+      "ctaEn": "Try the experiment at home"
+    }
+  }
+]

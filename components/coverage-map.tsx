@@ -184,10 +184,20 @@ export function CoverageMap({ ads, pinnedId, onHover, onPin, highlighted = [], o
                           ? `${motivation}, ${execution}, top gap. ${gap.hypothesis}`
                           : `${motivation}, ${execution}, ${density === "empty" ? "no ads" : density === "thin" ? "one ad" : `${cellAds.length} ads`}`
                       }
-                      title={gap?.hypothesis}
+                      title={
+                        gap && motivation === "Safety/trust" && execution === "Testimonial"
+                          ? `${gap.hypothesis} Illustrative testimonial: replace with a real customer quote before use.`
+                          : gap?.hypothesis
+                      }
                     >
                       {quiet ? (
-                        <span className="block min-h-16" />
+                        gap && motivation === "Safety/trust" && execution === "Testimonial" ? (
+                          <p className="max-w-[9rem] text-[10px] leading-snug text-muted-foreground">
+                            Illustrative testimonial: replace with a real customer quote before use
+                          </p>
+                        ) : (
+                          <span className="block min-h-16" />
+                        )
                       ) : (
                         <div className="flex flex-wrap gap-1">
                           {cellAds.map((ad) => (

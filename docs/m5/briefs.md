@@ -2,7 +2,8 @@
 
 The eight existing ads are the before. These three are the after, from the current top gaps.
 
-## 1. Roast Date You Can Trust
+## 1. Tryg start uden binding
+Safe start with no lock-in
 
 - Motivation: Safety/trust
 - Execution: Testimonial
@@ -10,22 +11,26 @@ The eight existing ads are the before. These three are the after, from the curre
 
 Hypothesis: Safety/trust has no ad in this set, so a Testimonial would cover a motivation the portfolio does not use. This is not a forecast.
 
+Illustrative testimonial: replace with a real customer quote before use.
+
 ### Danish
 
-- Headline: Ristet i Aarhus, med dato på posen
-- Primary text: Jeg køber én gang, og næste pose ristes bagefter. Ristedatoen står på posen, og jeg kan springe en uge over. Det er single origin fra Aarhus, så jeg ved, hvad jeg får hver morgen.
-- 2-second hook: Jeg ved, hvornår min kaffe er ristet.
-- CTA: Se Home-abonnementet
-- Core message: I know when my coffee was roasted, where it comes from, and that I can skip a week.
-- Visual direction: Close-up photograph of hands holding a warm ceramic cup over a light wooden kitchen table in soft morning daylight, a plain unmarked coffee bag beside it with no labels, a small plain bowl of coffee beans nearby, calm blurred kitchen background, no faces, no letters, no text, no numbers, no logos visible.
+- Headline: “Jeg startede, fordi jeg kunne stoppe igen”
+- Primary text: “Jeg så prisen pr. kop før jeg gik i gang. Jeg kan springe en uge over og opsige når jeg vil. Jeg kan se ristedato på posen.”
+- 2-second hook: Prøv uden at binde dig
+- CTA: Se prisen pr. kop
+- Core message: Trying a subscription feels low risk when you see the price per cup first and know you can skip or cancel.
+- Visual direction: Overhead photo of a calm kitchen table in soft morning light, two hands holding a plain light ceramic cup with light steam, small plain jug next to it, light wood surface and folded linen cloth, blurred background, no packaging, no text, no logos, no faces.
 
 ### English
 
-- Headline: Roasted in Aarhus, with the date on the bag
-- Primary text: I buy once, and the next bag is roasted after that. The roast date is on the bag, and I can skip a week. It is single origin from Aarhus, so I know what I get every morning.
-- CTA: See the Home plan
+- Headline: “I started because I could stop again”
+- Primary text: “I saw the price per cup before I started. I can skip a week and cancel when I want. I can see the roast date on the bag.”
+- 2-second hook: Try without locking yourself in
+- CTA: See the price per cup
 
-## 2. Samme rist, mange køkkener
+## 2. Fælles mandagskaffe
+Shared Monday coffee
 
 - Motivation: Belonging/social proof
 - Execution: Person/UGC
@@ -35,20 +40,22 @@ Hypothesis: Belonging/social proof has no ad in this set, so a Person/UGC would 
 
 ### Danish
 
-- Headline: Ristet i Aarhus – drukket hjemme hos os andre
-- Primary text: Vi er hjemmedrikkere i København og Aarhus, der før købte specialty-kaffe på café eller i supermarkedet. Nu får vi en single origin-pose ristet på Danish Coffee Labs risteri i Aarhus, med ristdato på posen og noter af mørk kirsebær og kakao. Du vælger dag, og du kan springe en uge over.
-- 2-second hook: Vi drikker det samme hver uge
-- CTA: Se Home-abonnementet
-- Core message: Home drinkers in Copenhagen and Aarhus share the same weekly ritual: coffee roasted in Aarhus with the roast date on the bag.
-- Visual direction: Handheld UGC-style photo in a home kitchen in soft morning light. A person in a grey knit sweater holds a steaming cup with both hands, looking at the camera with a calm smile. On the wooden counter behind, a plain open coffee bag without visible text and a second brewed cup sit softly out of focus. Unposed and warm. No letters, text, logos or writing visible anywhere in the image.
+- Headline: Sammen om mandagskaffen, hver i sit køkken
+- Primary text: Posen lander mandag morgen. Du brygger, og det gør naboen og kollegaen også. Samme kaffe til ugens start, med ristedato på posen og smag af mørk kirsebær og kakao. Du kan springe en uge over, når det passer.
+- 2-second hook: Samme morgen, samme kaffe som naboen
+- CTA: Vær med mandag
+- Core message: Monday brewing is a shared ritual among neighbours and colleagues at home.
+- Visual direction: Handheld phone photo in a small bright kitchen on Monday morning. A woman in a wool sweater smiles behind a steaming cup, kettle in hand. A plain coffee bag with its back turned sits open on the wooden table next to a dripper. Soft window light, slight motion blur, lived-in and honest. No text, no logos, no letters visible.
 
 ### English
 
-- Headline: Roasted in Aarhus – brewed at home with the rest of us
-- Primary text: We are home drinkers in Copenhagen and Aarhus who used to buy specialty coffee at a café or supermarket. Now we get a single-origin bag roasted at Danish Coffee Lab's roastery in Aarhus, with the roast date on the bag and notes of dark cherry and cocoa. You pick the day, and you can skip a week.
-- CTA: See the Home plan
+- Headline: Together for Monday coffee, each in their own kitchen
+- Primary text: The bag lands on Monday morning. You brew, and so do the neighbour and the colleague. Same coffee to start the week, with roast date on the bag and notes of dark cherry and cocoa. You can skip a week whenever it suits.
+- 2-second hook: Same morning, same coffee as the neighbour
+- CTA: Join us Monday
 
-## 3. Smag Datoen Tre Trin
+## 3. Køkkenforsøget med to kopper
+The Two-Cup Kitchen Experiment
 
 - Motivation: Curiosity/novelty
 - Execution: Demo/how-to
@@ -58,15 +65,16 @@ Hypothesis: Curiosity/novelty has no ad in this set, so a Demo/how-to would cove
 
 ### Danish
 
-- Headline: Bryg posen fra Aarhus og find mørk kirsebær og kakao
-- Primary text: Sådan prøver du det: 1. Se ristningsdatoen på posen. 2. Bryg din single origin som du plejer. 3. Smag efter mørk kirsebær og kakao. Din næste pose ristes i Aarhus først efter din ordre, og du kan springe en uge over.
-- 2-second hook: Sådan smager du mørk kirsebær i kaffe
-- CTA: Se hvordan det virker
-- Core message: Show home brewers how to use the printed roast date and the dark cherry and cocoa note to brew the single-origin bag roasted in Aarhus after their order.
-- Visual direction: Overhead photo of a kitchen table in soft autumn daylight: hands holding open a plain bag with blank side to camera showing coffee beans inside, a ceramic cup of black coffee beside it, and two small bowls with dried dark cherries and broken cocoa pieces; calm and still; no letters, text, numbers, logos or words visible anywhere.
+- Headline: Lav et lille smageforsøg i dit køkken
+- Primary text: Tag to kopper fra samme pose. Find først mørk kirsebær. Så kakao. Skriv ikke noget ned. Drik første kop frisk. Gem legen til sidste kop. Smag igen. Hvad har flyttet sig?
+- 2-second hook: Kan du finde kirsebær og kakao?
+- CTA: Prøv forsøget hjemme
+- Core message: Discovery through a playful home tasting: brew two cups, search for dark cherry and cocoa, and compare the first cup with the last.
+- Visual direction: Overhead close-up photograph on a light wooden kitchen table: two small cups of black coffee side by side, a small ceramic dish with dark cherries and a pinch of cocoa powder beside them, one hand lifting a cup, soft morning daylight from the side, shallow depth of field, no packaging, no text, no letters visible.
 
 ### English
 
-- Headline: Brew the Aarhus bag and taste dark cherry and cocoa
-- Primary text: How to try it: 1. Check the roast date on the bag. 2. Brew your single origin as usual. 3. Taste for dark cherry and cocoa. Your next bag is roasted in Aarhus only after your order, and you can skip a week.
-- CTA: See how it works
+- Headline: Run a little tasting test in your kitchen
+- Primary text: Take two cups from the same bag. Find dark cherry first. Then cocoa. Write nothing down. Drink the first cup fresh. Save the game for the last cup. Taste again. What has shifted?
+- 2-second hook: Can you find cherry and cocoa?
+- CTA: Try the experiment at home

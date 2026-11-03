@@ -69,8 +69,10 @@ export const conceptBriefSchema = z.object({
 
 export const conceptCopySchema = z.object({
   conceptName: nonEmpty.max(60),
+  conceptNameEn: nonEmpty.max(80),
   coreMessage: nonEmpty.max(280),
   hook: hookSchema,
+  hookEn: hookSchema,
   visualDirection: nonEmpty.max(600),
   headlineDa: nonEmpty.max(80),
   headlineEn: nonEmpty.max(80),
@@ -240,8 +242,10 @@ export const brandSummaryJsonSchema = strictObject({
 
 export const conceptCopyJsonSchema = strictObject({
   conceptName: { type: "string", minLength: 1, maxLength: 60 },
+  conceptNameEn: { type: "string", minLength: 1, maxLength: 80 },
   coreMessage: { type: "string", minLength: 1, maxLength: 280 },
   hook: { type: "string", minLength: 1, maxLength: 80, pattern: hookPattern },
+  hookEn: { type: "string", minLength: 1, maxLength: 80, pattern: hookPattern },
   visualDirection: { type: "string", minLength: 1, maxLength: 600 },
   headlineDa: { type: "string", minLength: 1, maxLength: 80 },
   headlineEn: { type: "string", minLength: 1, maxLength: 80 },
