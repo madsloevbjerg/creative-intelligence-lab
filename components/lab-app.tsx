@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CoverageMap, WhyPanel, type MapAd } from "@/components/coverage-map";
 import { conflictQuote, offBrandMotivations, rankGaps, topGaps } from "@/lib/gaps";
-import { BeforeAfter } from "@/components/before-after";
+import { BeforeAfter, Concepts } from "@/components/before-after";
 import { CoverageStory } from "@/components/coverage-story";
 import { FeedFrame } from "@/components/feed-frame";
 import { readImageFile } from "@/components/read-image";
@@ -284,12 +284,13 @@ export function LabApp() {
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-[88rem] flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
+    <main className="mx-auto flex w-full max-w-[1280px] flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
           <p className="text-sm text-muted-foreground">Meta ad creative coverage · Copy language: {demoCopyLanguage === "en" ? "English" : "Danish"}</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
-            Creative Intelligence Lab
+            <span className="sr-only">Creative Intelligence Lab</span>
+            <span className="wordmark" aria-hidden="true"><span>Creative</span><span>INTELLIGENCE</span><span>Lab</span></span>
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
             Meta&apos;s next-gen Andromeda scores every eligible ad and encodes ad content
@@ -321,7 +322,7 @@ export function LabApp() {
       <section className="space-y-4" aria-labelledby="brand-heading">
         <div>
           <h2 id="brand-heading" className="text-xl font-semibold tracking-tight">
-            1. Brand and brief
+            01 Input
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Paste the website, or give a public URL. Then add the campaign brief in a
@@ -392,7 +393,7 @@ export function LabApp() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 id="ads-heading" className="text-xl font-semibold tracking-tight">
-              2. Existing ads
+              02 Analysis
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Add {MIN_ADS}–{MAX_ADS} ads. Each one needs the image, the headline, and the
@@ -572,6 +573,7 @@ export function LabApp() {
                 offBrand={offBrand}
               />
               <WhyList ads={mapAds} exclusions={constraintLines.exclusions} />
+              <Concepts />
               <BeforeAfter
                 summary={`${mapAds.length} ads, ${new Set(mapAds.map((ad) => ad.classification.motivation)).size} of 10 motivations. Visual variety is not the same as different ideas.`}
               />
@@ -587,7 +589,7 @@ export function LabApp() {
         </section>
       ) : (
         <section id="coverage" className="rounded-xl border border-dashed px-4 py-8">
-          <h2 className="text-xl font-semibold tracking-tight">3. Coverage map</h2>
+          <h2 className="text-xl font-semibold tracking-tight">03 Coverage map</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             The map appears here after you analyze at least {MIN_ADS} ads. Empty cells have
             no ad. Thin cells have one. Nothing on this page is a performance prediction.
@@ -637,7 +639,7 @@ function AdInspect({
         <p className="text-sm font-medium">{ad.headline}</p>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {pick?.placement ? <p className="text-sm text-muted-foreground">{pick.placement.reason}</p> : null}
-          {pick?.layoutQa ? <p className="text-sm text-muted-foreground">{pick.layoutQa}</p> : null}
+          {pick?.layoutQa ? <p className="font-mono text-sm text-muted-foreground">{pick.layoutQa}</p> : null}
           <Button type="button" variant={cropView ? "outline" : "default"} onClick={() => cropView && onToggle()}>
             Final ad
           </Button>
@@ -696,7 +698,7 @@ function WhyList({ ads, exclusions }: { ads: MapAd[]; exclusions: string[] }) {
               <p className="font-medium">
                 {ad.headline}
                 {quote ? (
-                  <span className="ml-2 rounded-full bg-[#f6e7c4] px-2 py-0.5 text-[11px] font-medium text-[#7a5b1e]">
+                  <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-foreground">
                     conflicts with brief
                   </span>
                 ) : null}

@@ -67,9 +67,9 @@ function AdThumb({
       <img
         src={ad.imageDataUrl}
         alt={ad.headline}
-        className="h-20 w-16 bg-white object-cover"
+        className="h-24 w-20 bg-white object-cover"
       />
-      <span className="block bg-[#1c1612] px-1 py-0.5 text-center text-[9px] font-medium tracking-wide text-[#f7f3ec] uppercase">
+      <span className="block bg-foreground px-1 py-0.5 text-center text-[9px] font-medium tracking-wide text-background uppercase">
         {ad.classification.delivery}
       </span>
     </button>
@@ -92,7 +92,7 @@ export function WhyPanel({ ad }: { ad: MapAd | null }) {
         <img
           src={ad.imageDataUrl}
           alt=""
-          className="h-20 w-16 shrink-0 rounded-md object-cover"
+          className="h-24 w-20 shrink-0 rounded-md object-cover"
         />
         <div className="min-w-0">
           <p className="truncate text-sm font-medium">{ad.headline}</p>
@@ -114,7 +114,7 @@ export function CoverageMap({ ads, pinnedId, onHover, onPin, highlighted = [], o
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">3. Coverage map</h2>
+          <h2 className="text-xl font-semibold tracking-tight">03 Coverage map</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             Rows are motivations. Columns are execution styles. The badge on a thumbnail is
             the delivery: Static, Carousel, or Video. Highlighted cells are the top gaps.
@@ -122,8 +122,8 @@ export function CoverageMap({ ads, pinnedId, onHover, onPin, highlighted = [], o
           </p>
         </div>
         <ul className="flex flex-wrap gap-2 text-xs">
-          <li className="rounded-md border border-[#1F4A38]/30 bg-[#e7f0ea] px-2 py-1">Top gap</li>
-          <li className="rounded-md border border-[#c4a15a] bg-[#f6e7c4] px-2 py-1">One ad</li>
+          <li className="rounded-md border border-primary bg-accent px-2 py-1">Top gap</li>
+          <li className="rounded-md border border-border bg-secondary px-2 py-1">One ad</li>
           <li className="rounded-md border border-foreground/15 bg-card px-2 py-1">Two or more</li>
         </ul>
       </div>
@@ -177,7 +177,7 @@ export function CoverageMap({ ads, pinnedId, onHover, onPin, highlighted = [], o
                     <td
                       key={execution}
                       className={`min-h-24 min-w-[7.25rem] rounded-md p-1.5 align-top ${
-                        gap ? "border border-[#1F4A38]/40 bg-[#e7f0ea]" : "bg-[#f6f1e8]"
+                        gap ? "border border-primary bg-accent" : "bg-card"
                       }`}
                       aria-label={
                         gap

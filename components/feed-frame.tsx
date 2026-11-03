@@ -11,7 +11,7 @@ type FeedFrameProps = {
 export function FeedFrame({ imageUrl, headline, primaryText, placement = "feed" }: FeedFrameProps) {
   const tall = placement === "reels";
   return (
-    <article className="w-full max-w-[22rem] overflow-hidden rounded-xl border bg-white text-[#1c1612] shadow-sm">
+    <article className="w-full max-w-[22rem] overflow-hidden rounded-xl border bg-white text-foreground shadow-sm">
       <div className="flex items-center gap-2 px-3 py-2.5">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1F4A38] text-sm font-semibold text-[#F3EDE3]">
           D
