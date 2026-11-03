@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CoverageMap, WhyPanel, type MapAd } from "@/components/coverage-map";
 import { conflictQuote, offBrandMotivations, rankGaps, topGaps } from "@/lib/gaps";
+import { BeforeAfter } from "@/components/before-after";
 import { CoverageStory } from "@/components/coverage-story";
 import { FeedFrame } from "@/components/feed-frame";
 import { readImageFile } from "@/components/read-image";
@@ -571,6 +572,9 @@ export function LabApp() {
                 offBrand={offBrand}
               />
               <WhyList ads={mapAds} exclusions={constraintLines.exclusions} />
+              <BeforeAfter
+                summary={`${mapAds.length} ads, ${new Set(mapAds.map((ad) => ad.classification.motivation)).size} of 10 motivations. Visual variety is not the same as different ideas.`}
+              />
             </>
           ) : (
             <Alert variant="destructive">

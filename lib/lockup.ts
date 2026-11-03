@@ -13,7 +13,7 @@ export type LockupMasks = {
 };
 
 export type LayoutQa = {
-  corner: "bottom-left" | "top-left" | "none";
+  corner: "bottom-left" | "top-left" | "middle-left" | "none";
   contrast: number;
   overlapPx: { face: number; head: number; hands: number; bag: number };
   overlapPct: { face: number; head: number; hands: number; bag: number };
@@ -169,21 +169,29 @@ function allowedBand(width: number, height: number, aspect: LockupAspect, boxHei
   return { top: margin, bottom: height - margin - boxHeight, left: margin };
 }
 
-function corners(width: number, height: number, aspect: LockupAspect, box: { width: number; height: number }): { corner: "bottom-left" | "top-left"; rect: MaskBox }[] {
+function corners(width: number, height: number, aspect: LockupAspect, box: { width: number; height: number }): { corner: "bottom-left" | "top-left" | "middle-left"; rect: MaskBox }[] {
   const band = allowedBand(width, height, aspect, box.height);
   const left = Math.round(band.left);
   const topLeft = Math.round(band.top);
   const bottomLeft = Math.round(band.bottom);
-  return [
+  const placed: { corner: "bottom-left" | "top-left" | "middle-left"; rect: MaskBox }[] = [
     {
-      corner: "bottom-left",
+      corner: "bottom-left" as const,
       rect: { left, top: bottomLeft, right: left + box.width, bottom: bottomLeft + box.height },
     },
     {
-      corner: "top-left",
+      corner: "top-left" as const,
       rect: { left, top: topLeft, right: left + box.width, bottom: topLeft + box.height },
     },
   ];
+  if (aspect === "9:16") {
+    const mid = Math.round((topLeft + bottomLeft) / 2);
+    placed.push({
+      corner: "middle-left",
+      rect: { left, top: mid, right: left + box.width, bottom: mid + box.height },
+    });
+  }
+  return placed;
 }
 
 function forbidden(rect: MaskBox, masks: LockupMasks): number {
@@ -264,7 +272,7 @@ export async function renderLockup(input: {
     lines: string[];
     boxWidth: number;
     boxHeight: number;
-    corner: "bottom-left" | "top-left";
+    corner: "bottom-left" | "top-left" | "middle-left";
     rect: MaskBox;
     forbidden: number;
     hands: number;

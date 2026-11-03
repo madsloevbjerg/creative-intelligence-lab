@@ -246,7 +246,7 @@ async function main(): Promise<void> {
   };
   const qa: Record<string, LayoutQa> = {};
   const phraseCount = { hands: 0, hand: 0, neither: 0 };
-  const corners = { "bottom-left": 0, "top-left": 0, none: 0 };
+  const corners = { "bottom-left": 0, "top-left": 0, "middle-left": 0, none: 0 };
   const recrops: string[] = [];
 
   await runWithCost("live", async () => {
