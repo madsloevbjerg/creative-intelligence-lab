@@ -16,7 +16,8 @@
     "check:crop": "tsx scripts/validate-crop.ts",
     "check:text": "tsx scripts/validate-place-text.ts",
     "check:gaps": "tsx scripts/validate-gaps.ts",
-    "check:layout": "tsx scripts/validate-layout.ts",
+    "check:phone": "tsx --tsconfig scripts/tsconfig.budget.json scripts/validate-phone.ts",
+    "check:layout": "tsx scripts/validate-layout.ts && tsx --tsconfig scripts/tsconfig.budget.json scripts/validate-phone.ts",
     "m2:smoke": "tsx --tsconfig scripts/tsconfig.budget.json scripts/m2-smoke.ts",
     "m3:candidates": "tsx --tsconfig scripts/tsconfig.budget.json scripts/m3-candidates.ts",
     "m3:lock": "tsx --tsconfig scripts/tsconfig.budget.json scripts/m3-lock.ts"

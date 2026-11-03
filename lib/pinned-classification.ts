@@ -8,6 +8,19 @@ import type { Classification } from "@/lib/schemas";
  * Ad 7 was classified Emotion/ritual on the run the current concepts were built from.
  */
 export const PINNED_DEMO_CLASSIFICATIONS: Record<string, { priceUsd: number; result: Classification }> = {
+  "dcl-06": {
+    priceUsd: 0.01880375,
+    result: {
+      message: "Subscription delivers freshly roasted beans in time for effortless Monday coffee.",
+      motivation: "Convenience/time",
+      hook: "Monday coffee, already handled",
+      execution: "Lifestyle scene",
+      delivery: "Static",
+      visualDescription:
+        "Hand holding a phone with delivery notification above a coffee bag on a wooden table with cup and linen.",
+      why: "Static Lifestyle scene with Convenience/time fits the tabletop bag and phone notification promising effortless Monday coffee, but the copy describes a 10-second door-delivery video that the still image does not show.",
+    },
+  },
   "dcl-07": {
     priceUsd: 0.01000475,
     result: {
