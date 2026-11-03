@@ -558,7 +558,7 @@ export function LabApp() {
           ) : null}
           <BrandSummaryCard brand={result.brand} />
           <CoverageStory ads={mapAds} />
-          <div className="sticky top-2 z-30 space-y-3">
+          <div className="space-y-3">
             <WhyPanel ad={activeAd} />
             {activeAd ? <AdInspect ad={activeAd} manifest={manifest} cropView={cropView} onToggle={() => setCropView((value) => !value)} /> : null}
           </div>

@@ -1,110 +1,80 @@
 {
   "clip-A": {
-    "programs": [],
-    "stream_groups": [],
     "streams": [
       {
         "codec_name": "h264",
         "width": 1920,
         "height": 1080,
-        "r_frame_rate": "30/1",
-        "side_data_list": [
-          {}
-        ]
+        "r_frame_rate": "30/1"
       }
     ],
     "format": {
-      "duration": "17.233333"
+      "duration": "17.1"
     }
   },
   "clip-B": {
-    "programs": [],
-    "stream_groups": [],
     "streams": [
       {
         "codec_name": "h264",
         "width": 1920,
         "height": 1080,
-        "r_frame_rate": "30/1",
-        "side_data_list": [
-          {}
-        ]
+        "r_frame_rate": "30/1"
       }
     ],
     "format": {
-      "duration": "33.700000"
+      "duration": "32.966667"
     }
   },
   "clip-C": {
-    "programs": [],
-    "stream_groups": [],
     "streams": [
       {
         "codec_name": "h264",
         "width": 1920,
         "height": 1080,
-        "r_frame_rate": "30/1",
-        "side_data_list": [
-          {}
-        ]
+        "r_frame_rate": "30/1"
       }
     ],
     "format": {
-      "duration": "20.200000"
+      "duration": "20.1"
     }
   },
   "clip-D": {
-    "programs": [],
-    "stream_groups": [],
     "streams": [
       {
         "codec_name": "h264",
         "width": 1920,
         "height": 1080,
-        "r_frame_rate": "30/1",
-        "side_data_list": [
-          {}
-        ]
+        "r_frame_rate": "30/1"
       }
     ],
     "format": {
-      "duration": "21.200000"
+      "duration": "22.733333"
     }
   },
   "clip-E": {
-    "programs": [],
-    "stream_groups": [],
     "streams": [
       {
         "codec_name": "h264",
         "width": 1920,
         "height": 1080,
-        "r_frame_rate": "30/1",
-        "side_data_list": [
-          {}
-        ]
+        "r_frame_rate": "30/1"
       }
     ],
     "format": {
-      "duration": "22.233333"
+      "duration": "22.066667"
     }
   },
   "clip-F": {
-    "programs": [],
-    "stream_groups": [],
     "streams": [
       {
         "codec_name": "h264",
         "width": 1920,
         "height": 1080,
-        "r_frame_rate": "30/1",
-        "side_data_list": [
-          {}
-        ]
+        "r_frame_rate": "30/1"
       }
     ],
     "format": {
-      "duration": "17.233333"
+      "duration": "17.033333"
     }
   }
 }

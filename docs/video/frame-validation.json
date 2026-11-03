@@ -1,0 +1,1412 @@
+{
+  "clip-A": {
+    "duration": 17.1,
+    "minimum_duration": 16,
+    "passed": true,
+    "frames": [
+      {
+        "second": 0,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6054,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 1,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6054,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 2,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6054,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 3,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6055,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 4,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5938,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 5,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5521,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 6,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4876,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 7,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5485,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 8,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5437,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 9,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5494,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 10,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5481,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 11,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.546,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 12,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5449,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 13,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.546,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 14,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.546,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 15,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.546,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 16,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5449,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      }
+    ],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1"
+      }
+    ]
+  },
+  "clip-B": {
+    "duration": 32.966667,
+    "minimum_duration": 24,
+    "passed": true,
+    "frames": [
+      {
+        "second": 0,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6054,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 1,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6054,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 2,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6054,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 3,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6021,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 4,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6115,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 5,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6002,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 6,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6297,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 7,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7221,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 8,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7223,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 9,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7218,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 10,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7126,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 11,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7224,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 12,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7224,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 13,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7207,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 14,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6962,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 15,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7006,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 16,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7005,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 17,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7005,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 18,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7047,
+        "content_width_fraction": 0.962,
+        "passed": true
+      },
+      {
+        "second": 19,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8042,
+        "content_width_fraction": 0.9437,
+        "passed": true
+      },
+      {
+        "second": 20,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.78,
+        "content_width_fraction": 0.9437,
+        "passed": true
+      },
+      {
+        "second": 21,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7659,
+        "content_width_fraction": 0.9531,
+        "passed": true
+      },
+      {
+        "second": 22,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6911,
+        "content_width_fraction": 0.9531,
+        "passed": true
+      },
+      {
+        "second": 23,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.689,
+        "content_width_fraction": 0.9531,
+        "passed": true
+      },
+      {
+        "second": 24,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.689,
+        "content_width_fraction": 0.9531,
+        "passed": true
+      },
+      {
+        "second": 25,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6778,
+        "content_width_fraction": 0.9531,
+        "passed": true
+      },
+      {
+        "second": 26,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4886,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 27,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4929,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 28,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4928,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 29,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4928,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 30,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7597,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 31,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7597,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 32,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7597,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      }
+    ],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1"
+      }
+    ]
+  },
+  "clip-C": {
+    "duration": 20.1,
+    "minimum_duration": 19,
+    "passed": true,
+    "frames": [
+      {
+        "second": 0,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5605,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 1,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5605,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 2,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5605,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 3,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5653,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 4,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5607,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 5,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5605,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 6,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5602,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 7,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5602,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 8,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5933,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 9,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7496,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 10,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8204,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 11,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8204,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 12,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8204,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 13,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8204,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 14,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8273,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 15,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8541,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 16,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8555,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 17,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8553,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 18,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8387,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 19,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8387,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      }
+    ],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1"
+      }
+    ]
+  },
+  "clip-D": {
+    "duration": 22.733333,
+    "minimum_duration": 20,
+    "passed": true,
+    "frames": [
+      {
+        "second": 0,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6732,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 1,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6635,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 2,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6635,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 3,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6665,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 4,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5194,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 5,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7525,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 6,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.1609,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 7,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.1603,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 8,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.1605,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 9,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.1603,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 10,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.1658,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 11,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2024,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 12,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2084,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 13,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7497,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 14,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7497,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 15,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.748,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 16,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7473,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 17,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2072,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 18,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2072,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 19,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2066,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 20,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2004,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 21,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2004,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 22,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2004,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      }
+    ],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1"
+      }
+    ]
+  },
+  "clip-E": {
+    "duration": 22.066667,
+    "minimum_duration": 21,
+    "passed": true,
+    "frames": [
+      {
+        "second": 0,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5611,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 1,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5611,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 2,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5611,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 3,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5529,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 4,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.6587,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 5,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.398,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 6,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4969,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 7,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4969,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 8,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4969,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 9,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4969,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 10,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4969,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 11,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4969,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 12,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.497,
+        "content_width_fraction": 0.9656,
+        "passed": true
+      },
+      {
+        "second": 13,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.8513,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 14,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4499,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 15,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4497,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 16,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.7946,
+        "content_width_fraction": 0.9625,
+        "passed": true
+      },
+      {
+        "second": 17,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4995,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 18,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.498,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 19,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.498,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 20,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.498,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 21,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.498,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      }
+    ],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1"
+      }
+    ]
+  },
+  "clip-F": {
+    "duration": 17.033333,
+    "minimum_duration": 16,
+    "passed": true,
+    "frames": [
+      {
+        "second": 0,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2892,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 1,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2892,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 2,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2892,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 3,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2892,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 4,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.2818,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 5,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.151,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 6,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.25,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 7,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.4751,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 8,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.541,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 9,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 10,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 11,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 12,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 13,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 14,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 15,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      },
+      {
+        "second": 16,
+        "size": [
+          1920,
+          1080
+        ],
+        "background_fraction": 0.5406,
+        "content_width_fraction": 0.9661,
+        "passed": true
+      }
+    ],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1"
+      }
+    ]
+  }
+}
