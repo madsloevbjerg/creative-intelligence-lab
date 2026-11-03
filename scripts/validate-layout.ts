@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import sharp from "sharp";
 
 import { brandKit } from "../lib/brand-kit";
@@ -110,16 +110,89 @@ for (const sample of ["Coffee for 49 kr a week", "Three prices, one subscription
   if (lines.length > 2) fail(`${sample} used ${lines.length} lines`);
 }
 
+const REQUIRED = [
+  "dcl-01",
+  "dcl-02",
+  "dcl-03",
+  "dcl-04",
+  "dcl-05",
+  "dcl-06",
+  "dcl-07",
+  "dcl-08",
+  "1a",
+  "2a",
+  "3b",
+  "1a-916",
+  "2a-916",
+  "3b-916",
+  "persona-916",
+];
+const FILES: Record<string, string> = {
+  "dcl-01": "public/demo/dcl-01.png",
+  "dcl-02": "public/demo/dcl-02.png",
+  "dcl-03": "public/demo/dcl-03.png",
+  "dcl-04": "public/demo/dcl-04.png",
+  "dcl-05": "public/demo/dcl-05.png",
+  "dcl-06": "public/demo/dcl-06.png",
+  "dcl-07": "public/demo/dcl-07.png",
+  "dcl-08": "public/demo/dcl-08.png",
+  "1a": "public/demo/m5/1a.png",
+  "2a": "public/demo/m5/2a.png",
+  "3b": "public/demo/m5/3b.png",
+  "1a-916": "public/demo/m5/1a-916.png",
+  "2a-916": "public/demo/m5/2a-916.png",
+  "3b-916": "public/demo/m5/3b-916.png",
+  "persona-916": "public/demo/m5/persona-916.png",
+};
+const VERTICAL = new Set(["1a-916", "2a-916", "3b-916", "persona-916"]);
+const MEANINGFUL = 0.02;
+
 const stored = JSON.parse(readFileSync("lib/layout-qa.json", "utf8")) as Record<string, LayoutQa>;
-const names = Object.keys(stored);
-if (names.length < 11) fail(`expected 11 creatives, found ${names.length}`);
-for (const [name, qa] of Object.entries(stored)) assertRecord(name, qa);
+const names = [...new Set([...REQUIRED, ...Object.keys(stored)])].sort();
+const rows: string[] = [];
+for (const name of names) {
+  const qa = stored[name];
+  const before = failures;
+  if (FILES[name] && !existsSync(FILES[name])) fail(`${name} image is missing`);
+  if (!qa) {
+    fail(`${name} has no layout record`);
+  } else {
+    assertRecord(name, qa);
+    if (VERTICAL.has(name) || qa.aspect === "9:16") {
+      const zone = qa.bottom35Pct;
+      if (!zone) fail(`${name} has no bottom-35% measurement`);
+      else {
+        for (const key of ["bag", "face", "head", "hands", "cup"] as const) {
+          if (zone[key] > MEANINGFUL) fail(`${name} puts ${key} in the bottom 35% (${(zone[key] * 100).toFixed(1)}%)`);
+        }
+      }
+    }
+  }
+  const zone = qa?.bottom35Pct;
+  const zoneText = zone
+    ? ["bag", "face", "head", "hands", "cup"]
+        .map((key) => `${key} ${((zone[key as keyof typeof zone] ?? 0) * 100).toFixed(1)}%`)
+        .join(" ")
+    : "—";
+  rows.push(
+    [
+      name.padEnd(14),
+      (failures === before ? "PASS" : "FAIL").padEnd(6),
+      (qa?.corner ?? "—").padEnd(12),
+      String(qa?.lines ?? "—").padEnd(3),
+      (qa ? qa.contrast.toFixed(1) : "—").padEnd(6),
+      zoneText,
+    ].join(" "),
+  );
+}
+console.log("creative       result corner       lines contrast bottom 35%");
+for (const row of rows) console.log(row);
 
 if (failures > 0) {
   console.error(`${failures} layout check(s) failed`);
   process.exitCode = 1;
 } else {
-  console.log(`Layout QA holds for ${names.length} creatives. Contrast, margins, and the 9:16 band check out.`);
+  console.log(`Layout QA holds for ${names.length} creatives. A 9:16 mask in the bottom 35% fails above ${(MEANINGFUL * 100).toFixed(0)}% of that mask.`);
 }
 }
 
