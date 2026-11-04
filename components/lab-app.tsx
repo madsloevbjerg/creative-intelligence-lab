@@ -17,7 +17,6 @@ import { FeedFrame } from "@/components/feed-frame";
 import { readImageFile } from "@/components/read-image";
 import { SamCropView } from "@/components/sam-crop-view";
 import { demoFileDataUrl } from "@/lib/demo-data-url";
-import { demoCopyLanguage } from "@/lib/copy-language";
 import { demoPortfolio } from "@/lib/demo";
 import { formatBudgetUsd, formatUsd } from "@/lib/money";
 import {
@@ -292,25 +291,29 @@ export function LabApp() {
     <main className="mx-auto flex w-full max-w-[1280px] flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <p className="text-sm text-muted-foreground">Meta ad creative coverage · Copy language: {demoCopyLanguage === "en" ? "English" : "Danish"}</p>
+          <p className="font-mono text-xs uppercase tracking-[0.18em] text-primary">For Meta advertisers</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
             <span className="sr-only">Creative Intelligence Lab</span>
             <span className="wordmark" aria-hidden="true"><span>Creative</span><span>INTELLIGENCE</span><span>Lab</span></span>
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
-            Meta&apos;s next-gen Andromeda scores every eligible ad and encodes ad content
-            together with its serving context, while the pool of ads keeps growing with
-            generative AI. Variations of the same idea compete in a crowded pool. This tool
-            maps which distinct ideas are missing.
+          <p className="mt-4 text-base leading-relaxed text-foreground md:text-lg">
+            Eight ads can look different and still say the same thing. Creative Intelligence Lab
+            shows which ideas your Meta ads already cover, which ones are missing, and turns the
+            gaps into concepts ready to test.
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            It does not predict results, scores, or click-through.{" "}
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Why it matters: Meta&apos;s Andromeda decides which ads reach the auction based on what
+            each ad says and shows (
             <a
               className="underline decoration-muted-foreground/40 underline-offset-2 hover:decoration-foreground"
               href="https://engineering.fb.com/2026/10/28/ml-applications/meta-andromeda-next-gen-ads-retrieval-gpu-co-design/"
             >
-              Source
+              source
             </a>
+            ). Ads that say the same thing end up competing for the same people.
+          </p>
+          <p className="mt-2 font-mono text-xs leading-relaxed text-muted-foreground">
+            Built with Muse Spark, SAM 3.1 and Muse Image. Maps coverage. Never predicts performance.
           </p>
         </div>
         <Button
@@ -551,8 +554,12 @@ export function LabApp() {
 
       {result ? (
         <section id="coverage" className="scroll-mt-4 space-y-4">
-          <ModeBanner result={result} />
-          <CostLine cost={result.cost} />
+          {result.mode !== "cached" ? (
+            <>
+              <ModeBanner result={result} />
+              <CostLine cost={result.cost} />
+            </>
+          ) : null}
           {stale ? (
             <Alert>
               <AlertTitle>The inputs changed</AlertTitle>
