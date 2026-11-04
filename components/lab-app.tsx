@@ -36,6 +36,8 @@ type AdDraft = {
   primaryText: string;
   imageDataUrl: string;
   fileName: string;
+  /** Set while the ad is an unchanged demo ad; sent instead of the image bytes. */
+  demoRef?: string;
 };
 
 function emptyAd(): AdDraft {
@@ -158,7 +160,7 @@ export function LabApp() {
     setAdError(null);
     try {
       const imageDataUrl = await readImageFile(file);
-      updateAd(localId, { imageDataUrl, fileName: file.name });
+      updateAd(localId, { imageDataUrl, fileName: file.name, demoRef: undefined });
     } catch (picked) {
       setAdError(picked instanceof Error ? picked.message : "That image could not be read.");
     }
@@ -182,6 +184,7 @@ export function LabApp() {
             primaryText: ad.primaryText,
             fileName: ad.file.split("/").pop() ?? ad.file,
             imageDataUrl: demoFileDataUrl(ad.file, bytes),
+            demoRef: ad.file,
           } satisfies AdDraft;
         }),
       );
@@ -228,7 +231,7 @@ export function LabApp() {
             id: ad.localId,
             headline: ad.headline.trim(),
             primaryText: ad.primaryText.trim(),
-            imageDataUrl: ad.imageDataUrl,
+            ...(ad.demoRef ? { imageRef: ad.demoRef } : { imageDataUrl: ad.imageDataUrl }),
           })),
         }),
       });
@@ -237,7 +240,9 @@ export function LabApp() {
         const message =
           body && typeof body === "object" && "error" in body && typeof body.error === "string"
             ? body.error
-            : `The analysis failed (${response.status}).`;
+            : response.status === 413
+              ? "The images are too large to send in one run. Use fewer or smaller images (the host accepts about 4 MB per run)."
+              : `The analysis failed (${response.status}).`;
         const costParsed = costSummarySchema.safeParse(
           body && typeof body === "object" && "cost" in body ? body.cost : null,
         );

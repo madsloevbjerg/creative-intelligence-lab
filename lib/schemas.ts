@@ -140,8 +140,13 @@ export const analyzeRequestSchema = z.object({
         id: nonEmpty,
         headline: nonEmpty,
         primaryText: nonEmpty,
-        imageDataUrl: imageDataUrlSchema,
-      }),
+        imageDataUrl: imageDataUrlSchema.optional(),
+        // Unchanged demo ads are sent by reference, so the request stays under the host's body limit.
+        imageRef: z
+          .string()
+          .regex(/^\/demo\/dcl-0[1-8]\.png$/, "Unknown demo image.")
+          .optional(),
+      }).refine((ad) => Boolean(ad.imageDataUrl || ad.imageRef), "Each ad needs an image."),
     )
     .min(MIN_ADS, `Add at least ${MIN_ADS} ads.`)
     .max(MAX_ADS, `Use ${MAX_ADS} ads or fewer.`),

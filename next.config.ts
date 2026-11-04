@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   // SAM's parser is ESM-only. resvg is a native SVG rasterizer. Keep both out of the bundle.
   serverExternalPackages: ["@meta-sam/parser", "@resvg/resvg-js"],
+  // The analyze route reads demo images and the committed model cache from disk.
+  outputFileTracingIncludes: {
+    "/api/analyze": ["./public/demo/*.png", "./data/cache/**"],
+  },
   turbopack: {
     rules: {
       "*.css": {

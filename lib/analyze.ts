@@ -1,5 +1,6 @@
 import "server-only";
 
+import { demoImageDataUrl } from "@/lib/demo-assets";
 import { isExactDemoSubmission, loadCachedDemo } from "@/lib/demo-cache";
 import { ModelOutputError, UserFacingError } from "@/lib/errors";
 import { imageWithinLimit } from "@/lib/image-bytes";
@@ -47,12 +48,19 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
     throw new UserFacingError(message, 400);
   }
 
+  const requestAds = request.data.ads.map((ad) => ({
+    id: ad.id,
+    headline: ad.headline,
+    primaryText: ad.primaryText,
+    imageDataUrl: ad.imageDataUrl ?? demoImageDataUrl(ad.imageRef ?? ""),
+  }));
+
   const websiteText =
     request.data.source.kind === "text"
       ? request.data.source.websiteText
       : await websiteTextFromUrl(request.data.source.websiteUrl);
 
-  for (const ad of request.data.ads) {
+  for (const ad of requestAds) {
     if (!imageWithinLimit(ad.imageDataUrl)) {
       throw new UserFacingError(`“${ad.headline}” is over 5 MB. Use a smaller image.`, 413);
     }
@@ -61,7 +69,7 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
   const demoInput = {
     websiteText,
     brief: request.data.brief,
-    ads: request.data.ads,
+    ads: requestAds,
   };
   let chosen = decision;
   if (decision.mode !== "live" && isExactDemoSubmission(demoInput)) {
@@ -92,7 +100,7 @@ async function analyzePortfolioInner(body: unknown, decision: AdapterMode): Prom
   }
 
   const ads = [];
-  for (const ad of request.data.ads) {
+  for (const ad of requestAds) {
     try {
       const segmentation = await segmentImage({
         imageUrl: ad.imageDataUrl,

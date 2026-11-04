@@ -16,6 +16,11 @@ export function demoAssetBytes(publicPath: string): Buffer {
   return readFileSync(path.join(process.cwd(), "public", "demo", name));
 }
 
+/** Build the same PNG data URL the browser sends for a demo ad. */
+export function demoImageDataUrl(publicPath: string): string {
+  return `data:image/png;base64,${demoAssetBytes(publicPath).toString("base64")}`;
+}
+
 let demoShas: Set<string> | null = null;
 
 export function isDemoImageSha(sha: string): boolean {
