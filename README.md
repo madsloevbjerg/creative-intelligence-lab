@@ -4,6 +4,10 @@ A small web app for advertisers. It shows which creative ideas are already in a 
 
 It maps coverage. It does not predict results, scores, or click-through.
 
+- **Demo video (2 min):** https://youtu.be/lrJ6zbwHNns
+- **Live demo (cached, no login):** https://creative-intelligence-lab.vercel.app
+- Built for the Meta Global AI Developer Hackathon (Indie track, "Build for Your World") with Muse Spark, SAM 3.1 and Muse Image.
+
 Meta's next-gen Andromeda scores every eligible ad and encodes ad content together with its serving context, while the pool of ads keeps growing with generative AI. Variations of the same idea compete in a crowded pool. This tool maps which distinct ideas are missing.
 
 Source: [Meta Engineering, Andromeda](https://engineering.fb.com/2026/10/28/ml-applications/meta-andromeda-next-gen-ads-retrieval-gpu-co-design/)
